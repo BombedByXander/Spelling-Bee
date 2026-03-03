@@ -6,53 +6,54 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Universal+Sans:wght@400;700&display=swap');
 
-    --sidebar-foreground: 220 15% 90%;
-    --sidebar-primary: 160 80% 55%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 7%;
-    --sidebar-accent-foreground: 220 15% 90%;
-    --sidebar-border: 0 0% 10%;
-    --sidebar-ring: 160 80% 55%;
-  }
+:root {
+  --sidebar-foreground: 220 15% 90%;
+  --sidebar-primary: 160 80% 55%;
+  --sidebar-primary-foreground: 0 0% 0%;
+  --sidebar-accent: 0 0% 7%;
+  --sidebar-accent-foreground: 220 15% 90%;
+  --sidebar-border: 0 0% 10%;
+  --sidebar-ring: 160 80% 55%;
+}
 
-  .light {
-    --background: 0 0% 98%;
-    --foreground: 220 20% 12%;
+.light {
+  --background: 0 0% 98%;
+  --foreground: 220 20% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 20% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 20% 12%;
 
-    --primary: 160 80% 40%;
-    --primary-foreground: 0 0% 100%;
+  --primary: 160 80% 40%;
+  --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 94%;
-    --secondary-foreground: 220 15% 25%;
+  --secondary: 210 20% 94%;
+  --secondary-foreground: 220 15% 25%;
 
-    --muted: 210 20% 96%;
-    --muted-foreground: 220 10% 40%;
+  --muted: 210 20% 96%;
+  --muted-foreground: 220 10% 40%;
 
-    --accent: 160 70% 45%;
-    --accent-foreground: 0 0% 100%;
+  --accent: 160 70% 45%;
+  --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 70% 52%;
-    --destructive-foreground: 0 0% 100%;
+  --destructive: 0 70% 52%;
+  --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 85%;
-    --input: 220 20% 96%;
-    --ring: 160 70% 45%;
+  --border: 220 15% 85%;
+  --input: 220 20% 96%;
+  --ring: 160 70% 45%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 220 20% 12%;
-    --sidebar-primary: 160 70% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 94%;
-    --sidebar-accent-foreground: 220 20% 12%;
-    --sidebar-border: 220 15% 85%;
-    --sidebar-ring: 160 70% 45%;
-  }
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 220 20% 12%;
+  --sidebar-primary: 160 70% 45%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 210 20% 94%;
+  --sidebar-accent-foreground: 220 20% 12%;
+
+  --sidebar-border: 220 15% 85%;
+  --sidebar-ring: 160 70% 45%;
 }
 
 @layer base {
