@@ -33,6 +33,14 @@
   }
 }
 
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-fadein {
+  animation: fadein 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
 .card {
   padding: 2em;
 }
