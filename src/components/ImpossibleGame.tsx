@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { getRandomImpossibleWord, getRandomNightmarePlusWord, isCorrectSpelling, WordEntry, liveFeedbackCharMatches, liveFeedbackContainsChar, resolveWordForActiveModifiers } from "@/data/words";
+import { getRandomImpossibleWord, isCorrectSpelling, WordEntry, liveFeedbackCharMatches, liveFeedbackContainsChar, resolveWordForActiveModifiers } from "@/data/words";
 import { getSoundPack } from "@/lib/sounds";
 import { bumpFontSizeByPx, getFontPack } from "@/lib/fonts";
 import { getStoredCaretSettings } from "@/lib/caret";
@@ -56,7 +56,6 @@ function countLiveErrors(typedInput: string, word: WordEntry): number {
 }
 
 interface Props {
-  nightmarePlus?: boolean;
   userId?: string;
   activeSound: string;
   activeFont: string;
@@ -65,10 +64,10 @@ interface Props {
   restartKeybind: string;
 }
 
-const ImpossibleGame = ({ nightmarePlus = false, userId, activeSound, activeFont, keyboardLayout, keySize = 15, restartKeybind }: Props) => {
+const ImpossibleGame = ({ userId, activeSound, activeFont, keyboardLayout, keySize = 15, restartKeybind }: Props) => {
   const getNextWord = useCallback((exclude?: string) => {
-    return nightmarePlus ? getRandomNightmarePlusWord(exclude) : getRandomImpossibleWord(exclude);
-  }, [nightmarePlus]);
+    return getRandomImpossibleWord(exclude);
+  }, []);
 
   const [currentWord, setCurrentWord] = useState<WordEntry>(() => getNextWord());
   const [input, setInput] = useState("");
@@ -160,7 +159,7 @@ const ImpossibleGame = ({ nightmarePlus = false, userId, activeSound, activeFont
     const elapsedMs = startTime ? Math.max(0, now - startTime) : 0;
     const correct = isCorrectSpelling(input, currentWord);
     recordReplayEvent({
-      mode: nightmarePlus ? "nightmare_plus" : "nightmare",
+      mode: "nightmare",
       prompt: currentWord.primary,
       typed: input.trim(),
       correct,
@@ -192,7 +191,7 @@ const ImpossibleGame = ({ nightmarePlus = false, userId, activeSound, activeFont
       setShaking(true);
     }
     timeoutRef.current = setTimeout(nextWord, getStoredRoundDelayMs());
-  }, [input, currentWord, startTime, nextWord, stats, nightmarePlus, userId, rawCharCount]);
+  }, [input, currentWord, startTime, nextWord, stats, userId, rawCharCount]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     setCapsLockOn(e.getModifierState("CapsLock"));

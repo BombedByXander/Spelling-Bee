@@ -79,7 +79,7 @@ const ACTIVE_SOUND_KEY = "spelldown-active-sound";
 const ACTIVE_FONT_KEY = "spelldown-active-font";
 const RESET_STATS_PHRASE = "I want to reset my statistics";
 
-type GameMode = "master" | "custom" | "nightmare" | "nightmare_plus" | "beginner" | "novice" | "moderate" | "genius";
+type GameMode = "master" | "custom" | "beginner" | "novice" | "moderate" | "genius";
 type SettingsSectionId =
   | "section-gameplay"
   | "section-modifiers"
@@ -96,8 +96,6 @@ const TYPING_DIFFICULTIES: { label: string; value: GameMode }[] = [
   { label: "Moderate", value: "moderate" },
   { label: "Genius", value: "genius" },
   { label: "Master", value: "master" },
-  { label: "Nightmare", value: "nightmare" },
-  { label: "Nightmare+", value: "nightmare_plus" },
   { label: "Custom", value: "custom" },
 ];
 
@@ -226,10 +224,6 @@ const Settings = () => {
   const [resetIrreversibleAck, setResetIrreversibleAck] = useState(false);
   const [gameMode, setGameMode] = useState<GameMode>(() => {
     const storedMode = localStorage.getItem(GAME_MODE_KEY);
-    if (storedMode === "impossible") {
-      localStorage.setItem(GAME_MODE_KEY, "nightmare");
-      return "nightmare";
-    }
     return (storedMode as GameMode) || "master";
   });
   const [activeThemeTab, setActiveThemeTab] = useState<"preset" | "custom">(

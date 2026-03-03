@@ -42,7 +42,7 @@ const isAnnouncementsMissingError = (error: unknown) => {
   return err?.code === "PGRST205" || err?.code === "42P01" || (message.includes("announcements") && message.includes("schema cache"));
 };
 
-type GameMode = "master" | "custom" | "nightmare" | "nightmare_plus" | "beginner" | "novice" | "moderate" | "genius";
+type GameMode = "master" | "custom" | "beginner" | "novice" | "moderate" | "genius";
 
 interface QuickActionProps {
   label: string;
@@ -66,8 +66,6 @@ const GAME_MODE_LABELS: Record<GameMode, string> = {
   moderate: "Moderate",
   genius: "Genius",
   master: "Master",
-  nightmare: "Nightmare",
-  nightmare_plus: "Nightmare+",
   custom: "Custom",
 };
 
@@ -90,10 +88,6 @@ const Index = () => {
   });
   const [gameMode, setGameMode] = useState<GameMode>(() => {
     const storedMode = localStorage.getItem(GAME_MODE_KEY);
-    if (storedMode === "impossible") {
-      localStorage.setItem(GAME_MODE_KEY, "nightmare");
-      return "nightmare";
-    }
     return (storedMode as GameMode) || "master";
   });
   const [customWordsInput, setCustomWordsInput] = useState(() => localStorage.getItem(CUSTOM_WORDS_KEY) || "");
@@ -324,27 +318,6 @@ const Index = () => {
         <CustomGame
           key={restartTrigger}
           customWords={customWords}
-          userId={user?.id}
-          activeSound={activeSound}
-          activeFont={activeFont}
-          keyboardLayout={keyboardLayout}
-          keySize={keySize}
-          restartKeybind={restartKeybind}
-        />
-      ) : gameMode === "nightmare_plus" ? (
-        <ImpossibleGame
-          key={restartTrigger}
-          nightmarePlus
-          userId={user?.id}
-          activeSound={activeSound}
-          activeFont={activeFont}
-          keyboardLayout={keyboardLayout}
-          keySize={keySize}
-          restartKeybind={restartKeybind}
-        />
-      ) : gameMode === "nightmare" ? (
-        <ImpossibleGame
-          key={restartTrigger}
           userId={user?.id}
           activeSound={activeSound}
           activeFont={activeFont}
