@@ -28,6 +28,13 @@ interface FeedbackRow {
   category?: string | null;
 }
 
+interface AnnouncementRow {
+  id: string;
+  message: string;
+  active: boolean;
+  created_at: string;
+}
+
 type AppRole = "admin" | "moderator" | "user";
 
 interface RoleRow {
@@ -35,7 +42,7 @@ interface RoleRow {
   role: AppRole;
 }
 
-type AdminTab = "users" | "feedback";
+type AdminTab = "users" | "feedback" | "announcements";
 
 const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Props) => {
   const [users, setUsers] = useState<UserRow[]>([]);
@@ -56,6 +63,10 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
   const [editMessage, setEditMessage] = useState<string>("");
   const [editCategory, setEditCategory] = useState<string | null>(null);
   const [editLoading, setEditLoading] = useState<boolean>(false);
+  const [announcements, setAnnouncements] = useState<AnnouncementRow[]>([]);
+  const [newAnnouncementMessage, setNewAnnouncementMessage] = useState<string>("");
+  const [newAnnouncementActive, setNewAnnouncementActive] = useState<boolean>(true);
+  const [announcementsLoading, setAnnouncementsLoading] = useState<boolean>(false);
   // feedback editing removed — edits are no longer allowed via admin panel
 
   const roleRank: Record<AppRole, number> = {
@@ -196,6 +207,30 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
     }
   };
 
+  const fetchAnnouncements = async () => {
+    try {
+      setAnnouncementsLoading(true);
+      const { data, error } = await supabase
+        .from("announcements")
+        .select("id, message, active, created_at")
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      if (error) {
+        console.error("Error fetching announcements:", error);
+        setPanelError("Could not load announcements.");
+        return;
+      }
+
+      setAnnouncements((data ?? []) as AnnouncementRow[]);
+    } catch (err) {
+      console.error("Exception fetching announcements:", err);
+      setPanelError("Could not load announcements.");
+    } finally {
+      setAnnouncementsLoading(false);
+    }
+  };
+
   const refreshAll = async () => {
     setPanelError(null);
     await Promise.all([fetchUsers(search), fetchFeedback()]);
@@ -204,7 +239,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
   useEffect(() => {
     if (!open) return;
     setPanelError(null);
-    void Promise.all([fetchUsers(""), fetchFeedback()]);
+    void Promise.all([fetchUsers(""), fetchFeedback(), fetchAnnouncements()]);
   }, [open]);
 
   useEffect(() => {
@@ -231,8 +266,20 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
       )
       .subscribe();
 
+    const announcementsChannel = supabase
+      .channel("admin-announcements-sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "announcements" },
+        () => {
+          void fetchAnnouncements();
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(feedbackChannel);
+      supabase.removeChannel(announcementsChannel);
     };
   }, [open]);
 
@@ -375,6 +422,12 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
             className={`px-3 py-1.5 rounded-md text-xs font-mono border ${tab === "feedback" ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-foreground"}`}
           >
             Feedback
+          </button>
+          <button
+            onClick={() => setTab("announcements")}
+            className={`px-3 py-1.5 rounded-md text-xs font-mono border ${tab === "announcements" ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-foreground"}`}
+          >
+            Announcements
           </button>
           <button onClick={refreshAll} className="ml-auto text-muted-foreground hover:text-foreground transition-colors p-1" title="Refresh all">
             <RefreshCw size={16} className={loading || feedbackLoading ? "animate-spin" : ""} />
@@ -574,6 +627,96 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                   </div>
                 ))
               )}
+            {tab === "announcements" && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-primary mb-2">
+                  <Shield size={14} />
+                  <span className="text-xs font-mono font-semibold">Site announcements</span>
+                </div>
+
+                <div className="rounded-lg border border-border/60 bg-card/40 p-3">
+                  <label className="text-[10px] font-mono text-muted-foreground">Message</label>
+                  <textarea
+                    value={newAnnouncementMessage}
+                    onChange={(e) => setNewAnnouncementMessage(e.target.value)}
+                    rows={3}
+                    className="w-full mt-1 px-2 py-1 rounded bg-input border border-border text-sm text-foreground"
+                  />
+                  <div className="mt-2 flex items-center gap-2">
+                    <label className="flex items-center gap-2 text-[10px] font-mono">
+                      <input type="checkbox" checked={newAnnouncementActive} onChange={(e) => setNewAnnouncementActive(e.target.checked)} />
+                      Active
+                    </label>
+                    <div className="ml-auto">
+                      <button
+                        onClick={async () => {
+                          setPanelError(null);
+                          if (!newAnnouncementMessage.trim()) {
+                            setPanelError("Enter a message.");
+                            return;
+                          }
+                          setAnnouncementsLoading(true);
+                          const { error } = await supabase
+                            .from("announcements")
+                            .insert({ message: newAnnouncementMessage.trim(), active: newAnnouncementActive });
+
+                          if (error) {
+                            setPanelError(error.message || "Could not create announcement.");
+                          } else {
+                            setNewAnnouncementMessage("");
+                            setNewAnnouncementActive(true);
+                            await fetchAnnouncements();
+                          }
+                          setAnnouncementsLoading(false);
+                        }}
+                        className="px-3 py-1 rounded-md bg-primary text-primary-foreground text-sm"
+                      >
+                        {announcementsLoading ? "Creating..." : "Create announcement"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {announcements.map((a) => (
+                    <div key={a.id} className="rounded-lg border border-border/60 bg-card/30 p-3 flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm text-foreground whitespace-pre-wrap">{a.message}</p>
+                        <p className="text-[10px] text-muted-foreground font-mono mt-1">{new Date(a.created_at).toLocaleString()}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={async () => {
+                            setPanelError(null);
+                            const { error } = await supabase
+                              .from("announcements")
+                              .update({ active: !a.active })
+                              .eq("id", a.id);
+                            if (error) setPanelError(error.message || "Could not update announcement.");
+                            else await fetchAnnouncements();
+                          }}
+                          className={`px-2 py-1 text-xs rounded-md ${a.active ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}
+                        >
+                          {a.active ? "Active" : "Inactive"}
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (!window.confirm("Delete this announcement?")) return;
+                            setPanelError(null);
+                            const { error } = await supabase.from("announcements").delete().eq("id", a.id);
+                            if (error) setPanelError(error.message || "Could not delete announcement.");
+                            else await fetchAnnouncements();
+                          }}
+                          className="px-2 py-1 text-xs border border-destructive/70 rounded-md text-destructive"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             </div>
           )}
         </div>
