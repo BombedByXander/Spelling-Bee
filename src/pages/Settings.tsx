@@ -630,7 +630,7 @@ const Settings = () => {
           </aside>
 
           <div className="space-y-6">
-          <div className="rounded-lg border border-border/50 bg-card/30 px-4 py-2">
+          <div className="rounded-full border border-border/50 bg-card/30 px-4 py-2">
             <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
               Now editing: {SETTINGS_SECTIONS.find((section) => section.id === activeSettingsSection)?.label}
             </p>
@@ -638,7 +638,7 @@ const Settings = () => {
 
           {activeSettingsSection === "section-gameplay" && (
           <>
-          <div id="section-gameplay" className="px-5 py-4 rounded-xl bg-card/40 border border-border/40">
+          <div id="section-gameplay" className="px-5 py-4 rounded-full bg-card/40 border border-border/40">
             <div className="flex items-center gap-3 mb-3">
               <Keyboard size={16} className="text-primary" />
               <div>
@@ -655,7 +655,7 @@ const Settings = () => {
                     localStorage.setItem(GAME_MODE_KEY, difficulty.value);
                     window.dispatchEvent(new Event(GAME_MODE_CHANGED_EVENT));
                   }}
-                  className={`px-3 py-2 rounded-lg text-sm font-mono transition-colors ${
+                  className={`px-3 py-2 rounded-full text-sm font-mono transition-colors ${
                     gameMode === difficulty.value
                       ? "bg-primary text-primary-foreground border border-primary"
                       : "bg-card/60 border border-border text-muted-foreground hover:text-foreground hover:border-primary"
@@ -673,7 +673,7 @@ const Settings = () => {
               setAllowHomophones(value);
               localStorage.setItem(ALLOW_HOMOPHONES_KEY, String(value));
             }}
-            className="flex items-center gap-3 w-full px-5 py-4 rounded-xl bg-card/40 border border-border/40 text-sm text-foreground hover:border-primary transition-colors mt-3"
+            className="flex items-center gap-3 w-full px-5 py-4 rounded-full bg-card/40 border border-border/40 text-sm text-foreground hover:border-primary transition-colors mt-3"
           >
             <TextCursorInput size={16} className={allowHomophones ? "text-primary" : "text-muted-foreground"} />
             <div className="text-left flex-1">
@@ -691,7 +691,7 @@ const Settings = () => {
               setChargMode(value);
               localStorage.setItem(CHARG_KEY, String(value));
             }}
-            className="flex items-center gap-3 w-full px-5 py-4 rounded-xl bg-card/40 border border-border/40 text-sm text-foreground hover:border-primary transition-colors"
+            className="flex items-center gap-3 w-full px-5 py-4 rounded-full bg-card/40 border border-border/40 text-sm text-foreground hover:border-primary transition-colors"
           >
             <Zap size={16} className={chargMode ? "text-primary" : "text-muted-foreground"} />
             <div className="text-left flex-1">

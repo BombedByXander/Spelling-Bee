@@ -147,7 +147,6 @@ const ModerateGame = ({ userId, activeSound, activeFont, keyboardLayout, keySize
     };
   }, []);
 
-  const handleSubmit = useCallback(() => {
     if (!input.trim()) return;
     const now = performance.now();
     const elapsedMs = startTime ? Math.max(0, now - startTime) : 0;
@@ -156,6 +155,7 @@ const ModerateGame = ({ userId, activeSound, activeFont, keyboardLayout, keySize
       mode: "moderate",
       prompt: currentWord.primary,
       typed: input.trim(),
+          className={`w-full px-4 sm:px-6 py-3 sm:py-4 rounded-full font-mono text-base sm:text-lg md:text-xl leading-[1.35] bg-card/60 frost-input border-2 input-basic-white-glow ${isUltraBlackTheme ? "ultra-black-input-glow" : ""} ${rgbOverlayActive ? "text-transparent [-webkit-text-fill-color:transparent]" : "text-foreground"} ${hideNativeCaret ? "caret-transparent" : "caret-[hsl(var(--ring))]"} placeholder:text-muted-foreground outline-none transition-colors duration-300 ${
       correct,
       elapsedMs: startTime ? Math.round(now - startTime) : 0,
     });
