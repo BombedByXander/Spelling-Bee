@@ -147,6 +147,7 @@ const ModerateGame = ({ userId, activeSound, activeFont, keyboardLayout, keySize
     };
   }, []);
 
+    const handleSubmit = useCallback(() => {
     if (!input.trim()) return;
     const now = performance.now();
     const elapsedMs = startTime ? Math.max(0, now - startTime) : 0;
