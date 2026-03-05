@@ -25,6 +25,7 @@ interface FeedbackRow {
   user_id: string | null;
   message: string;
   created_at: string;
+  category?: string | null;
 }
 
 type AppRole = "admin" | "moderator" | "user";
@@ -172,7 +173,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
       setFeedbackLoading(true);
       const { data, error } = await supabase
         .from("feedback_submissions")
-        .select("id, display_name, user_id, message, created_at")
+        .select("id, display_name, user_id, message, created_at, category")
         .order("created_at", { ascending: false })
         .limit(200);
 
@@ -464,7 +465,22 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                     </p>
                     <>
                       <p className="mt-1 text-sm text-foreground whitespace-pre-wrap">{entry.message}</p>
-                      <div className="mt-2 flex items-center gap-2">
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          {entry.category ? (
+                            <span className="text-sm">{entry.category === 'bug' ? '🪲' : entry.category === 'critical' ? '❕' : '💬'}</span>
+                          ) : null}
+                          <span className="text-[10px] text-muted-foreground font-mono">{new Date(entry.created_at).toLocaleString()}</span>
+                        </div>
+                        <div>
+                          <button
+                            onClick={() => handleDeleteFeedback(entry.id)}
+                            className="inline-flex items-center gap-1 text-xs border border-destructive/70 rounded-md px-2 py-1 text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 size={12} /> Delete
+                          </button>
+                        </div>
+                      </div>
                         <button
                           onClick={() => handleDeleteFeedback(entry.id)}
                           className="inline-flex items-center gap-1 text-xs border border-destructive/70 rounded-md px-2 py-1 text-destructive hover:bg-destructive/10"

@@ -11,6 +11,7 @@ interface FeedbackEntry {
   user_id: string | null;
   display_name: string | null;
   message: string;
+  category?: string | null;
 }
 
 interface FeedbackVote {
@@ -73,7 +74,7 @@ const FeedbackInboxButton = ({ isAdmin = false, inline = false }: Props) => {
     const [{ data: feedbackData, error: feedbackError }, { data: voteData, error: voteError }] = await Promise.all([
       supabase
         .from("feedback_submissions")
-        .select("id, created_at, user_id, display_name, message")
+        .select("id, created_at, user_id, display_name, message, category")
         .order("created_at", { ascending: false })
         .limit(200),
       supabase
@@ -258,7 +259,7 @@ const FeedbackInboxButton = ({ isAdmin = false, inline = false }: Props) => {
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-foreground truncate">{sender}</p>
+                          <p className="text-sm font-semibold text-foreground truncate">{sender} {entry.category ? (<span className="ml-2 text-sm">{entry.category === 'bug' ? '🪲' : entry.category === 'critical' ? '❕' : '💬'}</span>) : null}</p>
                         <p className="text-[10px] text-muted-foreground font-mono">{dateLabel}</p>
                       </div>
                       <div className="inline-flex items-center gap-2 text-muted-foreground">
