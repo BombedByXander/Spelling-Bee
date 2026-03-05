@@ -221,6 +221,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
         return;
       }
 
+      try { console.debug("Fetched announcements:", data?.length ?? 0); } catch {}
       setAnnouncements((data ?? []) as AnnouncementRow[]);
     } catch (err) {
       console.error("Exception fetching announcements:", err);
@@ -621,6 +622,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                 </div>
 
                 <div className="rounded-lg border border-border/60 bg-card/40 p-3">
+                    <p className="text-[10px] text-muted-foreground mb-2">Debug: {announcementsLoading ? "loading..." : `${announcements.length} announcements`}</p>
                   <label className="text-[10px] font-mono text-muted-foreground">Message</label>
                   <textarea
                     value={newAnnouncementMessage}
@@ -642,9 +644,11 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                             return;
                           }
                           setAnnouncementsLoading(true);
-                          const { error } = await supabase
+                          const { data: created, error } = await supabase
                             .from("announcements")
-                            .insert({ message: newAnnouncementMessage.trim(), active: newAnnouncementActive });
+                            .insert({ message: newAnnouncementMessage.trim(), active: newAnnouncementActive })
+                            .select();
+                          try { console.debug("Create announcement result:", { created, error }); } catch {}
 
                           if (error) {
                             setPanelError(error.message || "Could not create announcement.");
