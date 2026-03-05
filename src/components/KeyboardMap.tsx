@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export type KeyboardLayout = "qwerty" | "azerty" | "dvorak" | "colemak";
 
@@ -33,6 +34,9 @@ const KEYBOARDS: Record<KeyboardLayout, string[][]> = {
 };
 
 const KeyboardMap = ({ lastKey, layout = "qwerty", size = 20 }: Props) => {
+  const isMobile = useIsMobile();
+  // hide entirely on mobile
+  if (isMobile) return null;
   // hide if size explicitly zero
   if (size === 0) return null;
   const [flashKey, setFlashKey] = useState<string | null>(null);

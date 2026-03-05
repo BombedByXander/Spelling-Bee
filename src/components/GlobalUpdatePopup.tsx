@@ -18,38 +18,6 @@ const GlobalUpdatePopup = () => {
     );
   }, [dismissedSessionKey, loading, neverKey]);
 
-  useEffect(() => {
-    if (loading) return;
-    let cancelled = false;
-
-    const checkRemoteVersion = async () => {
-      try {
-        const res = await fetch("/release.json", { cache: "no-store" });
-        if (!res.ok) return;
-        const body = await res.json();
-        const remoteVersion = String(body?.version || "").trim();
-        if (!remoteVersion) return;
-        if (remoteVersion !== RELEASE_VERSION) {
-          // if user hasn't opted out or dismissed for this session, show popup
-          if (localStorage.getItem(neverKey) !== "true" && sessionStorage.getItem(dismissedSessionKey) !== "true") {
-            try { console.debug("Remote release detected:", remoteVersion); } catch {}
-            setShowUpdatePopup(true);
-          }
-        }
-      } catch (err) {
-        // ignore network errors
-      }
-    };
-
-    // initial check + periodic poll
-    checkRemoteVersion();
-    const id = setInterval(checkRemoteVersion, 15_000);
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-    };
-  }, [loading, neverKey, dismissedSessionKey]);
-
   if (!showUpdatePopup) return null;
 
   return (
@@ -89,6 +57,9 @@ const GlobalUpdatePopup = () => {
           </div>
 
           <ul className="mt-3 space-y-2 text-sm text-foreground">
+            <li>• New AnnouncementBar: instant site announcements (fetch-on-mount, realtime updates, local dismissal).</li>
+            <li>• Static fallback for announcements via `/announcement.json` with fast polling for static deployments.</li>
+            <li>• Announcement styling improvements: centered text, pop-in/out animation, larger dismiss button, and higher z-index.</li>
             <li>• Theme Engine 2.0 added for stronger ambient gradients, glow intensity, and motion depth.</li>
             <li>• Added Holographic UI Layer toggle for glass/chromatic panel styling.</li>
             <li>• Added Dynamic Environment toggle that tints the game based on your local time of day.</li>
@@ -106,6 +77,10 @@ const GlobalUpdatePopup = () => {
 
           <p className="mt-4 text-xs text-muted-foreground font-mono">Bug fixes:</p>
           <ul className="mt-2 space-y-2 text-sm text-foreground">
+            <li>• Fixed a startup white-screen regression caused by a stray visual component.</li>
+            <li>• Announcements now appear for visitors without a page refresh and respect local dismissal state.</li>
+            <li>• Mobile UX improvements: condensed control bar and reduced base font-size on mobile for compact layout.</li>
+            <li>• Reactive keymap now hides on mobile to reduce clutter.</li>
             <li>• Live feedback now correctly matches all active modifiers across all game modes.</li>
             <li>• WPM now uses monkeytype-style net calculation so typing errors lower reported speed.</li>
             <li>• Clan creation now enforces 4-letter max clan tags.</li>
