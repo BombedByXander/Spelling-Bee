@@ -1,4 +1,5 @@
 -- Create announcements table for admin-posted site-wide messages
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TABLE IF NOT EXISTS public.announcements (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   message text NOT NULL,
