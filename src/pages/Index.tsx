@@ -322,7 +322,7 @@ const Index = () => {
         />
       )}
 
-      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-20 group">
+      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20 group">
         <div className="flex flex-col items-center pointer-events-none">
           {/* Gesture bar — visible as a thin rounded line; hover the area to reveal dock */}
           <div className="mb-2 pointer-events-auto">
@@ -370,7 +370,7 @@ const Index = () => {
                 <QuickAction label="Pass">
                   <button
                     onClick={() => navigate("/pass", { state: { backgroundLocation: location } })}
-                    className="dock-button p-2 rounded-full bg-primary/18 border border-primary/45 text-primary hover:bg-primary/28 hover:border-primary/65 transition-colors"
+                    className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
                     title="Season Pass"
                   >
                     <CalendarDays size={16} />
