@@ -251,7 +251,7 @@ const Index = () => {
   }
 
   return (
-    <>
+    <div>
       {showEasterGardenDecor && <EasterThemeDecor />}
       {/* legacy inline announcement removed — use global AnnouncementBar component */}
       {showSpaceBackground && <CosmicBackground />}
@@ -500,7 +500,7 @@ const Index = () => {
           currentUserId={user?.id}
         />
       )}
-    </>
+    </div>
   );
 };
 
