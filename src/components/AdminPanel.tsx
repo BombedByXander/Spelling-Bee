@@ -283,6 +283,26 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
     };
   }, [open]);
 
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    if (tab !== "announcements") return;
+    // focus and scroll the announcements area into view so admins see controls
+    const id = setTimeout(() => {
+      try {
+        const textarea = containerRef.current?.querySelector('textarea');
+        if (textarea) {
+          (textarea as HTMLTextAreaElement).focus();
+          textarea.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      } catch (e) {
+        // ignore
+      }
+    }, 80);
+    return () => clearTimeout(id);
+  }, [open, tab]);
+
   if (!open) return null;
 
   const handleGiveXp = async () => {
@@ -438,7 +458,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
 
         
 
-        <div className="flex-1 overflow-y-auto px-5 py-3">
+        <div ref={containerRef} className="flex-1 overflow-y-auto px-5 py-3">
           {tab === "users" && (
             <div className="mt-0">
               <input
