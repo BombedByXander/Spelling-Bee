@@ -347,44 +347,7 @@
   }
 }
 
-/* Space (remaster) decorative overlay + holographic accents */
-body.theme-space::before,
-body.theme-space::after {
-  content: "";
-  position: fixed;
-  width: min(96vw, 1400px);
-  height: min(96vw, 1400px);
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.9;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-position: center;
-}
-
-body.theme-space::before {
-  left: -360px;
-  top: -300px;
-  opacity: 0.6;
-  background-image:
-    radial-gradient(circle at 25% 30%, rgba(72,200,255,0.12), transparent 48%),
-    url('/space-overlay.svg');
-  filter: blur(10px) saturate(1.08);
-}
-
-body.theme-space::after {
-  right: -360px;
-  bottom: -320px;
-  opacity: 0.5;
-  background-image:
-    radial-gradient(circle at 70% 70%, rgba(200,90,255,0.10), transparent 54%),
-    linear-gradient(160deg, rgba(72,200,255,0.06), rgba(200,90,255,0.05));
-  mix-blend-mode: screen;
-}
-
-body.theme-space {
-  --theme-overlay-mask: radial-gradient(circle at center, rgba(0,0,0,1) 22%, rgba(0,0,0,0.94) 48%, rgba(0,0,0,0.62) 68%, rgba(0,0,0,0.22) 84%, rgba(0,0,0,0) 100%);
-}
+/* Space decorative remaster removed — reverted to standard theme styles */
 
 @layer utilities {
   .font-mono {

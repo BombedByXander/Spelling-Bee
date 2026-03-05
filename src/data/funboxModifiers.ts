@@ -36,7 +36,7 @@ export const FUNBOX_MODIFIERS: FunboxModifier[] = [
   { id: "rAnDoMcAsE", label: "rAnDoMcAsE", description: "Randomizes capitalization repeatedly." },
   { id: "rot13", label: "rot13", description: "Applies ROT13 transformation to the displayed word." },
   { id: "round_round_baby", label: "round round baby", description: "Spins the displayed word in circles." },
-  { id: "salvia", label: "salvia", description: "Splits the displayed word into two halves and aggressively liquifies, warps, and stretches both sides with heavy RGB distortion." },
+  { id: "salvia", label: "salvia", description: "ever wanted to try drugs before? nows your chance, try the salvia effect!" },
   { id: "scanner", label: "scanner", description: "Runs a scanning beam over the displayed word repeatedly." },
   { id: "shuffle_pair", label: "shuffle pair", description: "Swaps each adjacent letter pair in the displayed word." },
   { id: "snake_chain", label: "snake chain", description: "Inserts underscores between every displayed character." },
@@ -94,5 +94,5 @@ export const FUNBOX_MODIFIERS: FunboxModifier[] = [
   { id: "vowel_shift", label: "vowel shift", description: "Cycles vowels forward (a→e→i→o→u→a)." },
   { id: "upside_down", label: "upside down", description: "Flips the displayed word upside down." },
   { id: "vision_tester", label: "vision tester", description: "Starts the quoted word at 100px and shrinks it by 2px for each +1 streak." },
-  { id: "the_files", label: "the files", description: "Covers the input, keymap, and indicators with a solid black box so typed text is unreadable." },
+  { id: "the_files", label: "the files", description: "Turns key features into redactions like the DOJ files lol." },
 ];

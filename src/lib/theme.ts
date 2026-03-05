@@ -254,29 +254,11 @@ export const applyThemePreset = (presetName: string) => {
   const normalizedPresetName = resolvedPresetName.trim().toLowerCase().replace(/_/g, " ");
 
   if (isDefaultThemePreset(resolvedPresetName)) {
-    // Apply remastered "Space (default)" palette and decorative overlay
+    // Default preset: clear any overrides and use standard dark baseline.
     clearThemeOverrides(root);
+    root.style.setProperty("--ui-glow-rgb", "255 255 255");
     root.classList.remove("light");
     root.classList.add("dark");
-    // Deep neon/holo tokens for the Space remaster
-    root.style.setProperty("--ui-glow-rgb", "72 200 255");
-    root.style.setProperty("--background", "220 18% 6%"); /* near-black navy */
-    root.style.setProperty("--foreground", "210 40% 88%");
-    root.style.setProperty("--card", "216 18% 8%");
-    root.style.setProperty("--card-foreground", "210 40% 88%");
-    root.style.setProperty("--primary", "195 95% 55%"); /* vivid cyan */
-    root.style.setProperty("--primary-foreground", "0 0% 0%");
-    root.style.setProperty("--accent", "270 85% 60%"); /* magenta/purple */
-    root.style.setProperty("--accent-foreground", "0 0% 100%");
-    root.style.setProperty("--muted", "216 14% 10%");
-    root.style.setProperty("--muted-foreground", "210 18% 60%");
-    root.style.setProperty("--border", "220 10% 14%");
-    root.style.setProperty("--input", "220 10% 12%");
-    root.style.setProperty("--ring", "195 95% 55%");
-    root.style.setProperty("--sidebar-background", "216 14% 8%");
-    root.style.setProperty("--sidebar-foreground", "210 40% 88%");
-    // Add decorative overlay class so CSS can show nebula/grid overlays
-    document.body.classList.add("theme-space");
     applyVisualEnhancements();
     return;
   }
