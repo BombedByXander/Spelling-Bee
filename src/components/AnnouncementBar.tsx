@@ -19,6 +19,7 @@ const AnnouncementBar = () => {
       return null;
     }
   });
+  const [visible, setVisible] = useState<boolean>(false);
 
   const fetchAnnouncement = async () => {
     try {
@@ -58,24 +59,45 @@ const AnnouncementBar = () => {
     return () => supabase.removeChannel(ch);
   }, []);
 
+  useEffect(() => {
+    if (!announcement) return;
+    // trigger entrance animation
+    setVisible(false);
+    // next frame -> set visible
+    const id = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(id);
+  }, [announcement]);
+
   if (!announcement) return null;
   if (dismissedId === announcement.id) return null;
 
+  const handleDismiss = () => {
+    // animate out then persist dismissal
+    setVisible(false);
+    setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, announcement.id);
+        setDismissedId(announcement.id);
+      } catch {}
+    }, 220);
+  };
+
   return (
-    <div className="fixed inset-x-0 top-0 z-[60] bg-primary/95 text-primary-foreground border-b border-border/50 py-3 px-4">
-      <div className="max-w-7xl mx-auto w-full px-2 text-sm text-center">{announcement.message}</div>
-      <button
-        onClick={() => {
-          try {
-            localStorage.setItem(STORAGE_KEY, announcement.id);
-            setDismissedId(announcement.id);
-          } catch {}
-        }}
-        className="ml-3 text-primary-foreground/80 hover:text-primary-foreground"
-        aria-label="dismiss announcement"
+    <div className="fixed inset-x-0 top-0 z-[60] py-3 px-4">
+      <div
+        className={`mx-auto max-w-7xl w-full relative rounded-md border border-border/20 bg-primary/95 text-primary-foreground shadow-lg transition-all duration-200 ease-out transform ${
+          visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95"
+        }`}
       >
-        ×
-      </button>
+        <div className="w-full px-4 py-2 text-sm text-center">{announcement.message}</div>
+        <button
+          onClick={handleDismiss}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-foreground/90 hover:text-primary-foreground"
+          aria-label="dismiss announcement"
+        >
+          ×
+        </button>
+      </div>
     </div>
   );
 };
