@@ -215,17 +215,16 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
         .select("id, message, active, created_at")
         .order("created_at", { ascending: false })
         .limit(200);
-
       if (error) {
         console.error("Error fetching announcements:", error);
-        setPanelError("Could not load announcements.");
+        setAnnouncements([]);
         return;
       }
 
       setAnnouncements((data ?? []) as AnnouncementRow[]);
     } catch (err) {
       console.error("Exception fetching announcements:", err);
-      setPanelError("Could not load announcements.");
+      setAnnouncements([]);
     } finally {
       setAnnouncementsLoading(false);
     }
@@ -436,20 +435,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
 
         {panelError && <div className="px-5 py-2 text-xs text-destructive border-b border-border/60">{panelError}</div>}
 
-        <div className="px-5 py-3 border-b border-border/60 grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <div className="rounded-lg border border-border/60 bg-card/40 p-3">
-            <p className="text-[10px] text-muted-foreground font-mono">Total users</p>
-            <p className="text-lg font-bold text-foreground">{users.length}</p>
-          </div>
-          <div className="rounded-lg border border-border/60 bg-card/40 p-3">
-            <p className="text-[10px] text-muted-foreground font-mono">Total XP in economy</p>
-            <p className="text-lg font-bold text-foreground">{totalStars.toLocaleString()}</p>
-          </div>
-          <div className="rounded-lg border border-border/60 bg-card/40 p-3">
-            <p className="text-[10px] text-muted-foreground font-mono">Feedback submissions</p>
-            <p className="text-lg font-bold text-foreground">{feedback.length}</p>
-          </div>
-        </div>
+        
 
         <div className="flex-1 overflow-y-auto px-5 py-3">
           {tab === "users" && (
