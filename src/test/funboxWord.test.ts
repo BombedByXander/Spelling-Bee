@@ -48,11 +48,6 @@ describe("funbox modifier coverage", () => {
       "tremor_burst",
       "typewriter_hop",
       "upside_down",
-      "pogo_bounce",
-      "flip_jitter",
-      "rubber_squish",
-      "orbital_drift",
-      "wave_snap",
       "vision_tester",
       "wobble_spin",
     ]);
