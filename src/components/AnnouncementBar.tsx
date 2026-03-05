@@ -113,10 +113,11 @@ const AnnouncementBar = () => {
         <div className="w-full px-2 text-sm text-center">{announcement.message}</div>
         <button
           onClick={handleDismiss}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 text-xl font-bold text-primary-foreground/95 hover:text-primary-foreground"
+          className="absolute right-3 top-1/2 -translate-y-1/2 z-60 w-9 h-9 flex items-center justify-center rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20"
           aria-label="dismiss announcement"
+          title="Dismiss"
         >
-          ×
+          <span className="text-lg leading-none">×</span>
         </button>
       </div>
     </div>
