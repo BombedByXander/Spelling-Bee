@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Trophy, User, Settings, Shield, Wrench, Info, LogIn, LogOut, CalendarDays } from "lucide-react";
 import SpellingGame from "@/components/SpellingGame";
 import CustomGame from "@/components/CustomGame";
-import ImpossibleGame from "@/components/ImpossibleGame";
 import BeginnerGame from "@/components/BeginnerGame";
 import NoviceGame from "@/components/NoviceGame";
 import ModerateGame from "@/components/ModerateGame";

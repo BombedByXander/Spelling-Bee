@@ -77,7 +77,6 @@ const ImpossibleGame = ({ userId, activeSound, activeFont, keyboardLayout, keySi
   const [startTime, setStartTime] = useState<number | null>(null);
   const [shaking, setShaking] = useState(false);
   const [lastKey, setLastKey] = useState<string | null>(null);
-            className={`w-full px-4 sm:px-6 py-3 sm:py-4 rounded-full font-mono text-base sm:text-lg md:text-xl leading-[1.35] bg-card/60 frost-input border-2 input-basic-white-glow ${isUltraBlackTheme ? "ultra-black-input-glow" : ""} ${rgbOverlayActive ? "text-transparent [-webkit-text-fill-color:transparent]" : "text-foreground"} ${hideNativeCaret ? "caret-transparent" : "caret-[hsl(var(--ring))]"} placeholder:text-muted-foreground outline-none transition-colors duration-300 ${
   const [lastKeyTs, setLastKeyTs] = useState(0);
   const [capsLockOn, setCapsLockOn] = useState(false);
   const [isSelectingText, setIsSelectingText] = useState(false);
