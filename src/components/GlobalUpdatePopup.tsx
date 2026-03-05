@@ -27,8 +27,11 @@ const GlobalUpdatePopup = () => {
         <div className="max-h-[72vh] overflow-y-auto pr-1">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">New update · {RELEASE_VERSION}</h2>
-              <p className="mt-1 text-xs text-muted-foreground font-mono">Important changes:</p>
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">New update · {RELEASE_VERSION}</h2>
+                <span className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-mono border border-border">Early Access</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground font-mono">Info: {RELEASE_VERSION}</p>
             </div>
             <button
               onClick={() => {
@@ -56,42 +59,25 @@ const GlobalUpdatePopup = () => {
             </button>
           </div>
 
-          <ul className="mt-3 space-y-2 text-sm text-foreground">
-            <li>• New AnnouncementBar: instant site announcements (fetch-on-mount, realtime updates, local dismissal).</li>
-            <li>• Static fallback for announcements via `/announcement.json` with fast polling for static deployments.</li>
-            <li>• Announcement styling improvements: centered text, pop-in/out animation, larger dismiss button, and higher z-index.</li>
-            <li>• Theme Engine 2.0 added for stronger ambient gradients, glow intensity, and motion depth.</li>
-            <li>• Added Holographic UI Layer toggle for glass/chromatic panel styling.</li>
-            <li>• Added Dynamic Environment toggle that tints the game based on your local time of day.</li>
-            <li>• Referral rewards increased: both players now earn 10,000 XP per valid redeem.</li>
-            <li>• Added Easter Garden theme visuals plus secret bunny-bounce word effect toggle.</li>
-            <li>• Added monkeytype-style Randomize Theme modes that rotate after each completed word.</li>
-            <li>• Added gameplay toggle: Auto Enter on Exact Length.</li>
-            <li>• Added global refresh/update visibility improvements for all users.</li>
-            <li>• Added custom game mode reliability and autofocus fixes.</li>
-            <li>• Added live admin client-side streak override control.</li>
-            <li>• Added Nightmare+ mode and difficulty naming migration (Impossible → Nightmare).</li>
-            <li>• Added new streak visuals with expanded tier progression and stronger color transitions.</li>
-            <li>• Main HUD redesigned with minimal liquid-glass dock styling.</li>
-          </ul>
+          <div className="mt-3">
+            <p className="text-sm font-semibold">Updates (Today & Yesterday)</p>
+            <ul className="mt-2 space-y-2 text-sm text-foreground">
+              <li>• Announcements system + admin CRUD with realtime delivery and static fallback.</li>
+              <li>• Mobile UX: compact controls, reduced base font-size, and hidden reactive keymap on mobile.</li>
+              <li>• Space theme remaster: new tokens, canvas visuals, and decorative SVG overlay.</li>
+              <li>• Added funbox modifier "the_files" to visually block the input area for gameplay tests.</li>
+              <li>• Fixed multiple TypeScript/JSX build errors and completed a clean production build.</li>
+            </ul>
 
-          <p className="mt-4 text-xs text-muted-foreground font-mono">Bug fixes:</p>
-          <ul className="mt-2 space-y-2 text-sm text-foreground">
-            <li>• Fixed a startup white-screen regression caused by a stray visual component.</li>
-            <li>• Announcements now appear for visitors without a page refresh and respect local dismissal state.</li>
-            <li>• Mobile UX improvements: condensed control bar and reduced base font-size on mobile for compact layout.</li>
-            <li>• Reactive keymap now hides on mobile to reduce clutter.</li>
-            <li>• Live feedback now correctly matches all active modifiers across all game modes.</li>
-            <li>• WPM now uses monkeytype-style net calculation so typing errors lower reported speed.</li>
-            <li>• Clan creation now enforces 4-letter max clan tags.</li>
-            <li>• Homophone validation no longer incorrectly breaks streaks on accepted spellings.</li>
-            <li>• Settings/Profile overlay no longer resets active streak state.</li>
-            <li>• Round transition delay now supports full range down to 0ms.</li>
-            <li>• Salvia now splits words at randomized points (not fixed midpoint).</li>
-            <li>• Nightmare+ pool now contains only the Lopado word as requested.</li>
-            <li>• Profile trends/history section removed for cleaner dashboard UX.</li>
-            <li>• Index startup black-screen regression resolved after layout redesign.</li>
-          </ul>
+            <p className="mt-4 text-xs text-muted-foreground font-mono">Bug fixes</p>
+            <ul className="mt-2 space-y-2 text-sm text-foreground">
+              <li>• Resolved startup white/black-screen regressions and duplicate JSX parse errors.</li>
+              <li>• Fixed canvas parse/duplicate variable issues in the background rendering code.</li>
+              <li>• Announcements now show immediately to visitors and respect local dismissal state.</li>
+              <li>• Mobile layout and focus/autofocus issues resolved for custom game modes.</li>
+              <li>• General stability fixes across admin panels and game components from recent edits.</li>
+            </ul>
+          </div>
         </div>
       </div>
     </>
