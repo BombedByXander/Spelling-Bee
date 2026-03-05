@@ -51,9 +51,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
   const [giveLoading, setGiveLoading] = useState(false);
   const [giveError, setGiveError] = useState<string | null>(null);
   const [panelError, setPanelError] = useState<string | null>(null);
-  const [editingFeedbackId, setEditingFeedbackId] = useState<string | null>(null);
-  const [editingFeedbackMessage, setEditingFeedbackMessage] = useState("");
-  const [savingFeedbackId, setSavingFeedbackId] = useState<string | null>(null);
+  // feedback editing removed — edits are no longer allowed via admin panel
 
   const roleRank: Record<AppRole, number> = {
     user: 1,
@@ -236,10 +234,14 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
   if (!open) return null;
 
   const handleGiveXp = async () => {
-    if (!selectedUser || giveAmountStr.trim() === "") return;
+    if (!selectedUser) return;
 
-    const amount = Number(giveAmountStr);
-    if (!Number.isInteger(amount)) {
+    const targetId = selectedUser.id;
+    const raw = giveAmountStr.trim();
+    if (raw === "") return;
+
+    const amount = parseInt(raw, 10);
+    if (Number.isNaN(amount)) {
       setGiveError("Enter a valid integer");
       return;
     }
@@ -247,39 +249,46 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
     setGiveLoading(true);
     setGiveError(null);
 
-    const { data: currentProfile, error: currentProfileError } = await supabase
-      .from("profiles")
-      .select("stars")
-      .eq("id", selectedUser.id)
-      .single();
+    try {
+      // Read current stars (tolerant if missing)
+      const { data: currentProfile, error: currentProfileError } = await supabase
+        .from("profiles")
+        .select("stars")
+        .eq("id", targetId)
+        .single();
 
-    if (currentProfileError) {
-      setGiveError(currentProfileError.message || "Failed to read current XP");
-      setGiveLoading(false);
-      return;
-    }
+      if (currentProfileError) {
+        setGiveError(currentProfileError.message || "Failed to read current XP");
+        return;
+      }
 
-    const currentStars = Number(currentProfile?.stars || 0);
-    const newStars = currentStars + amount;
+      const currentStars = Number((currentProfile as any)?.stars || 0);
+      const newStars = currentStars + amount;
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .update({ stars: newStars })
-      .eq("id", selectedUser.id)
-      .select("stars")
-      .single();
+      // Apply update and read the new value back in one operation
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({ stars: newStars })
+        .eq("id", targetId)
+        .select("stars")
+        .single();
 
-    if (error) {
-      setGiveError(error.message || "Failed to grant XP");
-      console.error("Give XP error:", error);
-    } else {
-      const updatedStars = Number(data?.stars ?? newStars);
-      setUsers((prev) => prev.map((u) => (u.id === selectedUser.id ? { ...u, stars: updatedStars } : u)));
+      if (error) {
+        setGiveError(error.message || "Failed to grant XP");
+        console.error("Give XP error:", error);
+        return;
+      }
+
+      const updatedStars = Number((data as any)?.stars ?? newStars);
+      setUsers((prev) => prev.map((u) => (u.id === targetId ? { ...u, stars: updatedStars } : u)));
       setSelectedUser(null);
       setGiveAmountStr("");
+    } catch (err) {
+      console.error("Exception giving XP:", err);
+      setGiveError("An unexpected error occurred while granting XP.");
+    } finally {
+      setGiveLoading(false);
     }
-
-    setGiveLoading(false);
   };
 
   const handleDeleteFeedback = async (id: string) => {
@@ -298,45 +307,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
 
     await fetchFeedback();
   };
-
-  const handleStartFeedbackEdit = (entry: FeedbackRow) => {
-    setEditingFeedbackId(entry.id);
-    setEditingFeedbackMessage(entry.message);
-  };
-
-  const handleCancelFeedbackEdit = () => {
-    setEditingFeedbackId(null);
-    setEditingFeedbackMessage("");
-  };
-
-  const handleSaveFeedbackEdit = async (id: string) => {
-    const nextMessage = editingFeedbackMessage.trim();
-    if (!nextMessage) {
-      setPanelError("Feedback message cannot be empty.");
-      return;
-    }
-
-    setSavingFeedbackId(id);
-    setPanelError(null);
-
-    const { error } = await supabase
-      .from("feedback_submissions")
-      .update({ message: nextMessage })
-      .eq("id", id);
-
-    if (error) {
-      setSavingFeedbackId(null);
-      setPanelError(error.message || "Failed to update feedback.");
-      return;
-    }
-
-    setFeedback((previous) =>
-      previous.map((entry) => (entry.id === id ? { ...entry, message: nextMessage } : entry))
-    );
-    setSavingFeedbackId(null);
-    setEditingFeedbackId(null);
-    setEditingFeedbackMessage("");
-  };
+  // Feedback editing handlers removed — admins can only delete feedback now
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
@@ -491,49 +462,17 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                     <p className="text-[11px] text-muted-foreground font-mono">
                       {entry.display_name || (entry.user_id ? "User" : "Guest")} • {new Date(entry.created_at).toLocaleString()}
                     </p>
-                    {editingFeedbackId === entry.id ? (
-                      <div className="mt-2 space-y-2">
-                        <textarea
-                          value={editingFeedbackMessage}
-                          onChange={(event) => setEditingFeedbackMessage(event.target.value)}
-                          rows={4}
-                          className="w-full px-3 py-2 bg-input border border-border rounded-lg text-sm text-foreground"
-                        />
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleSaveFeedbackEdit(entry.id)}
-                            disabled={savingFeedbackId === entry.id}
-                            className="inline-flex items-center gap-1 text-xs border border-primary/70 rounded-md px-2 py-1 text-primary hover:bg-primary/10 disabled:opacity-60"
-                          >
-                            {savingFeedbackId === entry.id ? "Saving..." : "Save"}
-                          </button>
-                          <button
-                            onClick={handleCancelFeedbackEdit}
-                            className="inline-flex items-center gap-1 text-xs border border-border rounded-md px-2 py-1 text-muted-foreground hover:text-foreground"
-                          >
-                            Cancel
-                          </button>
-                        </div>
+                    <>
+                      <p className="mt-1 text-sm text-foreground whitespace-pre-wrap">{entry.message}</p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <button
+                          onClick={() => handleDeleteFeedback(entry.id)}
+                          className="inline-flex items-center gap-1 text-xs border border-destructive/70 rounded-md px-2 py-1 text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 size={12} /> Delete
+                        </button>
                       </div>
-                    ) : (
-                      <>
-                        <p className="mt-1 text-sm text-foreground whitespace-pre-wrap">{entry.message}</p>
-                        <div className="mt-2 flex items-center gap-2">
-                          <button
-                            onClick={() => handleStartFeedbackEdit(entry)}
-                            className="inline-flex items-center gap-1 text-xs border border-primary/70 rounded-md px-2 py-1 text-primary hover:bg-primary/10"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteFeedback(entry.id)}
-                            className="inline-flex items-center gap-1 text-xs border border-destructive/70 rounded-md px-2 py-1 text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 size={12} /> Delete
-                          </button>
-                        </div>
-                      </>
-                    )}
+                    </>
                   </div>
                 ))
               )}

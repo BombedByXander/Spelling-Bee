@@ -59,14 +59,7 @@ const QuickAction = ({ label, children }: QuickActionProps) => (
   </div>
 );
 
-const GAME_MODE_LABELS: Record<GameMode, string> = {
-  beginner: "Beginner",
-  novice: "Novice",
-  moderate: "Moderate",
-  genius: "Genius",
-  master: "Master",
-  custom: "Custom",
-};
+// GAME_MODE_LABELS removed — mode indicator consolidated into bottom dock
 
 const Index = () => {
   const [chargMode, setChargMode] = useState(() => localStorage.getItem(CHARG_KEY) === "true");
@@ -263,56 +256,7 @@ const Index = () => {
       {showSpaceBackground && <CosmicBackground />}
       {showUltraBlackStars && <StarryBackground />}
 
-      <div className={`fixed left-3 z-20 ${activeAnnouncement ? "top-6" : "top-3"}`}>
-        <div className="dock-shell rounded-[22px] border border-white/25 bg-card/45 backdrop-blur-xl px-3 py-2.5 flex items-center gap-2 shadow-[0_8px_24px_rgba(0,0,0,0.2)]">
-          <span className="text-[9px] font-mono uppercase tracking-wide text-muted-foreground">Mode</span>
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-mono border border-primary/40 text-primary bg-primary/15">
-            {GAME_MODE_LABELS[gameMode]}
-          </span>
-        </div>
-      </div>
-
-      <div className={`fixed right-3 z-20 ${activeAnnouncement ? "top-6" : "top-3"}`}>
-        <div className="dock-shell rounded-[22px] border border-white/25 bg-card/45 backdrop-blur-xl px-2.5 py-2.5 flex items-center gap-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.2)]">
-          {user ? (
-            <>
-              <button
-                onClick={() => navigate("/dashboard", { state: { backgroundLocation: location } })}
-                className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                title="Profile"
-              >
-                <User size={16} />
-              </button>
-              {isAdmin && (
-                <button
-                  onClick={() => setShowAdmin(true)}
-                  className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                  title="Admin Panel"
-                >
-                  <Shield size={16} />
-                </button>
-              )}
-              <button
-                onClick={signOut}
-                className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                title="Sign Out"
-                aria-label="Sign out"
-              >
-                <LogOut size={16} />
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => navigate("/auth")}
-              className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-              title="Sign In"
-              aria-label="Sign in"
-            >
-              <LogIn size={16} />
-            </button>
-          )}
-        </div>
-      </div>
+      {/* Top-left mode indicator and top-right dock removed — consolidated into bottom dock */}
 
       {gameMode === "custom" && customWords.length > 0 ? (
         <CustomGame
@@ -378,106 +322,118 @@ const Index = () => {
         />
       )}
 
-      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-20 dock-shell rounded-[26px] border border-white/25 bg-card/45 backdrop-blur-xl px-3 py-2.5 shadow-[0_10px_28px_rgba(0,0,0,0.25)]">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <QuickAction label="Post">
-              <FeedbackButton userId={user?.id} inline />
-            </QuickAction>
-            <QuickAction label="Board">
-              <FeedbackInboxButton isAdmin={isAdmin} inline />
-            </QuickAction>
+      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-20 group">
+        <div className="flex flex-col items-center pointer-events-none">
+          {/* Gesture bar — visible as a thin rounded line; hover the area to reveal dock */}
+          <div className="mb-2 pointer-events-auto">
+            <div
+              className="w-24 h-1.5 rounded-full bg-border/40 transition-colors duration-200 ease-out hover:bg-border/60"
+              aria-hidden
+            />
           </div>
 
-          <div className="w-px h-6 bg-border/40" />
+          <div className="dock-shell rounded-[26px] border border-white/25 bg-card/45 backdrop-blur-xl px-3 py-2.5 shadow-[0_10px_28px_rgba(0,0,0,0.25)] transform transition-all duration-300 ease-out translate-y-4 opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <QuickAction label="Post">
+                  <FeedbackButton userId={user?.id} inline />
+                </QuickAction>
+                <QuickAction label="Board">
+                  <FeedbackInboxButton isAdmin={isAdmin} inline />
+                </QuickAction>
+              </div>
 
-          <div className="flex items-center gap-2 flex-wrap justify-center max-w-[78vw] sm:max-w-none">
-            <QuickAction label="Info">
-              <InfoButton inline />
-            </QuickAction>
-            <QuickAction label="Leaders">
-              <button
-                onClick={() => setShowLeaderboard(true)}
-                className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                title="Leaderboard"
-              >
-                <Trophy size={16} />
-              </button>
-            </QuickAction>
-            <QuickAction label="Settings">
-              <button
-                onClick={() => navigate("/settings", { state: { backgroundLocation: location } })}
-                className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                title="Settings"
-              >
-                <Settings size={16} />
-              </button>
-            </QuickAction>
-            <QuickAction label="Pass">
-              <button
-                onClick={() => navigate("/pass", { state: { backgroundLocation: location } })}
-                className="dock-button p-2 rounded-full bg-primary/18 border border-primary/45 text-primary hover:bg-primary/28 hover:border-primary/65 transition-colors"
-                title="Season Pass"
-              >
-                <CalendarDays size={16} />
-              </button>
-            </QuickAction>
-            {gameMode === "custom" && (
-              <QuickAction label="Custom">
-                <button
-                  onClick={() => setShowCustomSettings(true)}
-                  className="dock-button p-2 rounded-full bg-primary/18 border border-primary/45 text-primary hover:bg-primary/28 hover:border-primary/65 transition-colors"
-                  title="Custom Settings"
-                >
-                  <Wrench size={16} />
-                </button>
-              </QuickAction>
-            )}
-            <QuickAction label="Sound">
-              <MuteButton muted={muted} onToggle={handleMuteToggle} />
-            </QuickAction>
-          </div>
+              <div className="w-px h-6 bg-border/40" />
 
-          <div className="w-px h-6 bg-border/40" />
-
-          <div className="flex items-center gap-2">
-            {user ? (
-              <>
-                <button
-                  onClick={() => navigate("/dashboard", { state: { backgroundLocation: location } })}
-                  className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                  title="Profile"
-                >
-                  <User size={16} />
-                </button>
-                {isAdmin && (
+              <div className="flex items-center gap-2 flex-wrap justify-center max-w-[78vw] sm:max-w-none">
+                <QuickAction label="Info">
+                  <InfoButton inline />
+                </QuickAction>
+                <QuickAction label="Leaders">
                   <button
-                    onClick={() => setShowAdmin(true)}
+                    onClick={() => setShowLeaderboard(true)}
                     className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                    title="Admin Panel"
+                    title="Leaderboard"
                   >
-                    <Shield size={16} />
+                    <Trophy size={16} />
+                  </button>
+                </QuickAction>
+                <QuickAction label="Settings">
+                  <button
+                    onClick={() => navigate("/settings", { state: { backgroundLocation: location } })}
+                    className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
+                    title="Settings"
+                  >
+                    <Settings size={16} />
+                  </button>
+                </QuickAction>
+                <QuickAction label="Pass">
+                  <button
+                    onClick={() => navigate("/pass", { state: { backgroundLocation: location } })}
+                    className="dock-button p-2 rounded-full bg-primary/18 border border-primary/45 text-primary hover:bg-primary/28 hover:border-primary/65 transition-colors"
+                    title="Season Pass"
+                  >
+                    <CalendarDays size={16} />
+                  </button>
+                </QuickAction>
+                {gameMode === "custom" && (
+                  <QuickAction label="Custom">
+                    <button
+                      onClick={() => setShowCustomSettings(true)}
+                      className="dock-button p-2 rounded-full bg-primary/18 border border-primary/45 text-primary hover:bg-primary/28 hover:border-primary/65 transition-colors"
+                      title="Custom Settings"
+                    >
+                      <Wrench size={16} />
+                    </button>
+                  </QuickAction>
+                )}
+                <QuickAction label="Sound">
+                  <MuteButton muted={muted} onToggle={handleMuteToggle} />
+                </QuickAction>
+              </div>
+
+              <div className="w-px h-6 bg-border/40" />
+
+              <div className="flex items-center gap-2">
+                {user ? (
+                  <>
+                    <button
+                      onClick={() => navigate("/dashboard", { state: { backgroundLocation: location } })}
+                      className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
+                      title="Profile"
+                    >
+                      <User size={16} />
+                    </button>
+                    {isAdmin && (
+                      <button
+                        onClick={() => setShowAdmin(true)}
+                        className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
+                        title="Admin Panel"
+                      >
+                        <Shield size={16} />
+                      </button>
+                    )}
+                    <button
+                      onClick={signOut}
+                      className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
+                      title="Sign Out"
+                      aria-label="Sign out"
+                    >
+                      <LogOut size={16} />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => navigate("/auth")}
+                    className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
+                    title="Sign In"
+                    aria-label="Sign in"
+                  >
+                    <LogIn size={16} />
                   </button>
                 )}
-                <button
-                  onClick={signOut}
-                  className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                  title="Sign Out"
-                  aria-label="Sign out"
-                >
-                  <LogOut size={16} />
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => navigate("/auth")}
-                className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                title="Sign In"
-                aria-label="Sign in"
-              >
-                <LogIn size={16} />
-              </button>
-            )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
