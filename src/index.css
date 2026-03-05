@@ -461,14 +461,14 @@ body.theme-easter-garden::after {
   opacity: 0.35;
 }
 
-/* Funbox modifier: the_files — solid black overlay over game stage */
-body.funbox-the-files .game-stage {
+/* Funbox modifier: the_files — solid black overlay over the input area only */
+body.funbox-the-files .game-stage .game-input-wrap {
   position: relative;
 }
-body.funbox-the-files .game-stage::after {
+body.funbox-the-files .game-stage .game-input-wrap::after {
   content: "";
   position: absolute;
-  inset: 0 0 0 0;
+  inset: 0;
   background: #000;
   z-index: 60;
   pointer-events: none;

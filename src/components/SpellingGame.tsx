@@ -350,7 +350,7 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
       </div>
 
       {/* Input - frosted */}
-      <div className={`relative w-full max-w-2xl px-1 ${shaking ? "animate-shake" : ""}`}>
+      <div className={`relative w-full max-w-2xl px-1 game-input-wrap ${shaking ? "animate-shake" : ""}`}>
         {rgbOverlayActive && input.length > 0 && (
           <div className="absolute inset-0 pointer-events-none px-4 sm:px-6 py-3 sm:py-4 font-mono text-base sm:text-lg md:text-xl leading-[1.35] whitespace-nowrap overflow-hidden">
             {input.split("").map((typedChar, i) => {
