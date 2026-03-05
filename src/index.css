@@ -1194,6 +1194,8 @@ body.fx-rgb-effects .frost-input {
   -webkit-backdrop-filter: blur(22px) saturate(1.2);
   background-image: linear-gradient(140deg, hsl(var(--foreground) / 0.08), transparent 45%);
   animation: fx-holographic-chromatic 8s ease-in-out infinite;
+  isolation: isolate;
+  background-clip: padding-box;
 }
 
 body.fx-dynamic-environment {
