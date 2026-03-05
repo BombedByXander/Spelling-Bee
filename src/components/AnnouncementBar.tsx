@@ -103,23 +103,21 @@ const AnnouncementBar = () => {
   };
 
   return (
-    <div className="fixed inset-x-0 top-0 z-[60] bg-primary/95 text-primary-foreground border-b border-border/50 py-3 px-4">
-      <div
-        style={{ width: "calc(100% + 6px)", marginLeft: "-3px", marginRight: "-3px" }}
-        className={`max-w-full mx-auto w-full relative transition-all duration-200 ease-out ${
-          visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
-        }`}
-      >
+    <div
+      style={{ width: "calc(100% + 6px)", marginLeft: "-3px", marginRight: "-3px", overflow: "visible" }}
+      className="fixed inset-x-0 top-0 z-[60] bg-primary/95 text-primary-foreground border-b border-border/50 py-3 px-4"
+    >
+      <div className={`max-w-full mx-auto w-full relative transition-all duration-200 ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}>
         <div className="w-full px-2 text-sm text-center">{announcement.message}</div>
-        <button
-          onClick={handleDismiss}
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-60 w-9 h-9 flex items-center justify-center rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20"
-          aria-label="dismiss announcement"
-          title="Dismiss"
-        >
-          <span className="text-lg leading-none">×</span>
-        </button>
       </div>
+      <button
+        onClick={handleDismiss}
+        className="absolute right-4 top-3 z-50 w-9 h-9 flex items-center justify-center rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20"
+        aria-label="dismiss announcement"
+        title="Dismiss"
+      >
+        <span className="text-lg leading-none">×</span>
+      </button>
     </div>
   );
 };
