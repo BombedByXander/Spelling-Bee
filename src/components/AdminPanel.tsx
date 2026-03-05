@@ -52,6 +52,10 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
   const [giveLoading, setGiveLoading] = useState(false);
   const [giveError, setGiveError] = useState<string | null>(null);
   const [panelError, setPanelError] = useState<string | null>(null);
+  const [editingFeedbackId, setEditingFeedbackId] = useState<string | null>(null);
+  const [editMessage, setEditMessage] = useState<string>("");
+  const [editCategory, setEditCategory] = useState<string | null>(null);
+  const [editLoading, setEditLoading] = useState<boolean>(false);
   // feedback editing removed — edits are no longer allowed via admin panel
 
   const roleRank: Record<AppRole, number> = {
@@ -308,7 +312,42 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
 
     await fetchFeedback();
   };
-  // Feedback editing handlers removed — admins can only delete feedback now
+  const startEditFeedback = (entry: FeedbackRow) => {
+    setEditingFeedbackId(entry.id);
+    setEditMessage(entry.message);
+    setEditCategory(entry.category ?? null);
+    setPanelError(null);
+  };
+
+  const handleSaveFeedback = async (id: string) => {
+    if (!window.confirm("Save changes to this feedback entry?")) return;
+    setEditLoading(true);
+    setPanelError(null);
+
+    const { error } = await supabase
+      .from("feedback_submissions")
+      .update({ message: editMessage, category: editCategory })
+      .eq("id", id);
+
+    if (error) {
+      setPanelError(error.message || "Could not update feedback.");
+      setEditLoading(false);
+      return;
+    }
+
+    await fetchFeedback();
+    setEditingFeedbackId(null);
+    setEditMessage("");
+    setEditCategory(null);
+    setEditLoading(false);
+  };
+
+  const cancelEdit = () => {
+    setEditingFeedbackId(null);
+    setEditMessage("");
+    setEditCategory(null);
+    setPanelError(null);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
@@ -464,23 +503,73 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                       {entry.display_name || (entry.user_id ? "User" : "Guest")} • {new Date(entry.created_at).toLocaleString()}
                     </p>
                     <>
-                      <p className="mt-1 text-sm text-foreground whitespace-pre-wrap">{entry.message}</p>
-                      <div className="mt-2 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          {entry.category ? (
-                            <span className="text-sm">{entry.category === 'bug' ? '🪲' : entry.category === 'critical' ? '❕' : '💬'}</span>
-                          ) : null}
-                          <span className="text-[10px] text-muted-foreground font-mono">{new Date(entry.created_at).toLocaleString()}</span>
-                        </div>
+                      {editingFeedbackId === entry.id ? (
                         <div>
-                          <button
-                            onClick={() => handleDeleteFeedback(entry.id)}
-                            className="inline-flex items-center gap-1 text-xs border border-destructive/70 rounded-md px-2 py-1 text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 size={12} /> Delete
-                          </button>
+                          <textarea
+                            value={editMessage}
+                            onChange={(e) => setEditMessage(e.target.value)}
+                            className="w-full mt-1 px-2 py-1 rounded bg-input border border-border text-sm text-foreground"
+                            rows={4}
+                          />
+                          <div className="mt-2 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <select
+                                value={editCategory ?? ""}
+                                onChange={(e) => setEditCategory(e.target.value || null)}
+                                className="rounded-md border border-border bg-card/60 px-2 py-1 text-[10px] font-mono text-foreground"
+                              >
+                                <option value="">(none)</option>
+                                <option value="bug">🪲 bug</option>
+                                <option value="critical">❕ critical</option>
+                                <option value="feedback">💬 feedback</option>
+                              </select>
+                              <span className="text-[10px] text-muted-foreground font-mono">{new Date(entry.created_at).toLocaleString()}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleSaveFeedback(entry.id)}
+                                disabled={editLoading}
+                                className="inline-flex items-center gap-1 text-xs rounded-md px-2 py-1 bg-primary text-primary-foreground"
+                              >
+                                {editLoading ? "Saving..." : "Save"}
+                              </button>
+                              <button
+                                onClick={cancelEdit}
+                                disabled={editLoading}
+                                className="inline-flex items-center gap-1 text-xs border border-border rounded-md px-2 py-1 text-muted-foreground hover:text-foreground"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <>
+                          <p className="mt-1 text-sm text-foreground whitespace-pre-wrap">{entry.message}</p>
+                          <div className="mt-2 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              {entry.category ? (
+                                <span className="text-sm">{entry.category === 'bug' ? '🪲' : entry.category === 'critical' ? '❕' : '💬'}</span>
+                              ) : null}
+                              <span className="text-[10px] text-muted-foreground font-mono">{new Date(entry.created_at).toLocaleString()}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => startEditFeedback(entry)}
+                                className="inline-flex items-center gap-1 text-xs border border-border rounded-md px-2 py-1 text-foreground hover:bg-card/60"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteFeedback(entry.id)}
+                                className="inline-flex items-center gap-1 text-xs border border-destructive/70 rounded-md px-2 py-1 text-destructive hover:bg-destructive/10"
+                              >
+                                <Trash2 size={12} /> Delete
+                              </button>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </>
                   </div>
                 ))
