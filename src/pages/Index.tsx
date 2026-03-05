@@ -21,6 +21,7 @@ import FeedbackButton from "@/components/FeedbackButton";
 import FeedbackInboxButton from "@/components/FeedbackInboxButton";
 import { KeyboardLayout } from "@/components/KeyboardMap";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { DEFAULT_THEME_PRESET, EASTER_THEME_NAME, getEffectiveThemePreset, RUNTIME_THEME_PRESET_KEY, THEME_CHANGED_EVENT } from "@/lib/theme";
 import { applyFont, getFontPack } from "@/lib/fonts";
@@ -87,6 +88,7 @@ const Index = () => {
   const [activeThemePreset, setActiveThemePreset] = useState(() => getEffectiveThemePreset());
 
   const { user, signOut } = useAuth();
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -178,6 +180,18 @@ const Index = () => {
   useEffect(() => {
     fetchActiveAnnouncement();
   }, [fetchActiveAnnouncement]);
+
+  // Reduce base font size on mobile for compact UI
+  useEffect(() => {
+    if (isMobile) {
+      document.documentElement.style.fontSize = "15px";
+    } else {
+      document.documentElement.style.fontSize = "";
+    }
+    return () => {
+      document.documentElement.style.fontSize = "";
+    };
+  }, [isMobile]);
 
 
   useEffect(() => {
@@ -309,8 +323,51 @@ const Index = () => {
         />
       )}
 
-      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20 group">
-        <div className="flex flex-col items-center pointer-events-none">
+      {isMobile && (
+        <div className="fixed top-4 right-3 z-30 flex items-center gap-2">
+          {user ? (
+            <>
+              <button
+                onClick={() => navigate("/dashboard", { state: { backgroundLocation: location } })}
+                className="p-2 rounded-lg bg-card/60 border border-border text-muted-foreground hover:text-primary transition-colors"
+                title="Dashboard"
+              >
+                <User size={16} />
+              </button>
+              <button
+                onClick={() => navigate("/settings", { state: { backgroundLocation: location } })}
+                className="p-2 rounded-lg bg-card/60 border border-border text-muted-foreground hover:text-primary transition-colors"
+                title="Settings"
+              >
+                <Settings size={16} />
+              </button>
+              <button
+                onClick={signOut}
+                className="p-2 rounded-lg bg-card/60 border border-border text-muted-foreground hover:text-primary transition-colors"
+                title="Sign Out"
+                aria-label="Sign out"
+              >
+                <LogOut size={16} />
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => navigate("/auth")}
+              className="p-2 rounded-lg bg-card/60 border border-border text-muted-foreground hover:text-primary transition-colors"
+              title="Sign In"
+              aria-label="Sign in"
+            >
+              <LogIn size={16} />
+            </button>
+          )}
+
+          <InfoButton inline />
+        </div>
+      )}
+
+      {isMobile ? null : (
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20 group">
+          <div className="flex flex-col items-center pointer-events-none">
           {/* Gesture bar — visible as a thin rounded line; hover the area to reveal dock */}
           <div className="mb-2 pointer-events-auto">
             <div
@@ -422,8 +479,9 @@ const Index = () => {
               </div>
             </div>
           </div>
+          </div>
         </div>
-      </div>
+      )}
 
       <Leaderboard open={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
       <ErrorBoundary>
