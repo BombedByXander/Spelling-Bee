@@ -41,12 +41,7 @@ const GlobalUpdatePopup = () => {
             </button>
           </div>
 
-          <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
-            "Hold up, whats up with the weird version number?!" you may say. This project now uses a date-based versioning system because it fits the live release cycle better.
-          </p>
-          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-            The new system is pretty simple, and is based on the date. First number is the year, second is the week number and third is the version.
-          </p>
+          {/* Versioning explanation removed per request; only the version label is shown */}
 
           <div className="mt-3 mb-2">
             <button
