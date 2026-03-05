@@ -32,7 +32,6 @@ const App = () => {
         <Toaster />
         <Sonner />
         <AnnouncementBar />
-        <RandomSideCircle />
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>
