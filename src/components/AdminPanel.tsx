@@ -186,7 +186,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
   const fetchFeedback = async () => {
     try {
       setFeedbackLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("feedback_submissions")
         .select("id, display_name, user_id, message, created_at, category")
         .order("created_at", { ascending: false })
@@ -210,7 +210,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
   const fetchAnnouncements = async () => {
     try {
       setAnnouncementsLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("announcements")
         .select("id, message, active, created_at")
         .order("created_at", { ascending: false })
@@ -415,6 +415,8 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
     setEditCategory(null);
     setPanelError(null);
   };
+
+  const currentTab = tab;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
@@ -636,7 +638,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
               )}
             
 
-          {tab === "announcements" && (
+          {currentTab === "announcements" && (
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-primary mb-2">
                 <Shield size={14} />
@@ -666,7 +668,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                           return;
                         }
                         setAnnouncementsLoading(true);
-                        const { data: created, error } = await supabase
+                        const { data: created, error } = await (supabase as any)
                           .from("announcements")
                           .insert({ message: newAnnouncementMessage.trim(), active: newAnnouncementActive })
                           .select();
@@ -700,8 +702,8 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                       <button
                         onClick={async () => {
                           setPanelError(null);
-                          const { error } = await supabase
-                            .from("announcements")
+                            const { error } = await (supabase as any)
+                              .from("announcements")
                             .update({ active: !a.active })
                             .eq("id", a.id);
                           if (error) setPanelError(error.message || "Could not update announcement.");
@@ -715,7 +717,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                         onClick={async () => {
                           if (!window.confirm("Delete this announcement?")) return;
                           setPanelError(null);
-                          const { error } = await supabase.from("announcements").delete().eq("id", a.id);
+                            const { error } = await (supabase as any).from("announcements").delete().eq("id", a.id);
                           if (error) setPanelError(error.message || "Could not delete announcement.");
                           else await fetchAnnouncements();
                         }}

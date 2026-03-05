@@ -149,7 +149,7 @@ const Index = () => {
 
   const fetchActiveAnnouncement = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("announcements")
         .select("message, created_at")
         .eq("active", true)
@@ -165,8 +165,8 @@ const Index = () => {
       }
 
       // We don't require starts_at/ends_at scheduling in DB migration; show latest active announcement
-      const latest = (data ?? [])[0];
-      setActiveAnnouncement(latest && latest.message && String(latest.message).trim() ? latest.message : null);
+      const latest = ((data ?? []) as Array<{ message?: string; created_at?: string }>)[0];
+      setActiveAnnouncement(latest?.message && String(latest.message).trim() ? String(latest.message).trim() : null);
     } catch (error) {
       if (!isAnnouncementsMissingError(error)) {
         console.error("Exception loading active announcement:", error);
