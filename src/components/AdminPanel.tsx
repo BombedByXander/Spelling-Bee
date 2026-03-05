@@ -394,7 +394,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search users..."
-                className="w-full mb-3 px-3 py-2 bg-input border border-border rounded-full text-sm font-mono text-foreground placeholder:text-muted-foreground"
+                className="w-full mb-3 px-3 py-2 bg-input border border-border rounded-lg text-sm font-mono text-foreground placeholder:text-muted-foreground"
               />
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -417,7 +417,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                   {users.map((user) => (
                     <div
                       key={user.id}
-                      className="py-2 px-3 rounded-full bg-card/40 border border-border/30 hover:bg-card/60 cursor-pointer transition-colors"
+                      className="py-2 px-3 rounded-lg bg-card/40 border border-border/30 hover:bg-card/60 cursor-pointer transition-colors"
                       onClick={() => {
                         setSelectedUser(user);
                         setGiveAmountStr("");
