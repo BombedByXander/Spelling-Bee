@@ -18,6 +18,38 @@ const GlobalUpdatePopup = () => {
     );
   }, [dismissedSessionKey, loading, neverKey]);
 
+  useEffect(() => {
+    if (loading) return;
+    let cancelled = false;
+
+    const checkRemoteVersion = async () => {
+      try {
+        const res = await fetch("/release.json", { cache: "no-store" });
+        if (!res.ok) return;
+        const body = await res.json();
+        const remoteVersion = String(body?.version || "").trim();
+        if (!remoteVersion) return;
+        if (remoteVersion !== RELEASE_VERSION) {
+          // if user hasn't opted out or dismissed for this session, show popup
+          if (localStorage.getItem(neverKey) !== "true" && sessionStorage.getItem(dismissedSessionKey) !== "true") {
+            try { console.debug("Remote release detected:", remoteVersion); } catch {}
+            setShowUpdatePopup(true);
+          }
+        }
+      } catch (err) {
+        // ignore network errors
+      }
+    };
+
+    // initial check + periodic poll
+    checkRemoteVersion();
+    const id = setInterval(checkRemoteVersion, 15_000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [loading, neverKey, dismissedSessionKey]);
+
   if (!showUpdatePopup) return null;
 
   return (
