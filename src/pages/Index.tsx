@@ -144,10 +144,11 @@ const Index = () => {
         .single();
 
       if (error || !data) return;
-      setActiveSound(data.active_sound || "default");
-      setActiveFont(data.active_font || "default");
-      localStorage.setItem("spelldown-active-sound", data.active_sound || "default");
-      localStorage.setItem("spelldown-active-font", data.active_font || "default");
+      const row: any = data;
+      setActiveSound(row.active_sound || "default");
+      setActiveFont(row.active_font || "default");
+      localStorage.setItem("spelldown-active-sound", row.active_sound || "default");
+      localStorage.setItem("spelldown-active-font", row.active_font || "default");
     };
 
     loadActiveCosmetics();

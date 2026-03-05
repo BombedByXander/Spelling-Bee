@@ -42,9 +42,10 @@ const ShopModal = ({
       ]);
 
       if (profileRes.data) {
-        setStars(profileRes.data.stars ?? 0);
-        if (profileRes.data.active_sound) onSoundChange(profileRes.data.active_sound);
-        if (profileRes.data.active_font) onFontChange(profileRes.data.active_font);
+        const row: any = profileRes.data;
+        setStars(row.stars ?? 0);
+        if (row.active_sound) onSoundChange(row.active_sound);
+        if (row.active_font) onFontChange(row.active_font);
       }
       if (soundRes.data) setPurchasedSounds(new Set(["default", ...soundRes.data.map((row: any) => row.sound_id)]));
       if (fontRes.data) setPurchasedFonts(new Set(["default", ...fontRes.data.map((row: any) => row.font_id)]));

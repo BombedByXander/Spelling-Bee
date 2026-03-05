@@ -366,13 +366,14 @@ const Settings = () => {
         return;
       }
 
-      const loadedSound = data.active_sound || "default";
-      const loadedFont = data.active_font || "default";
+      const row: any = data;
+      const loadedSound = row.active_sound || "default";
+      const loadedFont = row.active_font || "default";
       setActiveSound(loadedSound);
       setActiveFont(loadedFont);
       localStorage.setItem(ACTIVE_SOUND_KEY, loadedSound);
       localStorage.setItem(ACTIVE_FONT_KEY, loadedFont);
-      const loadedStars = Number((data as any).stars ?? 0);
+      const loadedStars = Number(row.stars ?? 0);
       setMyLevel(getLevelFromXp(loadedStars).level);
 
       const { data: generatedCode, error: codeError } = await (supabase as any).rpc("get_or_create_my_referral_code");
@@ -414,7 +415,7 @@ const Settings = () => {
     localStorage.setItem(ACTIVE_FONT_KEY, fontId);
 
     if (user) {
-      await supabase.from("profiles").update({ active_font: fontId }).eq("id", user.id);
+            await supabase.from("profiles").update({ active_font: fontId } as any).eq("id", user.id);
     }
   };
 
