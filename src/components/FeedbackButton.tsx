@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MessageSquarePlus, X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,9 +14,17 @@ const FeedbackButton = ({ userId, inline = false }: Props) => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [fetchedDisplayName, setFetchedDisplayName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [category, setCategory] = useState<"bug" | "critical" | "feedback">("feedback");
+
+  const CATEGORY_EMOJI: Record<string, string> = {
+    bug: "🪲",
+    critical: "❕",
+    feedback: "💬",
+  };
 
   const trimmedMessage = useMemo(() => message.trim(), [message]);
   const hasProfanity = useMemo(() => PROFANITY_REGEX.test(trimmedMessage), [trimmedMessage]);
@@ -24,10 +32,33 @@ const FeedbackButton = ({ userId, inline = false }: Props) => {
   const resetAndClose = () => {
     setOpen(false);
     setMessage("");
+    // keep fetched display name for next open, but clear manual input
     setDisplayName("");
     setError(null);
     setSuccess(false);
   };
+
+  useEffect(() => {
+    if (!open) return;
+    if (!userId) return;
+
+    let mounted = true;
+    (async () => {
+      try {
+        const { data, error } = await supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle();
+        if (error) return;
+        const name = (data as any)?.display_name || null;
+        if (mounted) setFetchedDisplayName(name);
+        if (name && !displayName) setDisplayName(name);
+      } catch (e) {
+        // ignore
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [open, userId]);
 
   const handleSubmit = async () => {
     setError(null);
@@ -50,14 +81,30 @@ const FeedbackButton = ({ userId, inline = false }: Props) => {
 
     setSubmitting(true);
 
-    const sender = displayName.trim() || (userId ? "Signed-in user" : "Guest");
-    const { error: insertError } = await supabase
-      .from("feedback_submissions")
-      .insert({
+    const sender = displayName.trim() || (userId ? fetchedDisplayName || "Signed-in user" : "Guest");
+
+    // Try to insert with category; if DB doesn't have column, fall back to inserting without it
+    setSubmitting(true);
+    let insertError: any = null;
+    try {
+      const payload: any = {
         message: trimmedMessage,
         display_name: sender,
         user_id: userId ?? null,
-      });
+        category: category,
+      };
+      const res = await supabase.from("feedback_submissions").insert(payload);
+      insertError = res.error;
+      // If unknown column error, retry without category
+      if (insertError && /column .*category/.test((insertError.message || "").toLowerCase())) {
+        const fallback = await supabase
+          .from("feedback_submissions")
+          .insert({ message: trimmedMessage, display_name: sender, user_id: userId ?? null });
+        insertError = fallback.error;
+      }
+    } catch (e) {
+      insertError = e as any;
+    }
 
     setSubmitting(false);
 
@@ -91,10 +138,41 @@ const FeedbackButton = ({ userId, inline = false }: Props) => {
           <X size={16} />
         </button>
 
-        <h3 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">Send Feedback</h3>
-        <p className="mt-1 text-xs text-muted-foreground font-mono">No curses allowed.</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">Send Feedback</h3>
+            <p className="mt-1 text-xs text-muted-foreground font-mono">No curses allowed.</p>
+          </div>
+          <div className="text-sm text-muted-foreground font-mono flex items-center gap-2">
+            <span className="text-xl">{CATEGORY_EMOJI[category]}</span>
+            <span className="text-xs">{displayName || fetchedDisplayName || (userId ? "Signed-in user" : "Guest")}</span>
+          </div>
+        </div>
 
         <div className="mt-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCategory("bug")}
+              type="button"
+              className={`px-2 py-1 rounded-md text-sm ${category === "bug" ? "bg-primary/15 border border-primary text-primary" : "bg-card/50 border border-border text-muted-foreground"}`}
+            >
+              🪲 Bug
+            </button>
+            <button
+              onClick={() => setCategory("critical")}
+              type="button"
+              className={`px-2 py-1 rounded-md text-sm ${category === "critical" ? "bg-primary/15 border border-primary text-primary" : "bg-card/50 border border-border text-muted-foreground"}`}
+            >
+              ❕ Critical
+            </button>
+            <button
+              onClick={() => setCategory("feedback")}
+              type="button"
+              className={`px-2 py-1 rounded-md text-sm ${category === "feedback" ? "bg-primary/15 border border-primary text-primary" : "bg-card/50 border border-border text-muted-foreground"}`}
+            >
+              💬 Feedback
+            </button>
+          </div>
           <label className="block text-xs text-muted-foreground font-mono">
             Name (optional)
             <input
