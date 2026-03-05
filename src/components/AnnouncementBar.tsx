@@ -43,15 +43,35 @@ const AnnouncementBar = () => {
   };
 
   useEffect(() => {
-    void fetchAnnouncement();
-
+    // Do not fetch existing announcements on mount — show only announcements
+    // that are created while the user is connected. This ensures visitors
+    // who arrive after an announcement was created do not see it.
     const ch = supabase
       .channel("announcement-sync")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "announcements" },
-        () => {
-          void fetchAnnouncement();
+        (payload: any) => {
+          try {
+            const eventType = payload?.event || payload?.type || payload?.eventType || payload?.action;
+            const record = payload?.record || payload?.new || payload?.old || payload?.data || null;
+
+            if (!record) return;
+
+            // Show announcements only on INSERT events to affect currently-connected users
+            if (String(eventType).toUpperCase().includes("INSERT")) {
+              setAnnouncement(record as AnnouncementRow);
+              setVisible(true);
+            }
+
+            // If the active announcement was deleted or deactivated, hide it
+            if (String(eventType).toUpperCase().includes("DELETE") || (String(eventType).toUpperCase().includes("UPDATE") && record && record.active === false)) {
+              setVisible(false);
+              setTimeout(() => setAnnouncement(null), 220);
+            }
+          } catch (err) {
+            // ignore
+          }
         }
       )
       .subscribe();
@@ -83,16 +103,12 @@ const AnnouncementBar = () => {
   };
 
   return (
-    <div className="fixed inset-x-0 top-0 z-[60] py-3 px-4">
-      <div
-        className={`mx-auto max-w-7xl w-full relative rounded-md border border-border/20 bg-primary/95 text-primary-foreground shadow-lg transition-all duration-200 ease-out transform ${
-          visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95"
-        }`}
-      >
-        <div className="w-full px-4 py-2 text-sm text-center">{announcement.message}</div>
+    <div className="fixed inset-x-0 top-0 z-[60] bg-primary/95 text-primary-foreground border-b border-border/50 py-3 px-4">
+      <div className={`max-w-full mx-auto w-full relative transition-all duration-200 ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}>
+        <div className="w-full px-2 text-sm text-center">{announcement.message}</div>
         <button
           onClick={handleDismiss}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-foreground/90 hover:text-primary-foreground"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-primary-foreground/90 hover:text-primary-foreground"
           aria-label="dismiss announcement"
         >
           ×
