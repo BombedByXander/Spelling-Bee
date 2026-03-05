@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, type Location } from "react-router-dom";
 import Index from "./pages/Index";
+import { getActiveFunboxModifiers, FUNBOX_MODIFIERS_UPDATED_EVENT } from "@/lib/funbox";
 
 import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
@@ -24,6 +25,16 @@ const queryClient = new QueryClient();
 const App = () => {
   useEffect(() => {
     applyThemePreset(getStoredThemePreset());
+  }, []);
+
+  useEffect(() => {
+    const updateOverlay = () => {
+      const active = getActiveFunboxModifiers().includes("the_files");
+      document.body.classList.toggle("funbox-the-files", active);
+    };
+    updateOverlay();
+    window.addEventListener(FUNBOX_MODIFIERS_UPDATED_EVENT, updateOverlay as EventListener);
+    return () => window.removeEventListener(FUNBOX_MODIFIERS_UPDATED_EVENT, updateOverlay as EventListener);
   }, []);
 
   return (

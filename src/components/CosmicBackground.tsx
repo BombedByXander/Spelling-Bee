@@ -69,7 +69,7 @@ const CosmicBackground = () => {
     // Helper function to draw 5-pointed star
     const drawStar = (cx: number, cy: number, size: number, color: string, alpha: number) => {
       const innerRadius = size * 0.4;
-      const outerRadius = size;
+          const starColors = ["rgba(92, 200, 255, 1)", "rgba(200, 90, 255, 1)", "rgba(140, 200, 255, 1)"]; // cyan, magenta, pale cyan
       ctx.save();
       ctx.translate(cx, cy);
       ctx.fillStyle = color.replace(/[\d.]+\)/, `${alpha})`);
@@ -135,7 +135,7 @@ const CosmicBackground = () => {
       // Shooting stars
       if (Math.random() < 1 / 400 && shootingStars.length < 3) {
         const angle = Math.PI / 6 + Math.random() * Math.PI / 6;
-        shootingStars.push({ x: Math.random() * w, y: Math.random() * h * 0.4, len: 80 + Math.random() * 120, speed: 8 + Math.random() * 8, angle, life: 0, maxLife: 30 + Math.random() * 20 });
+              ctx.fillStyle = `rgba(120, 200, 255, ${flicker * star.opacity})`;
       }
       for (let i = shootingStars.length - 1; i >= 0; i--) {
         const s = shootingStars[i];
@@ -147,8 +147,8 @@ const CosmicBackground = () => {
         const tailX = s.x - Math.cos(s.angle) * s.len;
         const tailY = s.y - Math.sin(s.angle) * s.len;
         const grad = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
-        grad.addColorStop(0, `rgba(200, 220, 255, 0)`);
-        grad.addColorStop(1, `rgba(200, 220, 255, ${alpha * 0.8})`);
+        grad.addColorStop(0, `rgba(72,200,255, 0)`);
+        grad.addColorStop(1, `rgba(72,200,255, ${alpha * 0.9})`);
         ctx.beginPath();
         ctx.moveTo(tailX, tailY);
         ctx.lineTo(s.x, s.y);
@@ -162,7 +162,6 @@ const CosmicBackground = () => {
         if (s.life >= s.maxLife) shootingStars.splice(i, 1);
       }
 
-      // Planets with enhanced visuals
       for (const p of planets) {
         p.orbitAngle += p.orbitSpeed;
         p.x = p.cx + Math.cos(p.orbitAngle) * p.orbitRadius;
@@ -236,6 +235,21 @@ const CosmicBackground = () => {
         }
       }
 
+      // Holographic grid overlay (subtle scanlines)
+      ctx.save();
+      ctx.globalAlpha = 0.03;
+      ctx.strokeStyle = "rgba(72,200,255,0.12)";
+      ctx.lineWidth = 1;
+      const rowSpacing = Math.max(80, Math.round(h / 12));
+      for (let gy = 0; gy < h; gy += rowSpacing) {
+        ctx.beginPath();
+        const offset = Math.sin(now * 0.0006 + gy) * 6;
+        ctx.moveTo(0, gy + offset);
+        ctx.lineTo(w, gy + offset);
+        ctx.stroke();
+      }
+      ctx.restore();
+
       animationId = requestAnimationFrame(draw);
     };
     draw();
@@ -246,7 +260,7 @@ const CosmicBackground = () => {
     };
   }, []);
 
-  return (
+    return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"

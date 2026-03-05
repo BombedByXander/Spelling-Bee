@@ -249,7 +249,7 @@ const BeginnerGame = ({ userId, activeSound, activeFont, keyboardLayout, keySize
   }, [autoEnterOnExactLength, handleSubmit, input, resolvedWord.primary.length, result]);
 
   return (
-    <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-3 sm:px-4 gap-3 sm:gap-5 select-none">
+    <div className="game-stage relative z-10 flex flex-col items-center justify-center min-h-screen px-3 sm:px-4 gap-3 sm:gap-5 select-none">
       <div className={`text-center space-y-2 ${shaking ? "animate-shake" : ""}`}>
         <p className="text-sm text-muted-foreground tracking-wide">{getPromptLabel(currentWord.primary)}</p>
         <h2
