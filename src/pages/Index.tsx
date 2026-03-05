@@ -239,13 +239,7 @@ const Index = () => {
   return (
     <>
       {showEasterGardenDecor && <EasterThemeDecor />}
-      {activeAnnouncement && (
-        <div className="fixed top-0 left-0 right-0 z-30 h-[15px] bg-blue-600 text-white flex items-center justify-center overflow-hidden px-2">
-          <span className="text-[10px] leading-none font-medium tracking-wide truncate">
-            {activeAnnouncement}
-          </span>
-        </div>
-      )}
+      {/* legacy inline announcement removed — use global AnnouncementBar component */}
       {showSpaceBackground && <CosmicBackground />}
       {showUltraBlackStars && <StarryBackground />}
 
