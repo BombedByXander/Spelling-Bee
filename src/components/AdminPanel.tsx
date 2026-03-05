@@ -481,13 +481,6 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                           </button>
                         </div>
                       </div>
-                        <button
-                          onClick={() => handleDeleteFeedback(entry.id)}
-                          className="inline-flex items-center gap-1 text-xs border border-destructive/70 rounded-md px-2 py-1 text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 size={12} /> Delete
-                        </button>
-                      </div>
                     </>
                   </div>
                 ))
