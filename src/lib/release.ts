@@ -1,6 +1,6 @@
 export const RELEASE_YEAR = 2026;
 export const RELEASE_WEEK = 9;
-export const RELEASE_REVISION = 7;
+export const RELEASE_REVISION = 8;
 
 const YEAR_SHORT = String(RELEASE_YEAR).slice(-2);
 const WEEK_PAD = String(RELEASE_WEEK).padStart(2, "0");

@@ -24,6 +24,7 @@ const Updates = () => {
           <div className="flex items-center gap-2">
             <Sparkles size={16} className="text-primary" />
             <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">v{RELEASE_VERSION}</h2>
+              {/* v26.09.8 is the current version */}
           </div>
 
           <p className="text-xs text-muted-foreground leading-relaxed">
