@@ -109,6 +109,42 @@ const AnnouncementBar = () => {
     return () => cancelAnimationFrame(id);
   }, [announcement]);
 
+  useEffect(() => {
+    // Poll a public announcement.json file as a global fallback/source-of-truth
+    // This allows static deployments to show announcements without supabase.
+    let cancelled = false;
+
+    const fetchRemoteAnnouncementFile = async () => {
+      try {
+        const res = await fetch("/announcement.json", { cache: "no-store" });
+        if (!res.ok) return;
+        const body = await res.json();
+        const remoteId = String(body?.id || "").trim();
+        const remoteMessage = body?.message ? String(body.message) : "";
+        const remoteActive = typeof body?.active === "boolean" ? body.active : true;
+        if (!remoteId || !remoteMessage) return;
+
+        // If remote announcement differs from current, show it
+        if (remoteId !== (announcement?.id ?? "")) {
+          try { console.debug("Remote announcement file detected:", { remoteId, remoteMessage }); } catch {}
+          const row: AnnouncementRow = { id: remoteId, message: remoteMessage, active: remoteActive, created_at: new Date().toISOString() };
+          setAnnouncement(row);
+          if (dismissedId !== remoteId) setVisible(true);
+        }
+      } catch (err) {
+        // ignore network errors
+      }
+    };
+
+    // initial check + periodic poll
+    void fetchRemoteAnnouncementFile();
+    const timer = setInterval(fetchRemoteAnnouncementFile, 15_000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [announcement?.id, dismissedId]);
+
   if (!announcement) return null;
   if (dismissedId === announcement.id) return null;
 
