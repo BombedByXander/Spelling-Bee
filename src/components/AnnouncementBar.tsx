@@ -136,9 +136,12 @@ const AnnouncementBar = () => {
       }
     };
 
-    // initial check + periodic poll
+    // initial check + periodic poll (shorter interval for faster popup)
     void fetchRemoteAnnouncementFile();
-    const timer = setInterval(fetchRemoteAnnouncementFile, 15_000);
+    const timer = setInterval(() => {
+      try { console.debug("Polling /announcement.json..."); } catch {}
+      void fetchRemoteAnnouncementFile();
+    }, 5_000);
     return () => {
       cancelled = true;
       clearInterval(timer);
