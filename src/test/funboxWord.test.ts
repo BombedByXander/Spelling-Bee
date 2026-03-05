@@ -50,6 +50,12 @@ describe("funbox modifier coverage", () => {
       "upside_down",
       "vision_tester",
       "wobble_spin",
+      "pogo_bounce",
+      "flip_jitter",
+      "rubber_squish",
+      "orbital_drift",
+      "wave_snap",
+      "the_files",
     ]);
 
     const missing = FUNBOX_MODIFIERS
