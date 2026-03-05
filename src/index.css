@@ -13,6 +13,9 @@
   --sidebar-accent-foreground: 220 15% 90%;
   --sidebar-border: 0 0% 10%;
   --sidebar-ring: 160 80% 55%;
+  /* Fallback theme tokens to avoid blank/white screen before JS runs */
+  --background: 220 18% 6%; /* near-black */
+  --foreground: 210 40% 88%;
 }
 
 .light {
