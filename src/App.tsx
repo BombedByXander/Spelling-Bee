@@ -18,6 +18,7 @@ import GlobalRefreshNotice from "@/components/GlobalRefreshNotice";
 import { supabase } from "@/integrations/supabase/client";
 import { applyThemePreset, getStoredThemePreset } from "@/lib/theme";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import RandomSideCircle from "@/components/RandomSideCircle";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <AnnouncementBar />
+        <RandomSideCircle />
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>
