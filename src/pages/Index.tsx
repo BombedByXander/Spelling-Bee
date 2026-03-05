@@ -151,7 +151,7 @@ const Index = () => {
     try {
       const { data, error } = await supabase
         .from("announcements")
-        .select("message, starts_at, ends_at, created_at")
+        .select("message, created_at")
         .eq("active", true)
         .order("created_at", { ascending: false })
         .limit(25);
@@ -164,16 +164,9 @@ const Index = () => {
         return;
       }
 
-      const now = Date.now();
-      const currentlyActive = (data ?? []).find((announcement) => {
-        const startMs = announcement.starts_at ? Date.parse(announcement.starts_at) : Number.NEGATIVE_INFINITY;
-        const endMs = announcement.ends_at ? Date.parse(announcement.ends_at) : Number.POSITIVE_INFINITY;
-        const startOk = Number.isNaN(startMs) ? true : startMs <= now;
-        const endOk = Number.isNaN(endMs) ? true : endMs >= now;
-        return startOk && endOk;
-      });
-
-      setActiveAnnouncement(currentlyActive?.message?.trim() ? currentlyActive.message : null);
+      // We don't require starts_at/ends_at scheduling in DB migration; show latest active announcement
+      const latest = (data ?? [])[0];
+      setActiveAnnouncement(latest && latest.message && String(latest.message).trim() ? latest.message : null);
     } catch (error) {
       if (!isAnnouncementsMissingError(error)) {
         console.error("Exception loading active announcement:", error);
