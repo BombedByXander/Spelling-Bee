@@ -34,43 +34,56 @@ const AnnouncementBar = () => {
 
       if (error) {
         setAnnouncement(null);
-        return;
+        return null;
       }
 
       setAnnouncement(data as AnnouncementRow);
+      return data as AnnouncementRow;
     } catch (err) {
       setAnnouncement(null);
+      return null;
     }
   };
 
   useEffect(() => {
-    // Do not fetch existing announcements on mount — show only announcements
-    // that are created while the user is connected. This ensures visitors
-    // who arrive after an announcement was created do not see it.
+    // Fetch the latest active announcement on mount so visitors arriving later
+    // will see the current announcement. Then subscribe to realtime changes
+    // to keep the banner up-to-date.
+    let mounted = true;
+    (async () => {
+      try {
+        const fetched = await fetchAnnouncement();
+        if (!mounted) return;
+        if (fetched && fetched.id && dismissedId !== fetched.id) {
+          setVisible(true);
+        }
+      } catch {}
+    })();
+
     const ch = supabase
       .channel("announcement-sync")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "announcements" },
         (payload: any) => {
-          // debug incoming payloads to help diagnose live update issues
           try { console.debug("Announcement payload:", payload); } catch {}
           try {
             const eventType = payload?.event || payload?.type || payload?.eventType || payload?.action;
             const record = payload?.record || payload?.new || payload?.old || payload?.data || null;
-
             if (!record) return;
 
-            // Show announcements only on INSERT events to affect currently-connected users
-            if (String(eventType).toUpperCase().includes("INSERT")) {
-              try { console.debug("Announcement INSERT record:", record); } catch {}
+            const et = String(eventType).toUpperCase();
+
+            // On INSERT or UPDATE (active true) show the announcement
+            if (et.includes("INSERT") || (et.includes("UPDATE") && record && record.active)) {
+              try { console.debug("Announcement show/updated:", record); } catch {}
               setAnnouncement(record as AnnouncementRow);
-              setVisible(true);
+              if (dismissedId !== record.id) setVisible(true);
             }
 
-            // If the active announcement was deleted or deactivated, hide it
-            if (String(eventType).toUpperCase().includes("DELETE") || (String(eventType).toUpperCase().includes("UPDATE") && record && record.active === false)) {
-              try { console.debug("Announcement removed or deactivated:", record); } catch {}
+            // On DELETE or UPDATE (active false) hide it
+            if (et.includes("DELETE") || (et.includes("UPDATE") && record && record.active === false)) {
+              try { console.debug("Announcement removed/deactivated:", record); } catch {}
               setVisible(false);
               setTimeout(() => setAnnouncement(null), 220);
             }
@@ -81,8 +94,11 @@ const AnnouncementBar = () => {
       )
       .subscribe();
 
-    return () => supabase.removeChannel(ch);
-  }, []);
+    return () => {
+      mounted = false;
+      supabase.removeChannel(ch);
+    };
+  }, [dismissedId]);
 
   useEffect(() => {
     if (!announcement) return;
