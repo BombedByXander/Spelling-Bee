@@ -211,7 +211,13 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
   };
 
   useEffect(() => {
-    const handleClick = () => { if (result === "idle") inputRef.current?.focus(); };
+    const handleClick = (e: MouseEvent) => {
+      if (result !== "idle") return;
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (target.closest("button, a, input, select, textarea, [role='menu'], [role='dialog']")) return;
+      inputRef.current?.focus();
+    };
     window.addEventListener("click", handleClick);
     return () => window.removeEventListener("click", handleClick);
   }, [result]);

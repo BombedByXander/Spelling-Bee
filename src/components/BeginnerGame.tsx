@@ -207,7 +207,13 @@ const BeginnerGame = ({ userId, activeSound, activeFont, keyboardLayout, keySize
     setCaretPosition(Math.min(e.target.selectionStart ?? val.length, val.length));
   };
 
-  const handleClick = () => { if (result === "idle") inputRef.current?.focus(); };
+  const handleClick = (e: MouseEvent) => {
+    if (result !== "idle") return;
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+    if (target.closest("button, a, input, select, textarea, [role='menu'], [role='dialog']")) return;
+    inputRef.current?.focus();
+  };
 
   useEffect(() => {
     window.addEventListener("click", handleClick);
