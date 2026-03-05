@@ -110,25 +110,25 @@ const AnnouncementBar = () => {
   return (
     <div
       style={{
+        left: "-3px",
+        right: "-3px",
         width: "calc(100% + 6px)",
-        marginLeft: "-3px",
-        marginRight: "-3px",
         overflow: "visible",
-        outline: debugMode ? "3px solid rgba(255,0,0,0.18)" : undefined,
+        boxSizing: "border-box",
       }}
-      className="fixed inset-x-0 top-0 z-[9990] bg-primary/95 text-primary-foreground border-b border-border/50 py-3 px-4"
+      className="fixed top-0 z-[100000] bg-primary/95 text-primary-foreground border-b border-border/50 py-3 px-4"
     >
       <div className={`max-w-full mx-auto w-full relative transition-all duration-200 ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}>
         <div className="w-full px-2 text-sm text-center">{announcement.message}</div>
       </div>
       <button
         onClick={handleDismiss}
-        style={{ zIndex: 99999, top: debugMode ? 8 : undefined }}
-        className={`absolute right-4 ${debugMode ? "top-2" : "top-3"} ${debugMode ? "w-11 h-11" : "w-9 h-9"} flex items-center justify-center rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20`}
+        style={{ zIndex: 100001, top: 6, right: 8 }}
+        className="absolute right-2 top-2 w-11 h-11 flex items-center justify-center rounded-full bg-primary-foreground/12 border border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20"
         aria-label="dismiss announcement"
         title="Dismiss"
       >
-        <span style={{ fontSize: debugMode ? 20 : undefined }} className="leading-none">×</span>
+        <span style={{ fontSize: 18, lineHeight: 1 }} className="leading-none">×</span>
       </button>
     </div>
   );
