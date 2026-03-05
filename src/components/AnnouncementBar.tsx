@@ -62,8 +62,8 @@ const AnnouncementBar = () => {
   if (dismissedId === announcement.id) return null;
 
   return (
-    <div className="fixed inset-x-0 top-0 z-[60] bg-primary/95 text-primary-foreground border-b border-border/50 py-3 px-4 flex items-center justify-between">
-      <div className="max-w-7xl mx-auto w-full px-2 text-sm">{announcement.message}</div>
+    <div className="fixed inset-x-0 top-0 z-[60] bg-primary/95 text-primary-foreground border-b border-border/50 py-3 px-4">
+      <div className="max-w-7xl mx-auto w-full px-2 text-sm text-center">{announcement.message}</div>
       <button
         onClick={() => {
           try {
