@@ -28,10 +28,10 @@ const Updates = () => {
           </div>
 
           <p className="text-xs text-muted-foreground leading-relaxed">
-            "Hold up, whats up with the weird version number?!" you may say. This project now uses a date-based versioning system because it fits the live release cycle better.
+            We've rebranded the public release label to a simple, friendly marketing version. You'll now see releases shown as <strong>v10.0</strong> in the UI.
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            The new system is pretty simple, and is based on the date. First number is the year, second is the week number and third is the version.
+            Internally we may still use more detailed tokens for storage and rollout, but the update log and info screens will display the branded version above.
           </p>
 
           <div>
