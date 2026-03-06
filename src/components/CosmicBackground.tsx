@@ -69,7 +69,8 @@ const CosmicBackground = () => {
     // Helper function to draw 5-pointed star
     const drawStar = (cx: number, cy: number, size: number, color: string, alpha: number) => {
       const innerRadius = size * 0.4;
-          const starColors = ["rgba(92, 200, 255, 1)", "rgba(200, 90, 255, 1)", "rgba(140, 200, 255, 1)"]; // cyan, magenta, pale cyan
+      const outerRadius = size;
+      const starColors = ["rgba(92, 200, 255, 1)", "rgba(200, 90, 255, 1)", "rgba(140, 200, 255, 1)"]; // cyan, magenta, pale cyan
       ctx.save();
       ctx.translate(cx, cy);
       ctx.fillStyle = color.replace(/[\d.]+\)/, `${alpha})`);
