@@ -183,10 +183,14 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
       // Upsert best WPM so leaderboard can reflect immediately
       if (userId && newWpm !== null) {
         try {
-          await supabase.from('user_best_wpm').upsert(
-            { user_id: userId, best_wpm: newWpm, mode: chargMode ? 'charg' : 'master', modifiers: [] },
-            { onConflict: 'user_id' }
-          );
+          const existing = await supabase.from('user_best_wpm').select('best_wpm').eq('user_id', userId).maybeSingle();
+          const existingBest = existing && existing.data ? Number(existing.data.best_wpm ?? 0) : 0;
+          if (newWpm > existingBest) {
+            await supabase.from('user_best_wpm').upsert(
+              { user_id: userId, best_wpm: newWpm, mode: chargMode ? 'charg' : 'master', modifiers: [] },
+              { onConflict: 'user_id' }
+            );
+          }
         } catch (e) {
           // ignore errors (migration missing or permissions), but log in console
           // eslint-disable-next-line no-console

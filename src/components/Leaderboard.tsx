@@ -95,6 +95,47 @@ const Leaderboard = ({ open, onClose }: Props) => {
       const castedEntries = data as unknown as LeaderboardEntry[];
       setEntries(castedEntries);
     }
+    // If user is signed in, fetch their personal row and append if not in top list
+    try {
+      const { data: userResp } = await supabase.auth.getUser();
+      const uid = userResp?.user?.id ?? null;
+      if (uid) {
+        const already = (data ?? []).find((r: any) => r.user_id === uid) ?? null;
+        if (!already) {
+          // try to fetch from all_time view first, fallback to user_best_wpm
+          let userRow: any = null;
+          try {
+            const { data: ur } = await supabase.from('all_time_wpm_leaderboard').select('*').eq('user_id', uid).maybeSingle();
+            userRow = ur ?? null;
+          } catch {
+            // ignore
+          }
+          if (!userRow) {
+            const { data: ub } = await supabase.from('user_best_wpm').select('user_id, best_wpm').eq('user_id', uid).maybeSingle();
+            if (ub && ub.user_id) {
+              userRow = {
+                user_id: ub.user_id,
+                display_name: 'You',
+                username: null,
+                avatar_url: null,
+                best_wpm: ub.best_wpm,
+                modifiers: [],
+                rank: null,
+              };
+            }
+          }
+          if (userRow) {
+            setEntries((prev) => {
+              // avoid duplicates
+              if (prev.find((r) => r.user_id === userRow.user_id)) return prev;
+              return [...prev, userRow];
+            });
+          }
+        }
+      }
+    } catch {
+      // ignore auth errors
+    }
     if (roles) {
       setAdminIds(new Set(roles.map((row: any) => row.user_id)));
     }
@@ -106,7 +147,7 @@ const Leaderboard = ({ open, onClose }: Props) => {
     fetchLeaderboard();
     const channel = supabase
       .channel("leaderboard-updates")
-      .on("postgres_changes", { event: "*", schema: "public", table: "weekly_streaks" }, () => fetchLeaderboard())
+      .on("postgres_changes", { event: "*", schema: "public", table: "user_best_wpm" }, () => fetchLeaderboard())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [open]);
