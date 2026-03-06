@@ -254,7 +254,12 @@ const Leaderboard = ({ open, onClose }: Props) => {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-[10px] text-muted-foreground font-mono">WPM</span>
-                  <span className="font-mono text-sm font-bold text-primary">{entry.best_wpm ? entry.best_wpm.toFixed(2) : "-"}</span>
+                  <span
+                    className="font-mono text-sm font-bold text-primary"
+                    title={`Mode: ${modeLabel} · Modifiers: ${modifiersList}`}
+                  >
+                    {entry.best_wpm ? entry.best_wpm.toFixed(2) : "-"}
+                  </span>
                 </div>
               </button>
             )})
