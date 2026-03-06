@@ -332,7 +332,6 @@ const BeginnerGame = ({ userId, activeSound, activeFont, keyboardLayout, keySize
                     {content}
                   </span>
                 );
-              }
           })}
         </div>}
         {!hideLiveFeedback && (
