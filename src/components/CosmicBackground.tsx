@@ -133,10 +133,20 @@ const CosmicBackground = () => {
         drawStar(tstar.x, tstar.y, tstar.size, color, flicker);
       }
 
-      // Shooting stars
+      // Occasionally spawn a shooting star (push an object for the draw loop)
       if (Math.random() < 1 / 400 && shootingStars.length < 3) {
+        const sx = Math.random() * w;
+        const sy = Math.random() * h * 0.6;
         const angle = Math.PI / 6 + Math.random() * Math.PI / 6;
-              ctx.fillStyle = `rgba(120, 200, 255, ${flicker * star.opacity})`;
+        shootingStars.push({
+          x: sx,
+          y: sy,
+          len: 80 + Math.random() * 120,
+          speed: 6 + Math.random() * 4,
+          angle,
+          life: 0,
+          maxLife: 50 + Math.floor(Math.random() * 80),
+        });
       }
       for (let i = shootingStars.length - 1; i >= 0; i--) {
         const s = shootingStars[i];

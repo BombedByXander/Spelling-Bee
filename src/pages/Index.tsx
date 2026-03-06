@@ -371,7 +371,7 @@ const Index = () => {
           {/* Gesture bar — visible as a thin rounded line; hover the area to reveal dock */}
           <div className="mb-2 pointer-events-auto">
             <div
-              className="w-24 h-1.5 rounded-full bg-border/40 transition-colors duration-200 ease-out hover:bg-border/60"
+              className="w-24 h-1.5 rounded-full bg-border/60 transition-colors duration-200 ease-out hover:bg-border/80"
               aria-hidden
             />
           </div>
