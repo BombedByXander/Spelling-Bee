@@ -732,8 +732,6 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
               </div>
             </div>
           )}
-            </div>
-          )}
         </div>
       </div>
 
