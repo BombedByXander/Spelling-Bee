@@ -3,7 +3,8 @@ const VOWEL_SHIFT_REGEX = /[aeiou]/gi;
 const LETTER_REGEX = /[a-z]/i;
 const ALPHABET_REGEX = /[a-zA-Z]/;
 const VOWEL_REGEX = /[aeiou]/i;
-const BASE_ALLOWED_INPUT_CHAR_REGEX = /[a-zA-Z0-9 ]/;
+// Disallow numeric characters in the typing input; only letters and space allowed by default.
+const BASE_ALLOWED_INPUT_CHAR_REGEX = /[a-zA-Z ]/;
 const CONSONANTS = "bcdfghjklmnpqrstvwxyz";
 const LEET_MAP: Record<string, string> = {
   a: "4",
