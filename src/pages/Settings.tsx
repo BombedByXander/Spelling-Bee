@@ -773,7 +773,7 @@ const Settings = () => {
                       setRoundDelayMs(preset);
                       localStorage.setItem(ROUND_DELAY_KEY, String(preset));
                     }}
-                    className={`text-[10px] font-mono px-2 py-1 rounded-md border ${
+                    className={`text-[10px] font-mono px-2 py-1 rounded-full border ${
                       roundDelayMs === preset
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-border text-muted-foreground hover:text-foreground hover:border-primary/60"
@@ -802,7 +802,7 @@ const Settings = () => {
               <p className="text-[10px] font-mono text-muted-foreground">Selected: {activeFunboxModifiers.length}</p>
               <button
                 onClick={() => setActiveFunboxModifiers([])}
-                className="text-[10px] font-mono px-2 py-1 rounded-md border border-border/70 text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                className="text-[10px] font-mono px-2 py-1 rounded-full border border-border/70 text-muted-foreground hover:text-primary hover:border-primary transition-colors"
               >
                 Clear all
               </button>
@@ -829,7 +829,7 @@ const Settings = () => {
                                   : [...previous, modifier.id]
                               );
                             }}
-                            className={`w-full px-2 py-2 rounded-lg text-[11px] font-mono transition-colors text-left border ${
+                            className={`w-full px-2 py-2 rounded-full text-[11px] font-mono transition-colors text-left border ${
                               active
                                 ? "bg-primary text-primary-foreground border-primary"
                                 : "bg-card/60 border-border text-muted-foreground hover:text-foreground hover:border-primary"
