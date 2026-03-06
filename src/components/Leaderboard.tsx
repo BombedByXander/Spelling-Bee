@@ -152,6 +152,16 @@ const Leaderboard = ({ open, onClose }: Props) => {
           <p className="text-[10px] text-muted-foreground mt-1 tracking-wide uppercase">
             Ranked by best recorded streak · Top 50 performers
           </p>
+          <div className="mt-2 flex items-center gap-3 text-[12px] text-muted-foreground">
+            <span className="uppercase font-mono text-[10px]">Legend:</span>
+            <span className="font-mono text-sm font-bold text-primary text-glow" title="1-4">1-4</span>
+            <span className="font-mono text-sm font-bold text-[hsl(var(--streak-yellow))] text-glow-yellow" title="5-9">5-9</span>
+            <span className="font-mono text-sm font-bold text-[hsl(var(--streak-red))] text-glow-red" title="10-19">10-19</span>
+            <span className="font-mono text-sm font-bold text-[hsl(var(--streak-deep-red))] text-glow-deep-red" title="20-29">20-29</span>
+            <span className="font-mono text-sm font-bold text-[hsl(var(--streak-purple))] text-glow-purple" title="30-39">30-39</span>
+            <span className="font-mono text-sm font-bold text-[hsl(var(--streak-light-blue))] text-glow-light-blue" title="40-49">40-49</span>
+            <span className="font-mono text-sm font-bold text-glow" title="50+ (rainbow)">50+</span>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-3 space-y-1">
