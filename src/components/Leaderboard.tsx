@@ -119,6 +119,40 @@ const Leaderboard = ({ open, onClose }: Props) => {
         }
       }
     }
+    // Ensure leaderboard includes any persisted bests not present in the view: merge with user_best_wpm top 50
+    try {
+      const { data: ubAll } = await supabase.from('user_best_wpm').select('user_id, best_wpm, mode, modifiers').order('best_wpm', { ascending: false }).limit(50);
+      if (ubAll && Array.isArray(ubAll) && ubAll.length > 0) {
+        // fetch profiles for any ids not already present
+        const missingIds = ubAll.map((r: any) => r.user_id).filter((id: string) => !castedEntries.find((e) => e.user_id === id));
+        if (missingIds.length > 0) {
+          const { data: profsAll } = await supabase.from('profiles').select('id, display_name, username, avatar_url').in('id', missingIds as any[]);
+          const profByIdAll: Record<string, any> = {};
+          (profsAll ?? []).forEach((p: any) => { profByIdAll[p.id] = p; });
+          const builtExtra = (ubAll as any[])
+            .filter((r: any) => missingIds.includes(r.user_id))
+            .map((r: any) => ({
+              user_id: r.user_id,
+              display_name: profByIdAll[r.user_id]?.display_name ?? '(unknown)',
+              username: profByIdAll[r.user_id]?.username ?? null,
+              avatar_url: profByIdAll[r.user_id]?.avatar_url ?? null,
+              best_wpm: Number(r.best_wpm),
+              modifiers: Array.isArray(r.modifiers) ? r.modifiers : [],
+              mode: r.mode ?? null,
+            } as LeaderboardEntry));
+          // merge and resort by best_wpm
+          const merged = [...castedEntries, ...builtExtra];
+          merged.sort((a, b) => (Number(b.best_wpm ?? -Infinity) - Number(a.best_wpm ?? -Infinity)));
+          // reassign ranks
+          const withRanks = merged.map((m, i) => ({ ...m, rank: i + 1 }));
+          setEntries(withRanks.slice(0, 50));
+          castedEntries = withRanks.slice(0, 50);
+        }
+      }
+    } catch {
+      // ignore any merge errors and continue
+    }
+
     // If user is signed in, fetch their personal row and append if not in top list
     try {
       const { data: userResp } = await supabase.auth.getUser();
