@@ -79,57 +79,50 @@ const Leaderboard = ({ open, onClose }: Props) => {
 
   const fetchLeaderboard = async () => {
     setLoading(true);
-    // Prefer an all-time WPM leaderboard view if present; fall back to weekly leaderboard
-    const [{ data, error }, { data: roles }] = await Promise.all([
-      supabase.from("all_time_wpm_leaderboard").select("*").order("rank", { ascending: true }).limit(50),
-      supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
-    ]);
-    let castedEntries: LeaderboardEntry[] = [];
-    if (!error && data && Array.isArray(data) && data.length > 0) {
-      castedEntries = data as unknown as LeaderboardEntry[];
-      setEntries(castedEntries);
-    } else {
-      // fallback to weekly view first
-      const fallback = await supabase.from("weekly_leaderboard").select("*").order("rank", { ascending: true }).limit(50);
-      if (fallback.data && Array.isArray(fallback.data) && fallback.data.length > 0) {
-        castedEntries = fallback.data as unknown as LeaderboardEntry[];
-        setEntries(castedEntries);
-      } else {
-        // final fallback: build from user_best_wpm + profiles so everyone persisted is visible
-        const { data: ub } = await supabase.from("user_best_wpm").select("user_id, best_wpm, mode, modifiers").order("best_wpm", { ascending: false }).limit(50);
-        if (ub && Array.isArray(ub) && ub.length > 0) {
-          const ids = ub.map((r: any) => r.user_id);
-          const { data: profs } = await supabase.from("profiles").select("id, display_name, username, avatar_url").in("id", ids as any[]);
-          const profById: Record<string, any> = {};
-          (profs ?? []).forEach((p: any) => { profById[p.id] = p; });
-          const built = (ub as any[]).map((r: any, i: number) => ({
-            user_id: r.user_id,
-            display_name: profById[r.user_id]?.display_name ?? "(unknown)",
-            username: profById[r.user_id]?.username ?? null,
-            avatar_url: profById[r.user_id]?.avatar_url ?? null,
-            best_wpm: Number(r.best_wpm),
-            modifiers: Array.isArray(r.modifiers) ? r.modifiers : [],
-            mode: r.mode ?? null,
-            rank: i + 1,
-          } as LeaderboardEntry));
-          castedEntries = built;
-          setEntries(castedEntries);
-        } else {
-          setEntries([]);
-        }
-      }
+    // New behavior: show top 50 highest recorded streaks (from profiles.best_streak)
+    try {
+      const [{ data: profiles }, { data: roles }] = await Promise.all([
+        supabase.from("profiles").select("id, display_name, username, avatar_url, best_streak").order("best_streak", { ascending: false }).limit(50),
+        supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
+      ]);
+      const built = (profiles ?? []).map((p: any, i: number) => ({
+        user_id: p.id,
+        display_name: p.display_name ?? "(unknown)",
+        username: p.username ?? null,
+        avatar_url: p.avatar_url ?? null,
+        best_wpm: Number(p.best_streak ?? 0), // reuse field for display
+        rank: i + 1,
+      } as LeaderboardEntry));
+      setEntries(built);
+      if (roles) setAdminIds(new Set(roles.map((row: any) => row.user_id)));
+    } catch (err) {
+      setEntries([]);
+    } finally {
+      setLoading(false);
     }
-    // (Reverted merge/append logic) Use only the canonical leaderboard views.
-    if (roles) {
-      setAdminIds(new Set(roles.map((row: any) => row.user_id)));
-    }
-    setLoading(false);
   };
 
   useEffect(() => {
     if (!open) return;
     fetchLeaderboard();
-    return undefined;
+
+    // subscribe to profile updates so streak changes reflect immediately
+    const channel = supabase
+      .channel("leaderboard-streaks")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles" }, (payload) => {
+        // only refresh on best_streak changes
+        try {
+          const record = (payload as any).record;
+          if (record && (record.best_streak !== undefined)) {
+            fetchLeaderboard();
+          }
+        } catch {
+          fetchLeaderboard();
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [open]);
 
   if (!open) return null;
@@ -148,11 +141,11 @@ const Leaderboard = ({ open, onClose }: Props) => {
       <div className="w-full max-w-[40rem] max-h-[82vh] mx-4 rounded-2xl bg-card/95 border border-border backdrop-blur-md overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
         <div className="px-5 py-4 border-b border-border">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">All-Time Highest WPM (Top 50)</h2>
+            <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">Top 50 Highest Streaks</h2>
             <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors text-xl leading-none">×</button>
           </div>
           <p className="text-[10px] text-muted-foreground mt-1 tracking-wide uppercase">
-            Ranked by peak recorded WPM · Top 50 all-time performers
+            Ranked by best recorded streak · Top 50 performers
           </p>
         </div>
 
@@ -221,12 +214,12 @@ const Leaderboard = ({ open, onClose }: Props) => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] text-muted-foreground font-mono">WPM</span>
+                  <span className="text-[10px] text-muted-foreground font-mono">Streak</span>
                   <span
                     className="font-mono text-sm font-bold text-primary"
                     title={`Mode: ${modeLabel} · Modifiers: ${modifiersList}`}
                   >
-                    {entry.best_wpm ? entry.best_wpm.toFixed(2) : "-"}
+                    {entry.best_wpm ? Number(entry.best_wpm).toString() : "-"}
                   </span>
                 </div>
               </button>
