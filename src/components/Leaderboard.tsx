@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { isOwnerUser } from "@/lib/roles";
 import { getLevelFromXp } from "@/lib/level";
+import { getStreakVisual } from "@/lib/streak";
 
 interface LeaderboardEntry {
   user_id: string;
@@ -12,6 +13,7 @@ interface LeaderboardEntry {
   correct_count?: number | null;
   rank?: number | null;
   best_wpm?: number | null;
+  streak?: number | null;
   modifiers?: string[] | null;
   mode?: string | null;
 }
@@ -85,14 +87,17 @@ const Leaderboard = ({ open, onClose }: Props) => {
         supabase.from("profiles").select("id, display_name, username, avatar_url, best_streak").order("best_streak", { ascending: false }).limit(50),
         supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
       ]);
-      const built = (profiles ?? []).map((p: any, i: number) => ({
-        user_id: p.id,
-        display_name: p.display_name ?? "(unknown)",
-        username: p.username ?? null,
-        avatar_url: p.avatar_url ?? null,
-        best_wpm: Number(p.best_streak ?? 0), // reuse field for display
-        rank: i + 1,
-      } as LeaderboardEntry));
+      const built = (profiles ?? [])
+        .map((p: any, i: number) => ({
+          user_id: p.id,
+          display_name: p.display_name ?? "(unknown)",
+          username: p.username ?? null,
+          avatar_url: p.avatar_url ?? null,
+          best_wpm: Number(p.best_streak ?? 0), // legacy field
+          streak: Number(p.best_streak ?? 0),
+          rank: i + 1,
+        } as LeaderboardEntry))
+        .filter((e: LeaderboardEntry) => Number(e.streak ?? 0) > 0);
       setEntries(built);
       if (roles) setAdminIds(new Set(roles.map((row: any) => row.user_id)));
     } catch (err) {
@@ -214,13 +219,16 @@ const Leaderboard = ({ open, onClose }: Props) => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] text-muted-foreground font-mono">Streak</span>
-                  <span
-                    className="font-mono text-sm font-bold text-primary"
-                    title={`Mode: ${modeLabel} · Modifiers: ${modifiersList}`}
-                  >
-                    {entry.best_wpm ? Number(entry.best_wpm).toString() : "-"}
-                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">&nbsp;</span>
+                  {(() => {
+                    const streakVal = Number(entry.streak ?? 0);
+                    const sv = getStreakVisual(streakVal);
+                    return (
+                      <span className={`font-mono text-sm font-bold ${sv.className}`} style={sv.style} title={`Streak: ${streakVal}`}>
+                        🔥 {streakVal}
+                      </span>
+                    );
+                  })()}
                 </div>
               </button>
             )})
