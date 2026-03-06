@@ -8,9 +8,11 @@ interface LeaderboardEntry {
   display_name: string;
   username: string | null;
   avatar_url: string | null;
-  streak_count: number;
-  correct_count: number;
-  rank: number;
+  streak_count?: number | null;
+  correct_count?: number | null;
+  rank?: number | null;
+  best_wpm?: number | null;
+  modifiers?: string[] | null;
 }
 
 interface Props {
@@ -76,12 +78,20 @@ const Leaderboard = ({ open, onClose }: Props) => {
 
   const fetchLeaderboard = async () => {
     setLoading(true);
+    // Prefer an all-time WPM leaderboard view if present; fall back to weekly leaderboard
     const [{ data, error }, { data: roles }] = await Promise.all([
-      supabase.from("weekly_leaderboard").select("*").order("rank", { ascending: true }).limit(50),
+      supabase.from("all_time_wpm_leaderboard").select("*").order("rank", { ascending: true }).limit(50),
       supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
     ]);
 
-    if (!error && data) {
+    if (error || !data) {
+      // fallback to weekly view
+      const fallback = await supabase.from("weekly_leaderboard").select("*").order("rank", { ascending: true }).limit(50);
+      if (fallback.data) {
+        const castedEntries = fallback.data as unknown as LeaderboardEntry[];
+        setEntries(castedEntries);
+      }
+    } else {
       const castedEntries = data as unknown as LeaderboardEntry[];
       setEntries(castedEntries);
     }
@@ -117,11 +127,11 @@ const Leaderboard = ({ open, onClose }: Props) => {
       <div className="w-full max-w-[40rem] max-h-[82vh] mx-4 rounded-2xl bg-card/95 border border-border backdrop-blur-md overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
         <div className="px-5 py-4 border-b border-border">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">Weekly Leaderboard</h2>
+            <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">All-Time Highest WPM (Top 50)</h2>
             <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors text-xl leading-none">×</button>
           </div>
           <p className="text-[10px] text-muted-foreground mt-1 tracking-wide uppercase">
-            Resets in {daysLeft}d {hoursLeft}h · Ranked by weekly correct words
+            Ranked by peak recorded WPM · Top 50 all-time performers
           </p>
         </div>
 
@@ -131,7 +141,9 @@ const Leaderboard = ({ open, onClose }: Props) => {
           ) : entries.length === 0 ? (
             <p className="text-center text-muted-foreground text-sm py-8">No activity yet this week. Be the first!</p>
           ) : (
-            entries.map((entry) => (
+            entries.map((entry) => {
+              const modifiersList = Array.isArray(entry.modifiers) && entry.modifiers.length > 0 ? entry.modifiers.join(", ") : "none";
+              return (
               <button
                 key={entry.user_id}
                 onClick={() => {
@@ -146,7 +158,7 @@ const Leaderboard = ({ open, onClose }: Props) => {
                   void fetchSelectedProfileStats(entry);
                 }}
                 className={`flex items-center justify-between py-2 px-3 rounded-lg transition-colors w-full text-left ${
-                  entry.rank <= 3 ? "bg-primary/5" : "hover:bg-card/60"
+                  (entry.rank && entry.rank <= 3) ? "bg-primary/5" : "hover:bg-card/60"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -156,7 +168,7 @@ const Leaderboard = ({ open, onClose }: Props) => {
                     entry.rank === 3 ? "text-[hsl(25_70%_50%)]" :
                     "text-muted-foreground"
                   }`}>
-                    {entry.rank}
+                    {entry.rank ?? "-"}
                   </span>
                   <div className="w-11 h-11 rounded-full bg-card border border-border overflow-hidden flex-shrink-0">
                     {entry.avatar_url ? (
@@ -168,7 +180,7 @@ const Leaderboard = ({ open, onClose }: Props) => {
                     )}
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm text-foreground font-medium truncate max-w-[120px]">
+                    <span className="text-sm text-foreground font-medium truncate max-w-[120px]" title={`Modifiers: ${modifiersList}`}>
                       {entry.display_name}
                     </span>
                     {adminIds.has(entry.user_id) && !isOwnerUser(entry.user_id) && (
@@ -184,11 +196,11 @@ const Leaderboard = ({ open, onClose }: Props) => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] text-muted-foreground font-mono">{entry.correct_count} correct</span>
-                  <span className="font-mono text-sm font-bold text-primary">{entry.streak_count} 🔥</span>
+                  <span className="text-[10px] text-muted-foreground font-mono">WPM</span>
+                  <span className="font-mono text-sm font-bold text-primary">{entry.best_wpm ? entry.best_wpm.toFixed(2) : "-"}</span>
                 </div>
               </button>
-            ))
+            )})
           )}
         </div>
 
