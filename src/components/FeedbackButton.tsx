@@ -161,38 +161,38 @@ const FeedbackButton = ({ userId, inline = false }: Props) => {
             <button
               onClick={() => setCategory("critical")}
               type="button"
-              className={`px-2 py-1 rounded-md text-sm ${category === "critical" ? "bg-primary/15 border border-primary text-primary" : "bg-card/50 border border-border text-muted-foreground"}`}
+              className={`px-2 py-1 rounded-full text-sm ${category === "critical" ? "bg-primary/15 border border-primary text-primary" : "bg-card/50 border border-border text-muted-foreground"}`}
             >
               ❕ Critical
             </button>
             <button
               onClick={() => setCategory("feedback")}
               type="button"
-              className={`px-2 py-1 rounded-md text-sm ${category === "feedback" ? "bg-primary/15 border border-primary text-primary" : "bg-card/50 border border-border text-muted-foreground"}`}
+              className={`px-2 py-1 rounded-full text-sm ${category === "feedback" ? "bg-primary/15 border border-primary text-primary" : "bg-card/50 border border-border text-muted-foreground"}`}
             >
               💬 Feedback
             </button>
           </div>
-          <label className="block text-xs text-muted-foreground font-mono">
+            <label className="block text-xs text-muted-foreground font-mono">
             Name (optional)
             <input
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               maxLength={40}
-              className="mt-1 w-full rounded-md border border-border bg-card/60 px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+                className="mt-1 w-full rounded-full border border-border bg-card/60 px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
               placeholder="Anonymous"
             />
           </label>
 
-          <label className="block text-xs text-muted-foreground font-mono">
+            <label className="block text-xs text-muted-foreground font-mono">
             Feedback
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               maxLength={600}
               rows={5}
-              className="mt-1 w-full resize-none rounded-md border border-border bg-card/60 px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+                className="mt-1 w-full resize-none rounded-xl border border-border bg-card/60 px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
               placeholder="Tell us what to improve..."
             />
           </label>

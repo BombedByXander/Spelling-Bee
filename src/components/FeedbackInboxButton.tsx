@@ -252,7 +252,7 @@ const FeedbackInboxButton = ({ isAdmin = false, inline = false }: Props) => {
               const dateLabel = new Date(entry.created_at).toLocaleString();
 
               return (
-                <div key={entry.id} className="rounded-lg border border-border/60 bg-card/60 p-3">
+                <div key={entry.id} className="rounded-xl border border-border/60 bg-card/60 p-3">
                   <button
                     onClick={() => setExpandedId(expanded ? null : entry.id)}
                     className="w-full text-left"
@@ -273,7 +273,7 @@ const FeedbackInboxButton = ({ isAdmin = false, inline = false }: Props) => {
                           value={editingMessage}
                           onChange={(event) => setEditingMessage(event.target.value)}
                           rows={4}
-                          className="w-full px-3 py-2 bg-input border border-border rounded-lg text-sm text-foreground"
+                          className="w-full px-3 py-2 bg-input border border-border rounded-xl text-sm text-foreground"
                         />
                       </div>
                     ) : (
