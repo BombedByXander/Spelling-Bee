@@ -150,7 +150,7 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
     };
   }, []);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (!input.trim()) return;
     const now = performance.now();
     const elapsedMs = startTime ? Math.max(0, now - startTime) : 0;
@@ -165,9 +165,9 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
     setResult(correct ? "correct" : "incorrect");
     applyRoundRandomizedTheme();
 
-    if (startTime) {
-      setRawWpm(calcWpm(rawCharCount, countLiveErrors(input, currentWord), startTime, now));
-    }
+    // compute WPM for this submission
+    const newWpm = startTime ? calcWpm(rawCharCount, countLiveErrors(input, currentWord), startTime, now) : null;
+    if (newWpm !== null) setRawWpm(newWpm);
 
     if (correct) {
       const newStreak = stats.streak + 1;
@@ -180,6 +180,19 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
       if (userId) {
         supabase.rpc("add_stars", { p_amount: earned }).then(() => {});
       }
+      // Upsert best WPM so leaderboard can reflect immediately
+      if (userId && newWpm !== null) {
+        try {
+          await supabase.from('user_best_wpm').upsert(
+            { user_id: userId, best_wpm: newWpm, mode: chargMode ? 'charg' : 'master', modifiers: [] },
+            { onConflict: 'user_id' }
+          );
+        } catch (e) {
+          // ignore errors (migration missing or permissions), but log in console
+          // eslint-disable-next-line no-console
+          console.warn('user_best_wpm upsert failed', e);
+        }
+      }
     } else {
       if (userId && stats.streak > 0) {
         supabase.rpc("submit_streak", { p_streak_count: stats.streak }).then(() => {});
@@ -188,7 +201,7 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
       setShaking(true);
     }
     timeoutRef.current = setTimeout(nextWord, getStoredRoundDelayMs());
-  }, [input, currentWord, startTime, nextWord, stats, userId, rawCharCount]);
+  }, [input, currentWord, startTime, nextWord, stats, userId, rawCharCount, chargMode]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     setCapsLockOn(e.getModifierState("CapsLock"));
