@@ -336,7 +336,7 @@ const CustomGame = ({ customWords, userId, activeSound, activeFont, keyboardLayo
                 return (
                   <span
                     key={i}
-                    className={`inline-flex items-center justify-center w-6 h-7 sm:w-7 sm:h-8 text-[11px] sm:text-sm font-mono font-bold border rounded-full transition-all duration-150 ${colorClass}`}
+                    className={`inline-flex items-center justify-center w-6 h-7 sm:w-7 sm:h-8 text-[11px] sm:text-sm font-mono font-bold border rounded transition-all duration-150 ${colorClass}`}
                     style={tileStyle}
                   >
                     {content}
