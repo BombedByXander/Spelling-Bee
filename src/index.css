@@ -440,6 +440,14 @@ body.funbox-the-files .game-stage .game-input-wrap::after {
   pointer-events: none;
 }
 
+/* Space theme: increase contrast of the gesture bar so it remains visible */
+body.theme-space .gesture-bar {
+  background-color: rgba(255,255,255,0.18) !important;
+}
+body.theme-space .gesture-bar:hover {
+  background-color: rgba(255,255,255,0.28) !important;
+}
+
 body.theme-easter-garden::before {
   width: min(58vw, 900px);
   height: min(58vw, 900px);
