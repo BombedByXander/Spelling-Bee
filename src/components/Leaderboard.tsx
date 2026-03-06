@@ -13,6 +13,7 @@ interface LeaderboardEntry {
   rank?: number | null;
   best_wpm?: number | null;
   modifiers?: string[] | null;
+  mode?: string | null;
 }
 
 interface Props {
@@ -111,17 +112,28 @@ const Leaderboard = ({ open, onClose }: Props) => {
             // ignore
           }
           if (!userRow) {
-            const { data: ub } = await supabase.from('user_best_wpm').select('user_id, best_wpm').eq('user_id', uid).maybeSingle();
+            const { data: ub } = await supabase.from('user_best_wpm').select('user_id, best_wpm, mode, modifiers').eq('user_id', uid).maybeSingle();
             if (ub && ub.user_id) {
+              // fetch display name from profiles
+              const { data: prof } = await supabase.from('profiles').select('display_name, username, avatar_url').eq('id', uid).maybeSingle();
+              // compute rank by counting users with higher best_wpm
+              let computedRank: number | null = null;
+              try {
+                const { count } = await supabase.from('user_best_wpm').select('user_id', { count: 'exact' }).gt('best_wpm', ub.best_wpm);
+                computedRank = (count ?? 0) + 1;
+              } catch {
+                computedRank = null;
+              }
               userRow = {
                 user_id: ub.user_id,
-                display_name: 'You',
-                username: null,
-                avatar_url: null,
+                display_name: (prof && prof.display_name) ? prof.display_name : 'You',
+                username: prof?.username ?? null,
+                avatar_url: prof?.avatar_url ?? null,
                 best_wpm: ub.best_wpm,
-                modifiers: [],
-                rank: null,
-              };
+                modifiers: Array.isArray(ub.modifiers) ? ub.modifiers : [],
+                mode: ub.mode ?? null,
+                rank: computedRank,
+              } as any;
             }
           }
           if (userRow) {
@@ -184,6 +196,7 @@ const Leaderboard = ({ open, onClose }: Props) => {
           ) : (
             entries.map((entry) => {
               const modifiersList = Array.isArray(entry.modifiers) && entry.modifiers.length > 0 ? entry.modifiers.join(", ") : "none";
+              const modeLabel = entry.mode ?? "unknown";
               return (
               <button
                 key={entry.user_id}
@@ -221,7 +234,10 @@ const Leaderboard = ({ open, onClose }: Props) => {
                     )}
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm text-foreground font-medium truncate max-w-[120px]" title={`Modifiers: ${modifiersList}`}>
+                    <span
+                      className="text-sm text-foreground font-medium truncate max-w-[120px]"
+                      title={`Mode: ${modeLabel} · Modifiers: ${modifiersList}`}
+                    >
                       {entry.display_name}
                     </span>
                     {adminIds.has(entry.user_id) && !isOwnerUser(entry.user_id) && (
