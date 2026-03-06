@@ -152,23 +152,7 @@ const Leaderboard = ({ open, onClose }: Props) => {
           <p className="text-[10px] text-muted-foreground mt-1 tracking-wide uppercase">
             Ranked by best recorded streak · Top 50 performers
           </p>
-          <div className="mt-2 flex items-center gap-3 text-[12px] text-muted-foreground">
-            <span className="uppercase font-mono text-[10px]">Legend:</span>
-            {(() => {
-              const samples = [3, 7, 12, 22, 32, 42, 60];
-              return samples.map((s) => {
-                const sv = getStreakVisual(s);
-                return (
-                  <span key={`legend-${s}`} className={`inline-flex items-center gap-1 font-mono text-sm`} title={`${s}${s >= 50 ? '+' : ''}`}>
-                    <span className={sv.className} style={{ ...sv.style, display: 'inline-block', width: 20, textAlign: 'center', borderRadius: 6 }}>
-                      🔥
-                    </span>
-                    <span className="text-muted-foreground text-[11px]">{s}{s >= 50 ? '+' : ''}</span>
-                  </span>
-                );
-              });
-            })()}
-          </div>
+          
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-3 space-y-1">
