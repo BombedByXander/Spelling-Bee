@@ -94,5 +94,5 @@ export const FUNBOX_MODIFIERS: FunboxModifier[] = [
   { id: "vowel_shift", label: "vowel shift", description: "Cycles vowels forward (a→e→i→o→u→a)." },
   { id: "upside_down", label: "upside down", description: "Flips the displayed word upside down." },
   { id: "vision_tester", label: "vision tester", description: "Starts the quoted word at 100px and shrinks it by 2px for each +1 streak." },
-  { id: "the_files", label: "the files", description: "Turns key features into redactions like the DOJ files lol." },
+  // temporarily removed: { id: "the_files", label: "the files", description: "Turns key features into redactions like the DOJ files lol." },
 ];

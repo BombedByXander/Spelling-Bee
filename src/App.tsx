@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, type Location } from "react-router-dom";
 import Index from "./pages/Index";
-import { getActiveFunboxModifiers, FUNBOX_MODIFIERS_UPDATED_EVENT } from "@/lib/funbox";
+import { getActiveFunboxModifiers, FUNBOX_MODIFIERS_UPDATED_EVENT, FUNBOX_MODIFIERS_KEY, emitFunboxModifiersUpdated } from "@/lib/funbox";
 
 import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
@@ -35,6 +35,25 @@ const App = () => {
     updateOverlay();
     window.addEventListener(FUNBOX_MODIFIERS_UPDATED_EVENT, updateOverlay as EventListener);
     return () => window.removeEventListener(FUNBOX_MODIFIERS_UPDATED_EVENT, updateOverlay as EventListener);
+  }, []);
+
+  // Sanitize any stored funbox modifiers (remove the_files) on app start to avoid persistent black overlay
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(FUNBOX_MODIFIERS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          const filtered = parsed.filter((m: unknown) => m !== "the_files");
+          if (filtered.length !== parsed.length) {
+            localStorage.setItem(FUNBOX_MODIFIERS_KEY, JSON.stringify(filtered));
+            emitFunboxModifiersUpdated();
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
   }, []);
 
   return (
