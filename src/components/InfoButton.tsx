@@ -45,7 +45,8 @@ const InfoButton = ({ inline }: Props) => {
               <p className="text-[10px] text-muted-foreground">on Discord</p>
             </div>
           </div>
-          <p className="mt-3 text-[10px] text-muted-foreground font-mono text-center">v{RELEASE_VERSION}</p>
+          <p className="mt-3 text-[10px] text-muted-foreground font-mono text-center">v26.1</p>
+          <p className="mt-1 text-[10px] text-muted-foreground font-mono text-center italic">"Why the huge version jump", you may be asking — it's sorta inspired by iOS, the year 2026 (isolated to 26) and the update.</p>
         </div>
 
         <div className="mt-6 pt-4 border-t border-border">
@@ -53,7 +54,7 @@ const InfoButton = ({ inline }: Props) => {
             href={DISCORD_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg bg-gradient-to-r from-[hsl(235_86%_65%)] to-[hsl(235_76%_55%)] text-white font-semibold text-sm hover:from-[hsl(235_86%_75%)] hover:to-[hsl(235_76%_65%)] transition-all transform hover:scale-105"
+            className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-full bg-gradient-to-r from-[hsl(235_86%_65%)] to-[hsl(235_76%_55%)] text-white font-semibold text-sm hover:from-[hsl(235_86%_75%)] hover:to-[hsl(235_76%_65%)] transition-all transform hover:scale-105"
           >
             <DiscordIcon size={18} />
             Join Our Discord

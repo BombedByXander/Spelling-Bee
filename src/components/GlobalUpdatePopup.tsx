@@ -27,7 +27,8 @@ const GlobalUpdatePopup = () => {
         <div className="max-h-[72vh] overflow-y-auto pr-1">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">New update · {RELEASE_VERSION}</h2>
+              <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">New update · v26.1</h2>
+              <p className="mt-1 text-[10px] text-muted-foreground font-mono italic">"Why the huge version jump", you may be asking — it's sorta inspired by iOS, the year 2026 (isolated to 26) and the update.</p>
               <p className="mt-1 text-xs text-muted-foreground font-mono">Important changes:</p>
             </div>
             <button
@@ -43,16 +44,16 @@ const GlobalUpdatePopup = () => {
 
           {/* Versioning explanation removed per request; only the version label is shown */}
 
-          <div className="mt-3 mb-2">
+            <div className="mt-3 mb-2">
             <button
               onClick={() => {
                 localStorage.setItem(neverKey, "true");
                 sessionStorage.setItem(dismissedSessionKey, "true");
                 setShowUpdatePopup(false);
               }}
-              className="px-2 py-1 rounded-md font-mono text-[10px] border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                className="px-2 py-1 rounded-md font-mono text-[10px] border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
             >
-              Never show again ({RELEASE_VERSION})
+                Never show again (v26.1)
             </button>
           </div>
 
