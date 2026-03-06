@@ -610,10 +610,10 @@ const Settings = () => {
               {SETTINGS_SECTIONS.map((section) => {
                 const active = activeSettingsSection === section.id;
                 return (
-                  <button
+                    <button
                     key={section.id}
                     onClick={() => jumpToSection(section.id)}
-                    className={`w-full text-left px-3 py-2 rounded-md text-xs font-mono border transition-colors ${
+                    className={`w-full text-left px-3 py-2 rounded-full text-xs font-mono border transition-colors ${
                       active
                         ? section.danger
                           ? "border-destructive/70 bg-destructive/10 text-destructive"
@@ -656,7 +656,7 @@ const Settings = () => {
                     localStorage.setItem(GAME_MODE_KEY, difficulty.value);
                     window.dispatchEvent(new Event(GAME_MODE_CHANGED_EVENT));
                   }}
-                  className={`px-3 py-2 rounded-lg text-sm font-mono transition-colors ${
+                  className={`px-3 py-2 rounded-full text-sm font-mono transition-colors ${
                     gameMode === difficulty.value
                       ? "bg-primary text-primary-foreground border border-primary"
                       : "bg-card/60 border border-border text-muted-foreground hover:text-foreground hover:border-primary"

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { FUNBOX_MODIFIERS_UPDATED_EVENT, isFunboxModifierActive } from "@/lib/funbox";
 
 export type KeyboardLayout = "qwerty" | "azerty" | "dvorak" | "colemak";
 
@@ -40,6 +41,7 @@ const KeyboardMap = ({ lastKey, layout = "qwerty", size = 20 }: Props) => {
   // hide if size explicitly zero
   if (size === 0) return null;
   const [flashKey, setFlashKey] = useState<string | null>(null);
+  const [theFilesActive, setTheFilesActive] = useState<boolean>(() => isFunboxModifierActive("the_files"));
 
   useEffect(() => {
     if (!lastKey) return;
@@ -48,6 +50,16 @@ const KeyboardMap = ({ lastKey, layout = "qwerty", size = 20 }: Props) => {
     const t = setTimeout(() => setFlashKey(null), 150);
     return () => clearTimeout(t);
   }, [lastKey]);
+
+  useEffect(() => {
+    const update = () => setTheFilesActive(isFunboxModifierActive("the_files"));
+    window.addEventListener("storage", update);
+    window.addEventListener(FUNBOX_MODIFIERS_UPDATED_EVENT, update as EventListener);
+    return () => {
+      window.removeEventListener("storage", update);
+      window.removeEventListener(FUNBOX_MODIFIERS_UPDATED_EVENT, update as EventListener);
+    };
+  }, []);
 
   const rows = KEYBOARDS[layout];
   const rowOffsets = layout === "qwerty" ? [0, 18, 36] : [0, 14, 28];
@@ -60,6 +72,7 @@ const KeyboardMap = ({ lastKey, layout = "qwerty", size = 20 }: Props) => {
         <div key={ri} className="flex gap-[4px]" style={{ marginLeft: rowOffsets[ri] ?? 0 }}>
           {row.map((key) => {
             const isFlash = flashKey === key;
+            const isLetter = /[A-Z0-9]/i.test(key);
             return (
               <div
                 key={key}
@@ -70,7 +83,11 @@ const KeyboardMap = ({ lastKey, layout = "qwerty", size = 20 }: Props) => {
                 }`}
                 style={{ width: keyDimension, height: keyDimension, fontSize: keyFontSize, fontWeight: 500 }}
               >
-                {key.toLowerCase()}
+                {theFilesActive && isLetter ? (
+                  <span style={{ color: "#000" }}>■</span>
+                ) : (
+                  key.toLowerCase()
+                )}
               </div>
             );
           })}
