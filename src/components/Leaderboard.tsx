@@ -154,13 +154,20 @@ const Leaderboard = ({ open, onClose }: Props) => {
           </p>
           <div className="mt-2 flex items-center gap-3 text-[12px] text-muted-foreground">
             <span className="uppercase font-mono text-[10px]">Legend:</span>
-            <span className="font-mono text-sm font-bold text-primary text-glow" title="1-4">1-4</span>
-            <span className="font-mono text-sm font-bold text-[hsl(var(--streak-yellow))] text-glow-yellow" title="5-9">5-9</span>
-            <span className="font-mono text-sm font-bold text-[hsl(var(--streak-red))] text-glow-red" title="10-19">10-19</span>
-            <span className="font-mono text-sm font-bold text-[hsl(var(--streak-deep-red))] text-glow-deep-red" title="20-29">20-29</span>
-            <span className="font-mono text-sm font-bold text-[hsl(var(--streak-purple))] text-glow-purple" title="30-39">30-39</span>
-            <span className="font-mono text-sm font-bold text-[hsl(var(--streak-light-blue))] text-glow-light-blue" title="40-49">40-49</span>
-            <span className="font-mono text-sm font-bold text-glow" title="50+ (rainbow)">50+</span>
+            {(() => {
+              const samples = [3, 7, 12, 22, 32, 42, 60];
+              return samples.map((s) => {
+                const sv = getStreakVisual(s);
+                return (
+                  <span key={`legend-${s}`} className={`inline-flex items-center gap-1 font-mono text-sm`} title={`${s}${s >= 50 ? '+' : ''}`}>
+                    <span className={sv.className} style={{ ...sv.style, display: 'inline-block', width: 20, textAlign: 'center', borderRadius: 6 }}>
+                      🔥
+                    </span>
+                    <span className="text-muted-foreground text-[11px]">{s}{s >= 50 ? '+' : ''}</span>
+                  </span>
+                );
+              });
+            })()}
           </div>
         </div>
 
@@ -187,8 +194,14 @@ const Leaderboard = ({ open, onClose }: Props) => {
                   setSelectedProfile(entry);
                   void fetchSelectedProfileStats(entry);
                 }}
-                className={`flex items-center justify-between py-2 px-3 rounded-lg transition-colors w-full text-left ${
-                  (entry.rank && entry.rank <= 3) ? "bg-primary/5" : "hover:bg-card/60"
+                className={`flex items-center justify-between py-2 px-3 rounded-lg transition-all w-full text-left ${
+                  entry.rank === 1
+                    ? "bg-gradient-to-r from-yellow-50/30 to-yellow-100/20 border border-yellow-300/40 animate-pulse"
+                    : entry.rank === 2
+                    ? "bg-gradient-to-r from-slate-50/20 to-slate-100/10 border border-slate-300/30 animate-pulse"
+                    : entry.rank === 3
+                    ? "bg-gradient-to-r from-orange-50/20 to-orange-100/10 border border-orange-300/30 animate-pulse"
+                    : "hover:bg-card/60"
                 }`}
               >
                 <div className="flex items-center gap-3">
