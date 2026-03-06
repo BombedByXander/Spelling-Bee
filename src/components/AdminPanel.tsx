@@ -636,9 +636,10 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                   </div>
                 ))
               )}
-            
+            </div>
+          )}
 
-          {currentTab === "announcements" && (
+          {tab === "announcements" && (
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-primary mb-2">
                 <Shield size={14} />
