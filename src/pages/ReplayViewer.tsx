@@ -91,7 +91,7 @@ const ReplayViewer = () => {
               <div className="flex items-center justify-between">
                 <p className="text-sm font-bold">Event {events.length ? index + 1 : 0} / {events.length}</p>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setPlaying((v) => !v)} disabled={events.length === 0} className="p-2 rounded-md border border-border text-muted-foreground hover:text-primary hover:border-primary disabled:opacity-50">
+                  <button onClick={() => setPlaying((v) => !v)} disabled={events.length === 0} className="p-2 rounded-full border border-border text-muted-foreground hover:text-primary hover:border-primary disabled:opacity-50">
                     {playing ? <Pause size={14} /> : <Play size={14} />}
                   </button>
                 </div>

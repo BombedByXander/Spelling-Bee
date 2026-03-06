@@ -435,19 +435,19 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
         <div className="px-5 pt-4 border-b border-border/60 flex items-center gap-2 overflow-x-auto">
           <button
             onClick={() => setTab("users")}
-            className={`px-3 py-1.5 rounded-md text-xs font-mono border ${tab === "users" ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-foreground"}`}
+            className={`px-3 py-1.5 rounded-full text-xs font-mono border ${tab === "users" ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-foreground"}`}
           >
             Users
           </button>
           <button
             onClick={() => setTab("feedback")}
-            className={`px-3 py-1.5 rounded-md text-xs font-mono border ${tab === "feedback" ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-foreground"}`}
+            className={`px-3 py-1.5 rounded-full text-xs font-mono border ${tab === "feedback" ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-foreground"}`}
           >
             Feedback
           </button>
           <button
             onClick={() => setTab("announcements")}
-            className={`px-3 py-1.5 rounded-md text-xs font-mono border ${tab === "announcements" ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-foreground"}`}
+            className={`px-3 py-1.5 rounded-full text-xs font-mono border ${tab === "announcements" ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-foreground"}`}
           >
             Announcements
           </button>
@@ -522,7 +522,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                               const selected = event.target.value as AppRole;
                               setPendingRoles((previous) => ({ ...previous, [user.id]: selected }));
                             }}
-                            className="rounded-md border border-border bg-card/60 px-2 py-1 text-[10px] font-mono text-foreground"
+                            className="rounded-full border border-border bg-card/60 px-2 py-1 text-[10px] font-mono text-foreground"
                           >
                             <option value="user">user</option>
                             <option value="moderator">moderator</option>
@@ -578,7 +578,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                               <select
                                 value={editCategory ?? ""}
                                 onChange={(e) => setEditCategory(e.target.value || null)}
-                                className="rounded-md border border-border bg-card/60 px-2 py-1 text-[10px] font-mono text-foreground"
+                                className="rounded-full border border-border bg-card/60 px-2 py-1 text-[10px] font-mono text-foreground"
                               >
                                 <option value="">(none)</option>
                                 <option value="bug">🪲 bug</option>
@@ -591,14 +591,14 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                               <button
                                 onClick={() => handleSaveFeedback(entry.id)}
                                 disabled={editLoading}
-                                className="inline-flex items-center gap-1 text-xs rounded-md px-2 py-1 bg-primary text-primary-foreground"
+                                className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 bg-primary text-primary-foreground"
                               >
                                 {editLoading ? "Saving..." : "Save"}
                               </button>
                               <button
                                 onClick={cancelEdit}
                                 disabled={editLoading}
-                                className="inline-flex items-center gap-1 text-xs border border-border rounded-md px-2 py-1 text-muted-foreground hover:text-foreground"
+                                className="inline-flex items-center gap-1 text-xs border border-border rounded-full px-2 py-1 text-muted-foreground hover:text-foreground"
                               >
                                 Cancel
                               </button>
@@ -618,13 +618,13 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => startEditFeedback(entry)}
-                                className="inline-flex items-center gap-1 text-xs border border-border rounded-md px-2 py-1 text-foreground hover:bg-card/60"
+                                className="inline-flex items-center gap-1 text-xs border border-border rounded-full px-2 py-1 text-foreground hover:bg-card/60"
                               >
                                 Edit
                               </button>
                               <button
                                 onClick={() => handleDeleteFeedback(entry.id)}
-                                className="inline-flex items-center gap-1 text-xs border border-destructive/70 rounded-md px-2 py-1 text-destructive hover:bg-destructive/10"
+                                className="inline-flex items-center gap-1 text-xs border border-destructive/70 rounded-full px-2 py-1 text-destructive hover:bg-destructive/10"
                               >
                                 <Trash2 size={12} /> Delete
                               </button>
@@ -683,7 +683,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                         }
                         setAnnouncementsLoading(false);
                       }}
-                      className="px-3 py-1 rounded-md bg-primary text-primary-foreground text-sm"
+                      className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-sm"
                     >
                       {announcementsLoading ? "Creating..." : "Create announcement"}
                     </button>
@@ -709,7 +709,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                           if (error) setPanelError(error.message || "Could not update announcement.");
                           else await fetchAnnouncements();
                         }}
-                        className={`px-2 py-1 text-xs rounded-md ${a.active ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}
+                        className={`px-2 py-1 text-xs rounded-full ${a.active ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"}`}
                       >
                         {a.active ? "Active" : "Inactive"}
                       </button>
@@ -721,7 +721,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                           if (error) setPanelError(error.message || "Could not delete announcement.");
                           else await fetchAnnouncements();
                         }}
-                        className="px-2 py-1 text-xs border border-destructive/70 rounded-md text-destructive"
+                        className="px-2 py-1 text-xs border border-destructive/70 rounded-full text-destructive"
                       >
                         Delete
                       </button>

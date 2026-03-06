@@ -169,7 +169,7 @@ const ShopModal = ({
                         isActive ? (
                           <span className="p-1.5 text-primary"><Check size={14} /></span>
                         ) : (
-                          <button onClick={() => handleSelectSound(sound.id)} className="text-[10px] font-mono px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Use</button>
+                          <button onClick={() => handleSelectSound(sound.id)} className="text-[10px] font-mono px-2 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Use</button>
                         )
                       ) : (
                         <button
@@ -222,7 +222,7 @@ const ShopModal = ({
                         isActive ? (
                           <span className="p-1.5 text-primary"><Check size={14} /></span>
                         ) : (
-                          <button onClick={() => handleSelectFont(font.id)} className="text-[10px] font-mono px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Use</button>
+                          <button onClick={() => handleSelectFont(font.id)} className="text-[10px] font-mono px-2 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">Use</button>
                         )
                       ) : (
                         <button

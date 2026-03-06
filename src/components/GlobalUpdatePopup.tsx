@@ -36,7 +36,7 @@ const GlobalUpdatePopup = () => {
                 sessionStorage.setItem(dismissedSessionKey, "true");
                 setShowUpdatePopup(false);
               }}
-              className="px-2 py-1 rounded-md font-mono text-[10px] border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+              className="px-2 py-1 rounded-full font-mono text-[10px] border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
             >
               Close
             </button>
@@ -51,7 +51,7 @@ const GlobalUpdatePopup = () => {
                 sessionStorage.setItem(dismissedSessionKey, "true");
                 setShowUpdatePopup(false);
               }}
-                className="px-2 py-1 rounded-md font-mono text-[10px] border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                className="px-2 py-1 rounded-full font-mono text-[10px] border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
             >
                 Never show again
             </button>

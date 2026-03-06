@@ -154,7 +154,7 @@ const FeedbackButton = ({ userId, inline = false }: Props) => {
             <button
               onClick={() => setCategory("bug")}
               type="button"
-              className={`px-2 py-1 rounded-md text-sm ${category === "bug" ? "bg-primary/15 border border-primary text-primary" : "bg-card/50 border border-border text-muted-foreground"}`}
+              className={`px-2 py-1 rounded-full text-sm ${category === "bug" ? "bg-primary/15 border border-primary text-primary" : "bg-card/50 border border-border text-muted-foreground"}`}
             >
               🪲 Bug
             </button>

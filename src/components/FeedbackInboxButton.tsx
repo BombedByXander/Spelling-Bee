@@ -288,7 +288,7 @@ const FeedbackInboxButton = ({ isAdmin = false, inline = false }: Props) => {
                       <button
                         onClick={() => handleVote(entry.id, "up")}
                         disabled={savingVoteId === entry.id}
-                        className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs border transition-colors ${
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs border transition-colors ${
                           myVote === "up"
                             ? "border-primary text-primary bg-primary/10"
                             : "border-border text-muted-foreground hover:text-primary hover:border-primary"
@@ -299,7 +299,7 @@ const FeedbackInboxButton = ({ isAdmin = false, inline = false }: Props) => {
                       <button
                         onClick={() => handleVote(entry.id, "down")}
                         disabled={savingVoteId === entry.id}
-                        className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs border transition-colors ${
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs border transition-colors ${
                           myVote === "down"
                             ? "border-destructive text-destructive bg-destructive/10"
                             : "border-border text-muted-foreground hover:text-destructive hover:border-destructive"
@@ -316,13 +316,13 @@ const FeedbackInboxButton = ({ isAdmin = false, inline = false }: Props) => {
                             <button
                               onClick={() => handleSaveEdit(entry.id)}
                               disabled={savingEditId === entry.id}
-                              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs border border-primary/70 text-primary hover:bg-primary/10 transition-colors disabled:opacity-60"
+                              className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs border border-primary/70 text-primary hover:bg-primary/10 transition-colors disabled:opacity-60"
                             >
                               {savingEditId === entry.id ? "Saving..." : "Save"}
                             </button>
                             <button
                               onClick={handleCancelEdit}
-                              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs border border-border text-muted-foreground hover:text-foreground transition-colors"
+                              className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs border border-border text-muted-foreground hover:text-foreground transition-colors"
                             >
                               Cancel
                             </button>
@@ -330,14 +330,14 @@ const FeedbackInboxButton = ({ isAdmin = false, inline = false }: Props) => {
                         ) : (
                           <button
                             onClick={() => handleStartEdit(entry)}
-                            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs border border-primary/70 text-primary hover:bg-primary/10 transition-colors"
+                            className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs border border-primary/70 text-primary hover:bg-primary/10 transition-colors"
                           >
                             Edit
                           </button>
                         )}
                         <button
                           onClick={() => handleDelete(entry.id)}
-                          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs border border-destructive/70 text-destructive hover:bg-destructive/10 transition-colors"
+                          className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs border border-destructive/70 text-destructive hover:bg-destructive/10 transition-colors"
                         >
                           <Trash2 size={12} /> Delete
                         </button>
