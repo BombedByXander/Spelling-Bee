@@ -320,15 +320,19 @@ const ModerateGame = ({ userId, activeSound, activeFont, keyboardLayout, keySize
                   : "text-destructive border-destructive/50 bg-destructive/10";
               }
             }
-            return (
-              <span
-                key={i}
-                className={`inline-flex items-center justify-center w-6 h-7 sm:w-7 sm:h-8 text-[11px] sm:text-sm font-mono font-bold border rounded transition-all duration-150 ${colorClass}`}
-                style={tileStyle}
-              >
-                {typed || "·"}
-              </span>
-            );
+                const theFilesActive = getActiveFunboxModifiers().includes("the_files");
+                const content = theFilesActive && /[a-z0-9]/i.test(char) ? (
+                  <span style={{ color: "#000" }}>■</span>
+                ) : (typed || "·");
+                return (
+                  <span
+                    key={i}
+                    className={`inline-flex items-center justify-center w-6 h-7 sm:w-7 sm:h-8 text-[11px] sm:text-sm font-mono font-bold border rounded transition-all duration-150 ${colorClass}`}
+                    style={tileStyle}
+                  >
+                    {content}
+                  </span>
+                );
           })}
         </div>}
         {!hideLiveFeedback && (

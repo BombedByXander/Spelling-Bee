@@ -301,6 +301,7 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
           <div className="flex flex-wrap justify-center gap-[2px] sm:gap-1 mb-2">
             {resolvedWord.primary.split("").map((char, i) => {
               const typed = input[i];
+              const theFilesActive = getActiveFunboxModifiers().includes("the_files");
               let colorClass = "text-muted-foreground/30 border-border/40";
               let tileStyle: React.CSSProperties | undefined;
               if (typed) {
@@ -330,13 +331,16 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
                     : "text-destructive border-destructive/50 bg-destructive/10";
                 }
               }
+              const content = theFilesActive && /[a-z0-9]/i.test(char) ? (
+                <span style={{ color: "#000" }}>■</span>
+              ) : (typed || "·");
               return (
                 <span
                   key={i}
                   className={`inline-flex items-center justify-center w-6 h-7 sm:w-7 sm:h-8 text-[11px] sm:text-sm font-mono font-bold border rounded transition-all duration-150 ${colorClass}`}
                   style={tileStyle}
                 >
-                  {typed || "·"}
+                  {content}
                 </span>
               );
             })}
@@ -353,15 +357,25 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
       <div className={`relative w-full max-w-2xl px-1 game-input-wrap ${shaking ? "animate-shake" : ""}`}>
         {rgbOverlayActive && input.length > 0 && (
           <div className="absolute inset-0 pointer-events-none px-4 sm:px-6 py-3 sm:py-4 font-mono text-base sm:text-lg md:text-xl leading-[1.35] whitespace-nowrap overflow-hidden">
-            {input.split("").map((typedChar, i) => {
-              const isCorrectChar = liveFeedbackCharMatches(typedChar, i, currentWord);
-              const color = `hsl(${(i * 42) % 360} 95% 65%)`;
-              return (
-                <span key={`input-char-${i}`} style={{ color }}>
-                  {typedChar}
-                </span>
-              );
-            })}
+            {(() => {
+              const theFilesActive = getActiveFunboxModifiers().includes("the_files");
+              return input.split("").map((typedChar, i) => {
+                const isCorrectChar = liveFeedbackCharMatches(typedChar, i, currentWord);
+                const color = `hsl(${(i * 42) % 360} 95% 65%)`;
+                if (theFilesActive && /[a-z0-9]/i.test(typedChar)) {
+                  return (
+                    <span key={`input-char-${i}`} style={{ color: "#000" }}>
+                      ■
+                    </span>
+                  );
+                }
+                return (
+                  <span key={`input-char-${i}`} style={{ color }}>
+                    {typedChar}
+                  </span>
+                );
+              });
+            })()}
           </div>
         )}
         {showCustomCaret && (
