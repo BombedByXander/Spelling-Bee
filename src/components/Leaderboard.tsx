@@ -84,17 +84,40 @@ const Leaderboard = ({ open, onClose }: Props) => {
       supabase.from("all_time_wpm_leaderboard").select("*").order("rank", { ascending: true }).limit(50),
       supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
     ]);
-
-    if (error || !data) {
-      // fallback to weekly view
-      const fallback = await supabase.from("weekly_leaderboard").select("*").order("rank", { ascending: true }).limit(50);
-      if (fallback.data) {
-        const castedEntries = fallback.data as unknown as LeaderboardEntry[];
-        setEntries(castedEntries);
-      }
-    } else {
-      const castedEntries = data as unknown as LeaderboardEntry[];
+    let castedEntries: LeaderboardEntry[] = [];
+    if (!error && data && Array.isArray(data) && data.length > 0) {
+      castedEntries = data as unknown as LeaderboardEntry[];
       setEntries(castedEntries);
+    } else {
+      // fallback to weekly view first
+      const fallback = await supabase.from("weekly_leaderboard").select("*").order("rank", { ascending: true }).limit(50);
+      if (fallback.data && Array.isArray(fallback.data) && fallback.data.length > 0) {
+        castedEntries = fallback.data as unknown as LeaderboardEntry[];
+        setEntries(castedEntries);
+      } else {
+        // final fallback: build from user_best_wpm + profiles so everyone persisted is visible
+        const { data: ub } = await supabase.from("user_best_wpm").select("user_id, best_wpm, mode, modifiers").order("best_wpm", { ascending: false }).limit(50);
+        if (ub && Array.isArray(ub) && ub.length > 0) {
+          const ids = ub.map((r: any) => r.user_id);
+          const { data: profs } = await supabase.from("profiles").select("id, display_name, username, avatar_url").in("id", ids as any[]);
+          const profById: Record<string, any> = {};
+          (profs ?? []).forEach((p: any) => { profById[p.id] = p; });
+          const built = (ub as any[]).map((r: any, i: number) => ({
+            user_id: r.user_id,
+            display_name: profById[r.user_id]?.display_name ?? "(unknown)",
+            username: profById[r.user_id]?.username ?? null,
+            avatar_url: profById[r.user_id]?.avatar_url ?? null,
+            best_wpm: Number(r.best_wpm),
+            modifiers: Array.isArray(r.modifiers) ? r.modifiers : [],
+            mode: r.mode ?? null,
+            rank: i + 1,
+          } as LeaderboardEntry));
+          castedEntries = built;
+          setEntries(castedEntries);
+        } else {
+          setEntries([]);
+        }
+      }
     }
     // If user is signed in, fetch their personal row and append if not in top list
     try {
