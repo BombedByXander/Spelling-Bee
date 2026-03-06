@@ -119,92 +119,7 @@ const Leaderboard = ({ open, onClose }: Props) => {
         }
       }
     }
-    // Ensure leaderboard includes any persisted bests not present in the view: merge with user_best_wpm top 50
-    try {
-      const { data: ubAll } = await supabase.from('user_best_wpm').select('user_id, best_wpm, mode, modifiers').order('best_wpm', { ascending: false }).limit(50);
-      if (ubAll && Array.isArray(ubAll) && ubAll.length > 0) {
-        // fetch profiles for any ids not already present
-        const missingIds = ubAll.map((r: any) => r.user_id).filter((id: string) => !castedEntries.find((e) => e.user_id === id));
-        if (missingIds.length > 0) {
-          const { data: profsAll } = await supabase.from('profiles').select('id, display_name, username, avatar_url').in('id', missingIds as any[]);
-          const profByIdAll: Record<string, any> = {};
-          (profsAll ?? []).forEach((p: any) => { profByIdAll[p.id] = p; });
-          const builtExtra = (ubAll as any[])
-            .filter((r: any) => missingIds.includes(r.user_id))
-            .map((r: any) => ({
-              user_id: r.user_id,
-              display_name: profByIdAll[r.user_id]?.display_name ?? '(unknown)',
-              username: profByIdAll[r.user_id]?.username ?? null,
-              avatar_url: profByIdAll[r.user_id]?.avatar_url ?? null,
-              best_wpm: Number(r.best_wpm),
-              modifiers: Array.isArray(r.modifiers) ? r.modifiers : [],
-              mode: r.mode ?? null,
-            } as LeaderboardEntry));
-          // merge and resort by best_wpm
-          const merged = [...castedEntries, ...builtExtra];
-          merged.sort((a, b) => (Number(b.best_wpm ?? -Infinity) - Number(a.best_wpm ?? -Infinity)));
-          // reassign ranks
-          const withRanks = merged.map((m, i) => ({ ...m, rank: i + 1 }));
-          setEntries(withRanks.slice(0, 50));
-          castedEntries = withRanks.slice(0, 50);
-        }
-      }
-    } catch {
-      // ignore any merge errors and continue
-    }
-
-    // If user is signed in, fetch their personal row and append if not in top list
-    try {
-      const { data: userResp } = await supabase.auth.getUser();
-      const uid = userResp?.user?.id ?? null;
-      if (uid) {
-        const already = (data ?? []).find((r: any) => r.user_id === uid) ?? null;
-        if (!already) {
-          // try to fetch from all_time view first, fallback to user_best_wpm
-          let userRow: any = null;
-          try {
-            const { data: ur } = await supabase.from('all_time_wpm_leaderboard').select('*').eq('user_id', uid).maybeSingle();
-            userRow = ur ?? null;
-          } catch {
-            // ignore
-          }
-          if (!userRow) {
-            const { data: ub } = await supabase.from('user_best_wpm').select('user_id, best_wpm, mode, modifiers').eq('user_id', uid).maybeSingle();
-            if (ub && ub.user_id) {
-              // fetch display name from profiles
-              const { data: prof } = await supabase.from('profiles').select('display_name, username, avatar_url').eq('id', uid).maybeSingle();
-              // compute rank by counting users with higher best_wpm
-              let computedRank: number | null = null;
-              try {
-                const { count } = await supabase.from('user_best_wpm').select('user_id', { count: 'exact' }).gt('best_wpm', ub.best_wpm);
-                computedRank = (count ?? 0) + 1;
-              } catch {
-                computedRank = null;
-              }
-              userRow = {
-                user_id: ub.user_id,
-                display_name: (prof && prof.display_name) ? prof.display_name : 'You',
-                username: prof?.username ?? null,
-                avatar_url: prof?.avatar_url ?? null,
-                best_wpm: ub.best_wpm,
-                modifiers: Array.isArray(ub.modifiers) ? ub.modifiers : [],
-                mode: ub.mode ?? null,
-                rank: computedRank,
-              } as any;
-            }
-          }
-          if (userRow) {
-            setEntries((prev) => {
-              // avoid duplicates
-              if (prev.find((r) => r.user_id === userRow.user_id)) return prev;
-              return [...prev, userRow];
-            });
-          }
-        }
-      }
-    } catch {
-      // ignore auth errors
-    }
+    // (Reverted merge/append logic) Use only the canonical leaderboard views.
     if (roles) {
       setAdminIds(new Set(roles.map((row: any) => row.user_id)));
     }
@@ -214,11 +129,7 @@ const Leaderboard = ({ open, onClose }: Props) => {
   useEffect(() => {
     if (!open) return;
     fetchLeaderboard();
-    const channel = supabase
-      .channel("leaderboard-updates")
-      .on("postgres_changes", { event: "*", schema: "public", table: "user_best_wpm" }, () => fetchLeaderboard())
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return undefined;
   }, [open]);
 
   if (!open) return null;
