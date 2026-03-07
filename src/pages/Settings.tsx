@@ -5,7 +5,7 @@ import { KeyboardLayout } from "@/components/KeyboardMap";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { monkeytypeThemes } from "@/data/monkeytypeThemes";
-import { animatedThemes } from "@/data/animatedThemes";
+import { themes } from "@/data/themes";
 import { ALL_SOUNDS, getSoundPack } from "@/lib/sounds";
 import { ALL_FONTS, applyFont, getFontPack } from "@/lib/fonts";
 import { getLevelFromXp } from "@/lib/level";
@@ -230,13 +230,13 @@ const Settings = () => {
     getStoredThemePreset() === CUSTOM_THEME_PRESET ? "custom" : "preset"
   );
   const [activeSettingsSection, setActiveSettingsSection] = useState<SettingsSectionId>("section-gameplay");
-  const [activePresetThemeTab, setActivePresetThemeTab] = useState<"all" | "animated">("all");
+  const [activePresetThemeTab, setActivePresetThemeTab] = useState<"all">("all");
   const [activeThemePresetSection, setActiveThemePresetSection] = useState<"library" | "randomize" | "visual">("library");
   const [activeFunboxModifiers, setActiveFunboxModifiers] = useState<string[]>(() =>
     getActiveFunboxModifiers().filter((modifier) => VALID_FUNBOX_MODIFIER_IDS.has(modifier))
   );
 
-  const presetThemesForActiveTab = activePresetThemeTab === "animated" ? animatedThemes : monkeytypeThemes;
+  const presetThemesForActiveTab = [...monkeytypeThemes, ...themes];
 
   const filteredThemes = presetThemesForActiveTab.filter((theme) =>
     theme.name.replace(/_/g, " ").toLowerCase().includes(themeSearch.toLowerCase().trim())

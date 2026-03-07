@@ -1,4 +1,4 @@
-import { animatedThemes } from "@/data/animatedThemes";
+import { themes } from "@/data/themes";
 import { monkeytypeThemes } from "@/data/monkeytypeThemes";
 import { applyThemePreset, CUSTOM_THEME_PRESET, DEFAULT_THEME_PRESET, getEffectiveThemePreset, RUNTIME_THEME_PRESET_KEY } from "@/lib/theme";
 
@@ -10,13 +10,13 @@ export type RandomizeThemeMode = "off" | "favorite" | "light" | "dark" | "auto" 
 const ALL_PRESET_NAMES = [
   DEFAULT_THEME_PRESET,
   ...monkeytypeThemes.map((theme) => theme.name),
-  ...animatedThemes.map((theme) => theme.name),
+  ...themes.map((theme) => theme.name),
 ];
 
 const ALL_THEME_BG = new Map<string, string>([
   [DEFAULT_THEME_PRESET, "#000000"],
   ...monkeytypeThemes.map((theme) => [theme.name, theme.bg] as const),
-  ...animatedThemes.map((theme) => [theme.name, theme.bg] as const),
+  ...themes.map((theme) => [theme.name, theme.bg] as const),
 ]);
 
 const unique = <T,>(items: T[]) => Array.from(new Set(items));

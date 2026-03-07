@@ -1,5 +1,5 @@
 import { monkeytypeThemes } from "@/data/monkeytypeThemes";
-import { animatedThemes } from "@/data/animatedThemes";
+import { themes } from "@/data/themes";
 
 export const THEME_PRESET_KEY = "spelldown-theme-preset";
 export const DEFAULT_THEME_PRESET = "default";
@@ -15,8 +15,8 @@ export const EASTER_BUNNY_BOUNCE_KEY = "spelldown-easter-bunny-bounce";
 export const EASTER_BUNNY_TOGGLE_EVENT = "spelldown-easter-bunny-toggle";
 export const THEME_CHANGED_EVENT = "spelldown-theme-changed";
 const VISUAL_ENVIRONMENT_CLASSES = ["env-morning", "env-day", "env-evening", "env-night"];
-const ANIMATED_THEME_CLASS = "theme-animated-collection";
-const ALL_THEME_PRESETS = [...monkeytypeThemes, ...animatedThemes];
+const ANIMATED_THEME_CLASS = "";
+const ALL_THEME_PRESETS = [...monkeytypeThemes, ...themes];
 const LEGACY_THEME_PRESET_ALIASES: Record<string, string> = {
   "rgb effects": "holo grid",
   "rgb_effects": "holo grid",
@@ -98,14 +98,8 @@ const DECORATIVE_THEME_CLASS_BY_NAME: Record<string, string> = {
 };
 
 const DECORATIVE_THEME_CLASSES = Object.values(DECORATIVE_THEME_CLASS_BY_NAME);
-const ANIMATED_THEME_PRESET_NAMES = animatedThemes.map((theme) => theme.name);
-const ANIMATED_THEME_PRESET_SET = new Set(ANIMATED_THEME_PRESET_NAMES);
-
-export const animatedThemePresetNames = ANIMATED_THEME_PRESET_NAMES;
-
-export const isAnimatedThemePreset = (presetName: string) => {
-  return ANIMATED_THEME_PRESET_SET.has(presetName);
-};
+export const animatedThemePresetNames: string[] = [];
+export const isAnimatedThemePreset = (_: string) => false;
 
 const normalizeHex = (hex: string) => {
   const clean = hex.replace("#", "").trim();
