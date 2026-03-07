@@ -376,9 +376,9 @@ const Index = () => {
             />
           </div>
 
-          <div className="dock-shell rounded-[26px] border border-white/25 bg-card/45 backdrop-blur-xl px-3 py-2.5 shadow-[0_10px_28px_rgba(0,0,0,0.25)] transform transition-all duration-300 ease-out translate-y-4 opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
+          <div className="dock-shell rounded-[26px] border border-white/20 bg-card/45 backdrop-blur-xl transform transition-all duration-300 ease-out translate-y-4 opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <QuickAction label="Post">
                   <FeedbackButton userId={user?.id} inline />
                 </QuickAction>
@@ -387,9 +387,9 @@ const Index = () => {
                 </QuickAction>
               </div>
 
-              <div className="w-px h-6 bg-border/40" />
+              <div className="divider-vertical" />
 
-              <div className="flex items-center gap-2 flex-wrap justify-center max-w-[78vw] sm:max-w-none">
+              <div className="flex items-center gap-3 flex-wrap justify-center max-w-[78vw] sm:max-w-none group">
                 <QuickAction label="Info">
                   <InfoButton inline />
                 </QuickAction>
@@ -436,9 +436,9 @@ const Index = () => {
                 </QuickAction>
               </div>
 
-              <div className="w-px h-6 bg-border/40" />
+              <div className="divider-vertical" />
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 {user ? (
                   <>
                     <button
