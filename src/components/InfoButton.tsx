@@ -45,8 +45,7 @@ const InfoButton = ({ inline }: Props) => {
               <p className="text-[10px] text-muted-foreground">on Discord</p>
             </div>
           </div>
-          <p className="mt-3 text-[10px] text-muted-foreground font-mono text-center">v26.1</p>
-          <p className="mt-1 text-[10px] text-muted-foreground font-mono text-center italic">"Why the huge version jump", you may be asking — it's sorta inspired by iOS, the year 2026 (isolated to 26) and the update.</p>
+          <p className="mt-3 text-[10px] text-muted-foreground font-mono text-center">v26.2</p>
         </div>
 
         <div className="mt-6 pt-4 border-t border-border">
