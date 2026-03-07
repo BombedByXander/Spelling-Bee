@@ -236,7 +236,9 @@ const Settings = () => {
     getActiveFunboxModifiers().filter((modifier) => VALID_FUNBOX_MODIFIER_IDS.has(modifier))
   );
 
-  const presetThemesForActiveTab = [...monkeytypeThemes, ...themes];
+  const presetThemesForActiveTab = [...monkeytypeThemes, ...themes].slice().sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+  );
 
   const filteredThemes = presetThemesForActiveTab.filter((theme) =>
     theme.name.replace(/_/g, " ").toLowerCase().includes(themeSearch.toLowerCase().trim())
@@ -1098,16 +1100,7 @@ const Settings = () => {
                       >
                         all
                       </button>
-                      <button
-                        onClick={() => setActivePresetThemeTab("animated")}
-                        className={`text-[10px] font-mono px-3 py-1 rounded-md border ${
-                          activePresetThemeTab === "animated"
-                            ? "border-border bg-secondary text-foreground"
-                            : "border-border/60 bg-card/50 text-muted-foreground"
-                        }`}
-                      >
-                        animated ({animatedThemePresetNames.length})
-                      </button>
+                      {/* animated themes removed; showing all presets alphabetically */}
                     </div>
 
                     <div className="max-h-[420px] overflow-y-auto rounded-md border border-border/60 bg-black/30 p-2">
