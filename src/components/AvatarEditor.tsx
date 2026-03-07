@@ -35,6 +35,19 @@ export default function AvatarEditor({ file, onCancel, onUpload }: Props) {
     return () => node && node.removeEventListener("wheel", onWheel as any);
   }, []);
 
+  // Auto-fit image so something is visible immediately
+  const onImgLoad = () => {
+    const img = imgRef.current;
+    const container = containerRef.current;
+    if (!img || !container) return;
+    const cRect = container.getBoundingClientRect();
+    const scaleFit = Math.max(cRect.width / img.naturalWidth, cRect.height / img.naturalHeight);
+    // keep scale within allowed range
+    const initial = Math.max(0.5, Math.min(3, scaleFit));
+    setScale(initial);
+    setOffset({ x: 0, y: 0 });
+  };
+
   const onPointerDown: React.PointerEventHandler = (e) => {
     (e.target as Element).setPointerCapture(e.pointerId);
     dragging.current = true;
@@ -129,6 +142,7 @@ export default function AvatarEditor({ file, onCancel, onUpload }: Props) {
               src={url.current}
               alt="avatar preview"
               draggable={false}
+              onLoad={onImgLoad}
               style={{
                 position: "absolute",
                 left: `calc(50% + ${offset.x}px)`,
@@ -142,22 +156,19 @@ export default function AvatarEditor({ file, onCancel, onUpload }: Props) {
               }}
             />
           )}
+          {/* Circular cutout overlay (darken outside, highlight circle) */}
+          <div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: "radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 48%, rgba(0,0,0,0.55) 49%)",
+            }}
+          />
         </div>
 
         <div className="mt-3 flex items-center gap-3">
-          <div className="flex items-center gap-2 w-full">
-            <label className="text-xs text-muted-foreground">Zoom</label>
-            <input
-              type="range"
-              min={0.5}
-              max={3}
-              step={0.01}
-              value={scale}
-              onChange={(e) => setScale(Number(e.target.value))}
-              className="w-full"
-            />
-          </div>
-          <div className="text-xs text-muted-foreground">{isGif ? "Animated GIF (no crop)" : "PNG/JPEG crop"}</div>
+          <div className="text-xs text-muted-foreground">Use mouse wheel to zoom, drag to pan.</div>
+          <div className="ml-auto text-xs text-muted-foreground">{isGif ? "Animated GIF (uploaded as-is)" : "PNG/JPEG crop"}</div>
         </div>
       </div>
     </div>
