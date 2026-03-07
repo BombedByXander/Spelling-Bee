@@ -815,6 +815,48 @@ body.theme-easter-garden::after {
   filter: blur(0.45px);
 }
 
+/* Disable animated theme visuals and remove theme pseudo-element decorations */
+body.theme-aurora-vault::before,
+body.theme-aurora-vault::after,
+body.theme-holo-grid::before,
+body.theme-holo-grid::after,
+body.theme-ember-cathedral::before,
+body.theme-ember-cathedral::after,
+body.theme-ocean-sigil::before,
+body.theme-ocean-sigil::after,
+body.theme-midnight-circuitry::before,
+body.theme-midnight-circuitry::after,
+body.theme-prism-dunes::before,
+body.theme-prism-dunes::after,
+body.theme-lotus-eclipse::before,
+body.theme-lotus-eclipse::after,
+body.theme-solar-runes::before,
+body.theme-solar-runes::after,
+body.theme-void-geometry::before,
+body.theme-void-geometry::after,
+body.theme-frost-shrine::before,
+body.theme-frost-shrine::after,
+body.theme-easter-garden::before,
+body.theme-easter-garden::after,
+body.theme-ultra-black::before,
+body.theme-ultra-black::after,
+body.theme-space::before,
+body.theme-space::after {
+  display: none !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  animation: none !important;
+}
+
+/* Disable animations/transitions inside any theme-prefixed body to remove animated themes entirely */
+body[class^="theme-"] *,
+body[class*=" theme-"] * {
+  animation: none !important;
+  transition: none !important;
+}
+
 .funbox-round-round-baby {
   display: inline-block;
   animation: funbox-round-round-baby 2.8s linear infinite;
