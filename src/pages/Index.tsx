@@ -45,18 +45,12 @@ const isAnnouncementsMissingError = (error: unknown) => {
 type GameMode = "master" | "custom" | "beginner" | "novice" | "moderate" | "genius";
 
 interface QuickActionProps {
-  label: string;
   children: ReactNode;
 }
 
-const QuickAction = ({ label, children }: QuickActionProps) => (
-  <div className="inline-flex min-w-[46px] flex-col items-center justify-start gap-1">
+const QuickAction = ({ children }: QuickActionProps) => (
+  <div className="inline-flex min-w-[46px] items-center justify-center">
     {children}
-    <span
-      className="text-[7px] leading-none font-mono text-muted-foreground whitespace-nowrap text-center select-none"
-    >
-      {label}
-    </span>
   </div>
 );
 
@@ -378,67 +372,78 @@ const Index = () => {
 
           <div className="dock-shell overflow-hidden rounded-[26px] border border-white/20 bg-card/45 backdrop-blur-xl transform transition-all duration-300 ease-out translate-y-4 opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <QuickAction label="Post">
-                  <FeedbackButton userId={user?.id} inline />
-                </QuickAction>
-                <QuickAction label="Board">
-                  <FeedbackInboxButton isAdmin={isAdmin} inline />
-                </QuickAction>
+              <div className="flex flex-col items-center">
+                <div className="flex items-center gap-3">
+                  <QuickAction>
+                    <FeedbackButton userId={user?.id} inline />
+                  </QuickAction>
+                  <QuickAction>
+                    <FeedbackInboxButton isAdmin={isAdmin} inline />
+                  </QuickAction>
+                </div>
+                <div className="mt-1 text-[10px] leading-none font-mono text-muted-foreground select-none text-center">
+                  Feedback
+                </div>
               </div>
 
               <div className="divider-vertical" />
 
-              <div className="flex items-center gap-3 flex-wrap justify-center max-w-[78vw] sm:max-w-none group">
-                <QuickAction label="Info">
-                  <InfoButton inline />
-                </QuickAction>
-                <QuickAction label="Leaders">
-                  <button
-                    onClick={() => setShowLeaderboard(true)}
-                    className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                    title="Leaderboard"
-                  >
-                    <Trophy size={16} />
-                  </button>
-                </QuickAction>
-                <QuickAction label="Settings">
-                  <button
-                    onClick={() => navigate("/settings", { state: { backgroundLocation: location } })}
-                    className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                    title="Settings"
-                  >
-                    <Settings size={16} />
-                  </button>
-                </QuickAction>
-                <QuickAction label="Pass">
-                  <button
-                    onClick={() => navigate("/pass", { state: { backgroundLocation: location } })}
-                    className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                    title="Season Pass"
-                  >
-                    <CalendarDays size={16} />
-                  </button>
-                </QuickAction>
-                {gameMode === "custom" && (
-                  <QuickAction label="Custom">
+              <div className="flex flex-col items-center">
+                <div className="flex items-center gap-3 flex-wrap justify-center max-w-[78vw] sm:max-w-none">
+                  <QuickAction>
+                    <InfoButton inline />
+                  </QuickAction>
+                  <QuickAction>
                     <button
-                      onClick={() => setShowCustomSettings(true)}
-                      className="dock-button p-2 rounded-full bg-primary/18 border border-primary/45 text-primary hover:bg-primary/28 hover:border-primary/65 transition-colors"
-                      title="Custom Settings"
+                      onClick={() => setShowLeaderboard(true)}
+                      className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
+                      title="Leaderboard"
                     >
-                      <Wrench size={16} />
+                      <Trophy size={16} />
                     </button>
                   </QuickAction>
-                )}
-                <QuickAction label="Sound">
-                  <MuteButton muted={muted} onToggle={handleMuteToggle} />
-                </QuickAction>
+                  <QuickAction>
+                    <button
+                      onClick={() => navigate("/settings", { state: { backgroundLocation: location } })}
+                      className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
+                      title="Settings"
+                    >
+                      <Settings size={16} />
+                    </button>
+                  </QuickAction>
+                  <QuickAction>
+                    <button
+                      onClick={() => navigate("/pass", { state: { backgroundLocation: location } })}
+                      className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
+                      title="Season Pass"
+                    >
+                      <CalendarDays size={16} />
+                    </button>
+                  </QuickAction>
+                  {gameMode === "custom" && (
+                    <QuickAction>
+                      <button
+                        onClick={() => setShowCustomSettings(true)}
+                        className="dock-button p-2 rounded-full bg-primary/18 border border-primary/45 text-primary hover:bg-primary/28 hover:border-primary/65 transition-colors"
+                        title="Custom Settings"
+                      >
+                        <Wrench size={16} />
+                      </button>
+                    </QuickAction>
+                  )}
+                  <QuickAction>
+                    <MuteButton muted={muted} onToggle={handleMuteToggle} />
+                  </QuickAction>
+                </div>
+                <div className="mt-1 text-[10px] leading-none font-mono text-muted-foreground select-none text-center">
+                  Actions
+                </div>
               </div>
 
               <div className="divider-vertical" />
 
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col items-center">
+                <div className="flex items-center gap-3">
                 {user ? (
                   <>
                     <button
@@ -476,6 +481,10 @@ const Index = () => {
                     <LogIn size={16} />
                   </button>
                 )}
+                </div>
+                <div className="mt-1 text-[10px] leading-none font-mono text-muted-foreground select-none text-center">
+                  Account Controls
+                </div>
               </div>
             </div>
           </div>
