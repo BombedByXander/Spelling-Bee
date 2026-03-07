@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Star, Trophy, Target, Flame, Camera, Calendar, RefreshCw, Medal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import AvatarEditor from "@/components/AvatarEditor";
+import { useEffect, useState } from "react";
+import { ArrowLeft, Star, Trophy, Target, Flame, Camera, Calendar, RefreshCw, Medal } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { getLevelFromXp } from "@/lib/level";
 
 interface ProfileData {
@@ -43,6 +47,7 @@ const PersonalDashboard = ({ open, onClose, userId, fullPage = false }: Props) =
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [avatarTempFile, setAvatarTempFile] = useState<File | null>(null);
   const [editingName, setEditingName] = useState(false);
   const [editingUsername, setEditingUsername] = useState(false);
   const [newName, setNewName] = useState("");
@@ -147,15 +152,26 @@ const PersonalDashboard = ({ open, onClose, userId, fullPage = false }: Props) =
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // show editor modal for non-gif images; for gif allow direct upload after confirm
+    setAvatarTempFile(file);
+  };
+
+  const doUploadAvatarFile = async (fileToUpload: File) => {
     setUploading(true);
-    const ext = file.name.split(".").pop();
-    const path = `${userId}/avatar.${ext}`;
-    await supabase.storage.from("avatars").upload(path, file, { upsert: true });
-    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-    const avatarUrl = data.publicUrl + "?t=" + Date.now();
-    await supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", userId);
-    setProfile(p => p ? { ...p, avatar_url: avatarUrl } : p);
-    setUploading(false);
+    try {
+      const ext = fileToUpload.name.split('.').pop() || 'png';
+      const path = `${userId}/avatar.${ext}`;
+      await supabase.storage.from('avatars').upload(path, fileToUpload, { upsert: true });
+      const { data } = supabase.storage.from('avatars').getPublicUrl(path);
+      const avatarUrl = data.publicUrl + '?t=' + Date.now();
+      await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('id', userId);
+      setProfile(p => p ? { ...p, avatar_url: avatarUrl } : p);
+    } catch (err) {
+      console.error('Avatar upload failed', err);
+    } finally {
+      setUploading(false);
+      setAvatarTempFile(null);
+    }
   };
 
   const handleNameSave = async () => {
@@ -222,6 +238,13 @@ const PersonalDashboard = ({ open, onClose, userId, fullPage = false }: Props) =
             )}
           </div>
         </div>
+        {avatarTempFile && (
+          <AvatarEditor
+            file={avatarTempFile}
+            onCancel={() => setAvatarTempFile(null)}
+            onUpload={(f) => doUploadAvatarFile(f)}
+          />
+        )}
 
         <div className={`flex-1 ${fullPage ? "overflow-visible" : "overflow-y-auto min-h-0"} px-5 py-4 space-y-5`}>
           {loading ? (
@@ -253,17 +276,17 @@ const PersonalDashboard = ({ open, onClose, userId, fullPage = false }: Props) =
               {/* Avatar + Name */}
               <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-4 items-center rounded-xl bg-card/30 border border-border/40 p-4">
                 <div className="relative group mx-auto md:mx-0">
-                  <div className="w-20 h-20 rounded-full bg-card border-2 border-border overflow-hidden flex items-center justify-center">
-                    {profile.avatar_url ? (
-                      <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-3xl font-bold text-muted-foreground font-mono">{profile.display_name[0]?.toUpperCase()}</span>
-                    )}
-                  </div>
-                  <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-                    <Camera size={16} className="text-foreground" />
-                    <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
-                  </label>
+                    <div className="w-20 h-20 rounded-full bg-card border-2 border-border overflow-hidden flex items-center justify-center">
+                      {profile.avatar_url ? (
+                        <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-3xl font-bold text-muted-foreground font-mono">{profile.display_name[0]?.toUpperCase()}</span>
+                      )}
+                    </div>
+                    <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                      <Camera size={16} className="text-foreground" />
+                      <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+                    </label>
                 </div>
                 <div className="flex-1">
                   {/* Display Name */}
