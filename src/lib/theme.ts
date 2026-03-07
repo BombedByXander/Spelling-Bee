@@ -244,7 +244,10 @@ export const applyVisualEnhancements = () => {
 export const applyThemePreset = (presetName: string) => {
   const resolvedPresetName = LEGACY_THEME_PRESET_ALIASES[presetName] || presetName;
   const root = document.documentElement;
-  document.body.classList.remove(...DECORATIVE_THEME_CLASSES, ANIMATED_THEME_CLASS);
+  // Avoid passing empty strings to classList.remove (ANIMATED_THEME_CLASS may be empty)
+  const toRemove = [...DECORATIVE_THEME_CLASSES];
+  if (ANIMATED_THEME_CLASS) toRemove.push(ANIMATED_THEME_CLASS);
+  document.body.classList.remove(...toRemove);
   const normalizedPresetName = resolvedPresetName.trim().toLowerCase().replace(/_/g, " ");
 
   if (isDefaultThemePreset(resolvedPresetName)) {
@@ -318,7 +321,7 @@ export const applyThemePreset = (presetName: string) => {
   root.style.setProperty("--sidebar-border", hexToHslTokens(selectedTheme.sub));
   root.style.setProperty("--sidebar-ring", hexToHslTokens(selectedTheme.caret));
 
-  if (resolvedPresetName !== CUSTOM_THEME_PRESET && isAnimatedThemePreset(resolvedPresetName)) {
+  if (resolvedPresetName !== CUSTOM_THEME_PRESET && isAnimatedThemePreset(resolvedPresetName) && ANIMATED_THEME_CLASS) {
     document.body.classList.add(ANIMATED_THEME_CLASS);
   }
 
