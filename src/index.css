@@ -476,6 +476,19 @@ body.theme-space .gesture-bar:hover {
   background-color: rgba(255,255,255,0.28) !important;
 }
 
+/* Ensure gesture bar and dock dividers remain visible across themes
+   Use the foreground variable so the elements adapt to light/dark themes. */
+.gesture-bar {
+  background-color: hsl(var(--foreground) / 0.12);
+}
+.gesture-bar:hover {
+  background-color: hsl(var(--foreground) / 0.18);
+}
+
+.divider-vertical {
+  background: linear-gradient(180deg, hsl(var(--foreground) / 0.06), hsl(var(--foreground) / 0.03));
+}
+
 body.theme-easter-garden::before {
   width: min(58vw, 900px);
   height: min(58vw, 900px);
