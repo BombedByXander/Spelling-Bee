@@ -36,6 +36,13 @@ const KEYBOARD_LAYOUTS: { label: string; value: KeyboardLayout }[] = [
 const CustomizeMenu = ({ open, onClose, restartKeybind, onKeybindChange, onRestart, chargMode, onChargToggle, keyboardLayout, onKeyboardLayoutChange, keySize, onKeySizeChange, volume, onVolumeChange, isDarkTheme, onThemeToggle }: Props) => {
   const [recording, setRecording] = useState(false);
 
+  const SectionHeader = ({ title }: { title: string }) => (
+    <div className="flex items-center gap-3">
+      <span className="text-[11px] font-mono text-primary/80 uppercase tracking-wider">{title}</span>
+      <div className="flex-1 h-px bg-border/60" />
+    </div>
+  );
+
   useEffect(() => {
     if (!recording) return;
     const handler = (e: KeyboardEvent) => {
@@ -74,6 +81,7 @@ const CustomizeMenu = ({ open, onClose, restartKeybind, onKeybindChange, onResta
         </div>
 
         <div className="px-5 py-4 space-y-4 overflow-y-auto">
+          <SectionHeader title="Keyboard" />
           {/* Keyboard Layout */}
           <div className="px-4 py-3 rounded-xl bg-card/40 border border-border/40">
             <div className="flex items-center gap-3 mb-3">
@@ -100,6 +108,7 @@ const CustomizeMenu = ({ open, onClose, restartKeybind, onKeybindChange, onResta
             </div>
           </div>
 
+          <SectionHeader title="Keymap" />
           {/* Keyboard Size */}
           <div className="px-4 py-3 rounded-xl bg-card/40 border border-border/40">
             <div className="flex items-center gap-3 mb-2">
@@ -126,6 +135,7 @@ const CustomizeMenu = ({ open, onClose, restartKeybind, onKeybindChange, onResta
             </div>
           </div>
 
+          <SectionHeader title="Controls" />
           {/* Restart Keybind */}
           <div className="px-4 py-3 rounded-xl bg-card/40 border border-border/40">
             <div className="flex items-center gap-3 mb-2">
@@ -160,6 +170,7 @@ const CustomizeMenu = ({ open, onClose, restartKeybind, onKeybindChange, onResta
             </div>
           </div>
 
+          <SectionHeader title="Modifiers" />
           {/* Charg Mode */}
           <button
             onClick={() => onChargToggle(!chargMode)}
@@ -175,6 +186,7 @@ const CustomizeMenu = ({ open, onClose, restartKeybind, onKeybindChange, onResta
             </span>
           </button>
 
+          <SectionHeader title="Audio" />
           {/* Volume Control */}
           <div className="px-4 py-3 rounded-xl bg-card/40 border border-border/40">
             <div className="flex items-center gap-3 mb-2">
@@ -202,6 +214,7 @@ const CustomizeMenu = ({ open, onClose, restartKeybind, onKeybindChange, onResta
             </div>
           </div>
 
+          <SectionHeader title="Appearance" />
           {/* Theme Toggle */}
           <button
             onClick={() => {
@@ -229,6 +242,7 @@ const CustomizeMenu = ({ open, onClose, restartKeybind, onKeybindChange, onResta
             </span>
           </button>
 
+          <SectionHeader title="Account" />
           {/* Reset Statistics */}
           <button
             onClick={() => {
