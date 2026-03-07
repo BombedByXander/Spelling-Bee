@@ -524,6 +524,28 @@ body.theme-easter-garden::after {
   77% { opacity: 0.95; filter: contrast(1.5) brightness(1.1); }
 }
 
+/* Override: make dock and buttons 3px larger (keeps original proportions) */
+.dock-shell {
+  padding-left: calc(0.75rem + 3px) !important;
+  padding-right: calc(0.75rem + 3px) !important;
+  padding-top: calc(0.5rem + 3px) !important;
+  padding-bottom: calc(0.75rem + 3px) !important;
+}
+
+.dock-shell .dock-button {
+  padding: calc(0.5rem + 3px) !important;
+}
+
+@media (max-width: 640px) {
+  .dock-shell {
+    padding-left: calc(0.5rem + 3px) !important;
+    padding-right: calc(0.5rem + 3px) !important;
+  }
+  .dock-shell .dock-button {
+    padding: calc(0.5rem + 3px) !important;
+  }
+}
+
 @keyframes funbox-neon-pulse {
   0%, 100% { filter: saturate(1.08) brightness(1.04); text-shadow: 0 0 8px rgba(120, 255, 195, 0.42), 0 0 18px rgba(120, 255, 195, 0.26); }
   50% { filter: saturate(1.24) brightness(1.16); text-shadow: 0 0 12px rgba(120, 255, 195, 0.64), 0 0 28px rgba(120, 255, 195, 0.38); }
