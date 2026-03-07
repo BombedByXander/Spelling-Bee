@@ -28,7 +28,9 @@ export default function AvatarEditor({ file, onCancel, onUpload }: Props) {
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      setScale((s) => Math.max(0.5, Math.min(3, s - e.deltaY * 0.0015)));
+      const newScale = Math.max(0.5, Math.min(3, scale - e.deltaY * 0.0015));
+      setScale(newScale);
+      setOffset((o) => clampOffset(o, newScale));
     };
     const node = containerRef.current;
     if (node) node.addEventListener("wheel", onWheel, { passive: false });
@@ -45,7 +47,8 @@ export default function AvatarEditor({ file, onCancel, onUpload }: Props) {
     // keep scale within allowed range
     const initial = Math.max(0.5, Math.min(3, scaleFit));
     setScale(initial);
-    setOffset({ x: 0, y: 0 });
+    // center and clamp
+    setOffset(clampOffset({ x: 0, y: 0 }, initial));
   };
 
   const onPointerDown: React.PointerEventHandler = (e) => {
@@ -59,7 +62,10 @@ export default function AvatarEditor({ file, onCancel, onUpload }: Props) {
     const dx = e.clientX - last.current.x;
     const dy = e.clientY - last.current.y;
     last.current = { x: e.clientX, y: e.clientY };
-    setOffset((o) => ({ x: o.x + dx, y: o.y + dy }));
+    setOffset((o) => {
+      const next = { x: o.x + dx, y: o.y + dy };
+      return clampOffset(next, scale);
+    });
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
@@ -116,6 +122,40 @@ export default function AvatarEditor({ file, onCancel, onUpload }: Props) {
     if (!blob) return;
     const outFile = new File([blob], "avatar.png", { type: "image/png" });
     onUpload(outFile);
+  };
+
+  // Clamp offset so the image always covers the container (no transparent edges visible)
+  const clampOffset = (candidate: { x: number; y: number }, forScale: number) => {
+    const img = imgRef.current;
+    const container = containerRef.current;
+    if (!img || !container) return { x: candidate.x, y: candidate.y };
+
+    const cRect = container.getBoundingClientRect();
+    const cW = cRect.width;
+    const cH = cRect.height;
+
+    const dispW = img.naturalWidth * forScale;
+    const dispH = img.naturalHeight * forScale;
+
+    const halfCw = cW / 2;
+    const halfCh = cH / 2;
+    const halfIw = dispW / 2;
+    const halfIh = dispH / 2;
+
+    const minX = halfCw - halfIw; // left edge <= 0
+    const maxX = halfIw - halfCw; // right edge >= cW
+    const minY = halfCh - halfIh;
+    const maxY = halfIh - halfCh;
+
+    const clamp1 = (v: number, lo: number, hi: number) => {
+      if (lo > hi) return 0; // image smaller than container in this axis -> center
+      return Math.max(lo, Math.min(hi, v));
+    };
+
+    return {
+      x: clamp1(candidate.x, minX, maxX),
+      y: clamp1(candidate.y, minY, maxY),
+    };
   };
 
   return (
