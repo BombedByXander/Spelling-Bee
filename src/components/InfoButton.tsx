@@ -17,15 +17,16 @@ interface Props {
 
 const InfoButton = ({ inline }: Props) => {
   const [open, setOpen] = useState(false);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const modal = open ? (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/70 backdrop-blur-sm" onClick={() => setOpen(false)}>
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/70 backdrop-blur-sm" onClick={() => { setOpen(false); setExpandedIndex(null); }}>
       <div
         className="bg-card border border-border rounded-2xl p-6 max-w-sm w-full mx-4 relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          onClick={() => setOpen(false)}
+          onClick={() => { setOpen(false); setExpandedIndex(null); }}
           className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
         >
           <X size={16} />
@@ -34,16 +35,42 @@ const InfoButton = ({ inline }: Props) => {
         <div className="mb-6">
           <h3 className="text-2xl font-extrabold font-mono text-primary text-glow tracking-tight mb-3">Credits</h3>
           <div className="bg-gradient-to-r from-primary/20 to-transparent p-4 rounded-xl border border-primary/30 space-y-4">
-            <div>
-              <p className="text-xs font-mono text-primary/80 mb-1">Founder, Scripter & Designer</p>
-              <p className="text-lg font-bold text-primary">@xanderisontop</p>
-              <p className="text-[10px] text-muted-foreground">on Discord</p>
-            </div>
-            <div>
-              <p className="text-xs font-mono text-primary/80 mb-1">Co-Founder & Bug Tester</p>
-              <p className="text-lg font-bold text-primary">@jaco66666666</p>
-              <p className="text-[10px] text-muted-foreground">on Discord</p>
-            </div>
+            {[
+              {
+                name: "@xanderisontop",
+                roles: ["Founder", "Scripter", "Designer"],
+                note: "on Discord",
+              },
+              {
+                name: "@jaco66666666",
+                roles: ["Co-Founder", "Bug Tester"],
+                note: "on Discord",
+              },
+            ].map((c, i) => (
+              <div key={c.name} className="relative">
+                <p className="text-xs font-mono text-primary/80 mb-1 flex items-center gap-2">
+                  <span>{c.roles.slice(0, 2).join(", ")}</span>
+                  {c.roles.length > 1 && (
+                    <button
+                      onClick={() => setExpandedIndex(expandedIndex === i ? null : i)}
+                      className="text-xs text-primary underline hover:text-primary/80"
+                    >
+                      Show All
+                    </button>
+                  )}
+                </p>
+                <p className="text-lg font-bold text-primary">{c.name}</p>
+                <p className="text-[10px] text-muted-foreground">{c.note}</p>
+
+                {expandedIndex === i && (
+                  <div className="mt-2 p-2 bg-background border border-border rounded-md text-xs">
+                    {c.roles.map((r, ri) => (
+                      <div key={ri} className="text-muted-foreground">{r}</div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
           <p className="mt-3 text-[10px] text-muted-foreground font-mono text-center">v26.2</p>
         </div>
