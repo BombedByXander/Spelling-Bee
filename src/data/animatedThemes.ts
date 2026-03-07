@@ -1,6 +1,7 @@
 import type { MonkeytypeTheme } from "@/data/monkeytypeThemes";
 
-const ANIMATED_THEME_COUNT = 260;
+// Increase to add 100 new unique animated themes
+const ANIMATED_THEME_COUNT = 360;
 const GOLDEN_ANGLE = 137.508;
 
 const ANIMATED_CODENAMES = [
@@ -150,4 +151,6 @@ const buildUniqueAnimatedThemes = (count: number): MonkeytypeTheme[] => {
   return themes;
 };
 
-export const animatedThemes: MonkeytypeTheme[] = buildUniqueAnimatedThemes(ANIMATED_THEME_COUNT);
+export const animatedThemes: MonkeytypeTheme[] = buildUniqueAnimatedThemes(ANIMATED_THEME_COUNT).sort((a, b) =>
+  a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+);
