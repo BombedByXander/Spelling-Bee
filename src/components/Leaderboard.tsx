@@ -178,13 +178,13 @@ const Leaderboard = ({ open, onClose }: Props) => {
                   setSelectedProfile(entry);
                   void fetchSelectedProfileStats(entry);
                 }}
-                className={`flex items-center justify-between py-2 px-3 rounded-lg transition-all w-full text-left ${
+                className={`flex items-center justify-between py-2 px-3 rounded-xl leaderboard-row w-full text-left ${
                   entry.rank === 1
                     ? "bg-gradient-to-r from-yellow-50/30 to-yellow-100/20 border border-yellow-300/40 animate-pulse"
                     : entry.rank === 2
                     ? "bg-gradient-to-r from-slate-50/20 to-slate-100/10 border border-slate-300/30 animate-pulse"
                     : entry.rank === 3
-                    ? "bg-gradient-to-r from-orange-50/20 to-orange-100/10 border border-orange-300/30 animate-pulse"
+                    ? "bg-gradient-to-r from-orange-50/20 to-orange-100/10 border border-orange-300/30 animate-pulse leaderboard-top3"
                     : "hover:bg-card/60"
                 }`}
               >

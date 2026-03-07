@@ -408,6 +408,22 @@
   .box-glow-error {
     box-shadow: var(--glow-error);
   }
+
+  /* Leaderboard row visuals and micro-animations */
+  .leaderboard-row {
+    transition: transform 200ms ease, box-shadow 200ms ease, opacity 220ms ease, background-color 180ms ease;
+    will-change: transform, opacity;
+  }
+
+  .leaderboard-row:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.28);
+    background-color: rgba(255,255,255,0.02);
+  }
+
+  .leaderboard-top3 {
+    animation: funbox-jello 900ms ease-in-out;
+  }
 }
 
 @keyframes fire-flicker {
