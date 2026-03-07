@@ -17,16 +17,15 @@ interface Props {
 
 const InfoButton = ({ inline }: Props) => {
   const [open, setOpen] = useState(false);
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const modal = open ? (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/70 backdrop-blur-sm" onClick={() => { setOpen(false); setExpandedIndex(null); }}>
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/70 backdrop-blur-sm" onClick={() => { setOpen(false); }}>
       <div
         className="bg-card border border-border rounded-2xl p-6 max-w-sm w-full mx-4 relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          onClick={() => { setOpen(false); setExpandedIndex(null); }}
+          onClick={() => { setOpen(false); }}
           className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
         >
           <X size={16} />
@@ -46,29 +45,11 @@ const InfoButton = ({ inline }: Props) => {
                 roles: ["Co-Founder", "Bug Finder", "Support Member", "Developer"],
                 note: "on Discord",
               },
-            ].map((c, i) => (
+            ].map((c) => (
               <div key={c.name} className="relative">
-                <p className="text-xs font-mono text-primary/80 mb-1 flex items-center gap-2">
-                  <span>{c.roles.slice(0, 2).join(", ")}</span>
-                  {c.roles.length > 1 && (
-                    <button
-                      onClick={() => setExpandedIndex(expandedIndex === i ? null : i)}
-                      className="text-xs text-primary underline hover:text-primary/80"
-                    >
-                      Show All
-                    </button>
-                  )}
-                </p>
+                <p className="text-xs font-mono text-primary/80 mb-1">{c.roles.join(", ")}</p>
                 <p className="text-lg font-bold text-primary">{c.name}</p>
                 <p className="text-[10px] text-muted-foreground">{c.note}</p>
-
-                {expandedIndex === i && (
-                  <div className="mt-2 p-2 bg-background border border-border rounded-md text-xs">
-                    {c.roles.map((r, ri) => (
-                      <div key={ri} className="text-muted-foreground">{r}</div>
-                    ))}
-                  </div>
-                )}
               </div>
             ))}
           </div>
