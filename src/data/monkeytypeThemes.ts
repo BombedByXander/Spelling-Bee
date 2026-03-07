@@ -2827,16 +2827,16 @@ const baseMonkeytypeThemes: MonkeytypeTheme[] = [
   },
   {
     "name": "vscode",
-    "bg": "#1e1e1e",
-    "caret": "#569cd6",
-    "main": "#007acc",
-    "sub": "#4d4d4d",
-    "subAlt": "#191919",
-    "text": "#d4d4d4",
-    "error": "#f44747",
-    "errorExtra": "#f44747",
-    "colorfulError": "#f44747",
-    "colorfulErrorExtra": "#f44747"
+    "bg": "#0f1720",
+    "caret": "#7dd3fc",
+    "main": "#0ea5a0",
+    "sub": "#14343d",
+    "subAlt": "#071216",
+    "text": "#e6f7fb",
+    "error": "#ff6b6b",
+    "errorExtra": "#c94b4b",
+    "colorfulError": "#ff7b88",
+    "colorfulErrorExtra": "#c9555f"
   },
   {
     "name": "watermelon",
