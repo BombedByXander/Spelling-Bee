@@ -86,6 +86,7 @@ const SeasonPassPanel = ({ userId }: Props) => {
   const [claimingReward, setClaimingReward] = useState<"login" | "stars" | "correct" | null>(null);
   const [showSeasonPass, setShowSeasonPass] = useState(true);
   const [usingLocalFallback, setUsingLocalFallback] = useState(false);
+  const [creatingCheckout, setCreatingCheckout] = useState(false);
 
   const refreshProfileProgress = async (): Promise<ProfileProgress> => {
     const { data, error } = await supabase
@@ -246,6 +247,41 @@ const SeasonPassPanel = ({ userId }: Props) => {
 
       {showSeasonPass && (
         <div className="space-y-3">
+          {/* Buy season pass CTA */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-sm font-bold font-mono text-foreground">Buy Season Pass</div>
+              <div className="text-[11px] text-muted-foreground font-mono">One-time purchase — unlock premium cosmetics and bonuses</div>
+            </div>
+            <div>
+              <button
+                onClick={async () => {
+                  if (!userId || creatingCheckout) return;
+                  setCreatingCheckout(true);
+                  try {
+                    const res = await fetch("/api/create-stripe-checkout", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ userId }),
+                    });
+                    const payload = await res.json();
+                    if (payload?.url) {
+                      window.location.href = payload.url;
+                    } else {
+                      console.error("Checkout creation failed", payload);
+                    }
+                  } catch (e) {
+                    console.error(e);
+                  }
+                  setCreatingCheckout(false);
+                }}
+                className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground font-mono text-sm"
+                disabled={creatingCheckout}
+              >
+                {creatingCheckout ? "Redirecting..." : "Buy — $4.99"}
+              </button>
+            </div>
+          </div>
           <SeasonPassCalendarStrip progressDate={seasonPass?.progress_date} allClaimed={seasonPassClaimedCount === 3} />
           {usingLocalFallback && (
             <p className="text-[11px] text-muted-foreground font-mono">Season Pass is running in fallback mode.</p>

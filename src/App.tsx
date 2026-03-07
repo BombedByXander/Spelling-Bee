@@ -19,6 +19,7 @@ import GlobalRefreshNotice from "@/components/GlobalRefreshNotice";
 import { supabase } from "@/integrations/supabase/client";
 import { applyThemePreset, getStoredThemePreset } from "@/lib/theme";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import AchievementToast from "@/components/AchievementToast";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <AchievementToast />
         <AnnouncementBar />
         <BrowserRouter>
           <AppRoutes />
