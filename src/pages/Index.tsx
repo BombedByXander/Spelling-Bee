@@ -404,15 +404,6 @@ const Index = () => {
                   </QuickAction>
                   <QuickAction>
                     <button
-                      onClick={() => navigate("/settings", { state: { backgroundLocation: location } })}
-                      className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
-                      title="Settings"
-                    >
-                      <Settings size={16} />
-                    </button>
-                  </QuickAction>
-                  <QuickAction>
-                    <button
                       onClick={() => navigate("/pass", { state: { backgroundLocation: location } })}
                       className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
                       title="Season Pass"
@@ -433,6 +424,15 @@ const Index = () => {
                   )}
                   <QuickAction>
                     <MuteButton muted={muted} onToggle={handleMuteToggle} />
+                  </QuickAction>
+                  <QuickAction>
+                    <button
+                      onClick={() => navigate("/settings", { state: { backgroundLocation: location } })}
+                      className="dock-button p-2 rounded-full bg-card/55 border border-white/20 text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
+                      title="Settings"
+                    >
+                      <Settings size={16} />
+                    </button>
                   </QuickAction>
                 </div>
                 <div className="mt-1 text-[10px] leading-none font-mono text-muted-foreground select-none text-center">
