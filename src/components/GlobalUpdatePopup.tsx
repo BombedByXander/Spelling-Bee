@@ -27,7 +27,7 @@ const GlobalUpdatePopup = () => {
         <div className="max-h-[72vh] overflow-y-auto pr-1">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">New update · v26.1</h2>
+              <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">New update · v26.2</h2>
               <p className="mt-1 text-[10px] text-muted-foreground font-mono italic">"Why the huge version jump", you may be asking — it's sorta inspired by iOS, the year 2026 (isolated to 26) and the update.</p>
               <p className="mt-1 text-xs text-muted-foreground font-mono">Important changes:</p>
             </div>
@@ -53,32 +53,22 @@ const GlobalUpdatePopup = () => {
               }}
                 className="px-2 py-1 rounded-full font-mono text-[10px] border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
             >
-                Never show again
+                Don't show again
             </button>
           </div>
 
           <ul className="mt-3 space-y-2 text-sm text-foreground">
-            <li>• Leaderboard is now a Top 50 all time Highest WPM.</li>
+            <li>• Leaderboard is now a Top 50 all time Highest Streak.</li>
+            <li>• .GIF file types now supported for profile pictures.</li>
+            <li>• Added Profile Picture cropping & panning.</li>
             <li>• Mobile support is now added for the site. </li>
-            <li>• New AnnouncementBar: instant site announcements (fetch-on-mount, realtime updates, local dismissal).</li>
-            <li>• Announcement styling improvements: centered text, pop-in/out animation, larger dismiss button, and higher z-index.</li>
-            <li>• Added gameplay toggle: Auto Enter on Exact Length.</li>
-            <li>• Added global refresh/update visibility improvements for all users.</li>
-            <li>• Added new streak visuals with expanded tier progression and stronger color transitions.</li>
-            <li>• Space theme redesigned and much more BeAuTiFuL!!</li>
-            <li>• New "the files" modifier, which redacts things like the files, quite literally.</li>
-            <li>• All buttons are centered in a reactive dock.</li>
+            <li>• Dock has more simple captions and size is improved.</li>
           </ul>
 
           <p className="mt-4 text-xs text-muted-foreground font-mono">Bug fixes:</p>
           <ul className="mt-2 space-y-2 text-sm text-foreground">
-            <li>• Mobile UX improvements: condensed control bar and reduced base font-size on mobile for compact layout.</li>
-            <li>• Reactive keymap now hides on mobile to reduce clutter.</li>
-            <li>• Live feedback now correctly matches all active modifiers across all game modes.</li>
-            <li>• Homophone validation no longer incorrectly breaks streaks on accepted spellings.</li>
-            <li>• Settings/Profile overlay no longer resets active streak state.</li>
-            <li>• Round transition delay now supports full range down to 0ms.</li>
-            <li>• Salvia now splits words at randomized points (not fixed midpoint).</li>
+            <li>• Profile picture images not showing.</li>
+
           </ul>
         </div>
       </div>
