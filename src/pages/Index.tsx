@@ -376,7 +376,7 @@ const Index = () => {
             />
           </div>
 
-          <div className="dock-shell rounded-[26px] border border-white/20 bg-card/45 backdrop-blur-xl transform transition-all duration-300 ease-out translate-y-4 opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto">
+          <div className="dock-shell overflow-hidden rounded-[26px] border border-white/20 bg-card/45 backdrop-blur-xl transform transition-all duration-300 ease-out translate-y-4 opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <QuickAction label="Post">
