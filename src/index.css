@@ -524,25 +524,25 @@ body.theme-easter-garden::after {
   77% { opacity: 0.95; filter: contrast(1.5) brightness(1.1); }
 }
 
-/* Override: make dock and buttons 3px larger (keeps original proportions) */
+/* Override: make dock and buttons slightly larger (original +1.5px) */
 .dock-shell {
-  padding-left: calc(0.75rem + 3px) !important;
-  padding-right: calc(0.75rem + 3px) !important;
-  padding-top: calc(0.5rem + 3px) !important;
-  padding-bottom: calc(0.75rem + 3px) !important;
+  padding-left: calc(0.75rem + 1.5px) !important;
+  padding-right: calc(0.75rem + 1.5px) !important;
+  padding-top: calc(0.5rem + 1.5px) !important;
+  padding-bottom: calc(0.75rem + 1.5px) !important;
 }
 
 .dock-shell .dock-button {
-  padding: calc(0.5rem + 3px) !important;
+  padding: calc(0.5rem + 1.5px) !important;
 }
 
 @media (max-width: 640px) {
   .dock-shell {
-    padding-left: calc(0.5rem + 3px) !important;
-    padding-right: calc(0.5rem + 3px) !important;
+    padding-left: calc(0.5rem + 1.5px) !important;
+    padding-right: calc(0.5rem + 1.5px) !important;
   }
   .dock-shell .dock-button {
-    padding: calc(0.5rem + 3px) !important;
+    padding: calc(0.5rem + 1.5px) !important;
   }
 }
 
