@@ -3,19 +3,22 @@ import type { MonkeytypeTheme } from "@/data/monkeytypeThemes";
 const THEMES_COUNT = 100;
 const GOLDEN_ANGLE = 137.508;
 
-const CODENAMES = [
-  "Astra","Beryl","Cinder","Dawn","Echo","Fable","Gleam","Haven","Iris","Juniper",
-  "Kite","Lark","Mist","Noble","Olive","Pique","Quartz","Ridge","Sable","Thyme",
-  "Umbel","Vale","Wisp","Xanadu","Yield","Zephyr","Amble","Brio","Cove","Dawnfall",
-  "Elm","Fjord","Grove","Hearth","Isle","Jade","Knoll","Lumen","Meadow","Nova",
-  "Orchid","Praxis","Quill","Rune","Sprig","Tide","Umber","Vireo","Wren","Xylo",
-  "Yarrow","Zenith","Argyle","Blossom","Clove","Drizzle","Ember","Frost","Gossamer","Hollow",
-  "Indigo","Jasper","Kestrel","Lattice","Marigold","Nimbus","Opal","Palisade","Quarry","Ravine",
-  "Sirocco","Tarn","Upland","Vesper","Willow","Xander","Yara","Zinnia","Alder","Bramble",
-  "Cobalt","Delta","Elder","Fen","Glade","Harbor","Ivory","Junia","Kora","Lyric",
-  "Mica","North","Orion","Pollen","Questa","Rowan","Sylvan","Tropic","Ulric","Vela",
-  "Wilder","Xebec","Yonder","Zephyrus","Aurora","Brisk","Crescent","Dune","Evoke","Fawn",
-  "Gale","Hush","Islewood","Juno","Kirin","Lumenia","Mistral","Nyx","Oriel","Pavo"
+const ADJECTIVES = [
+  "Azure","Brisk","Cobalt","Dusky","Ember","Frost","Gilded","Hollow","Iridescent","Jaded",
+  "Keen","Luminous","Misty","Narrow","Opaline","Pale","Quarry","Rustic","Silken","Tranquil",
+  "Umber","Vernal","Windward","Xenial","Yielding","Zenithal","Alder","Bramble","Cinder","Dawn",
+  "Echo","Fable","Gleam","Haven","Iris","Juniper","Lark","Meadow","Nova","Orchid",
+  "Praxis","Quill","Rune","Sprig","Tide","Vireo","Wren","Yarrow","Zinnia","Argyle",
+  "Blossom","Clove","Drizzle","Gossamer","Indigo","Jasper","Kestrel","Marigold","Nimbus","Opal",
+  "Palisade","Ravine","Sirocco","Tarn","Upland","Vesper","Willow","Cove","Elm","Fjord"
+];
+
+const NOUNS = [
+  "Harbor","Ridge","Grove","Hearth","Isle","Knoll","Lumen","Field","Quarry","Rowan",
+  "Sylvan","Tropic","Vela","Wilder","Zephyr","Aurora","Crescent","Dune","Fawn","Gale",
+  "Hush","Islewood","Juno","Kirin","Mistral","Nyx","Oriel","Pavo","Meadow","Marsh",
+  "Canyon","Springs","Fen","Bluff","Cove","Harbor","Trail","Vale","Peak","Hollow",
+  "Basin","Mesa","Glen","Thicket","Delta","Prairie","Haven","Thorn","Glade","Moor"
 ];
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
@@ -42,7 +45,11 @@ const hslToHex = (hue: number, saturation: number, lightness: number) => {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
 
-const getName = (index: number) => `${CODENAMES[index % CODENAMES.length]}-${String(index + 1).padStart(3, "0")}`;
+const getName = (index: number) => {
+  const adj = ADJECTIVES[index % ADJECTIVES.length];
+  const noun = NOUNS[Math.floor(index / ADJECTIVES.length) % NOUNS.length];
+  return `${adj} ${noun}`;
+};
 
 const createTheme = (index: number): MonkeytypeTheme => {
   const baseHue = (index * GOLDEN_ANGLE) % 360;
