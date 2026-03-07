@@ -38,12 +38,12 @@ const InfoButton = ({ inline }: Props) => {
             {[
               {
                 name: "@xanderisontop",
-                roles: ["Founder", "Scripter", "Designer"],
+                roles: ["Founder", "Scripter", "Designer", "Bug Fixer"],
                 note: "on Discord",
               },
               {
                 name: "@jaco66666666",
-                roles: ["Co-Founder", "Bug Tester"],
+                roles: ["Co-Founder", "Bug Finder", "Support Member", "Developer"],
                 note: "on Discord",
               },
             ].map((c, i) => (
