@@ -395,6 +395,15 @@
       0 0 100px hsl(0 90% 45% / 0.3);
   }
 
+  /* VS Code preset: UI-only tweaks (monospace/codey feel) */
+  :root.theme-vscode-ui {
+    --font-family: 'JetBrains Mono', monospace;
+  }
+
+  :root.theme-vscode-ui body, :root.theme-vscode-ui * {
+    transition: none !important;
+  }
+
   .box-glow {
     box-shadow:
       0 0 12px rgb(var(--ui-glow-rgb) / 0.3),

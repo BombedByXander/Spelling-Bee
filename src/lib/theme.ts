@@ -285,6 +285,13 @@ export const applyThemePreset = (presetName: string) => {
     document.body.classList.add(decorativeThemeClass);
   }
 
+  // If the preset is `vscode`, enable a subtle 'codey' UI: use monospace font and small UI tweaks.
+  if (normalizedPresetName === "vscode") {
+    root.classList.add("theme-vscode-ui");
+  } else {
+    root.classList.remove("theme-vscode-ui");
+  }
+
   const glowHex = resolvedPresetName === CUSTOM_THEME_PRESET ? selectedTheme.glow : "#ffffff";
   root.style.setProperty("--ui-glow-rgb", hexToRgbTokens(glowHex));
   root.style.setProperty("--theme-animated-main-rgb", hexToRgbTokens(selectedTheme.main));
