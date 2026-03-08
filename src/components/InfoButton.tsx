@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 
 const DISCORD_URL = "https://discord.gg/Eb8ga2ZuqM";
 const TIKTOK_URL = "https://www.tiktok.com/@creepsinthecloset";
+const GITHUB_URL = "https://github.com/BombedByXander";
 
 const DiscordIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -14,7 +15,14 @@ const DiscordIcon = ({ size = 16 }: { size?: number }) => (
 
 const TikTokIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M16.5 3v6.1a4.5 4.5 0 1 1-4.5-4.6V3a7.5 7.5 0 1 0 7.5 7.5V3h-3z" fill="currentColor" />
+    <path d="M12.003 2v6.53c1.017.19 1.847.726 2.45 1.48 0 0 1.165-.39 1.165-2.03V3.5h2.382V1.5H12.003z" fill="currentColor" />
+    <path d="M8.5 9.5a4.5 4.5 0 1 0 4.5 4.5v-2a2.5 2.5 0 1 1-2.5-2.5V9.5z" fill="currentColor" />
+  </svg>
+);
+
+const GitHubIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.16 6.84 9.49.5.09.68-.22.68-.48 0-.24-.01-.87-.01-1.71-2.78.61-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.9 1.54 2.36 1.1 2.94.84.09-.65.35-1.1.63-1.35-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.58 9.58 0 0112 6.8c.85.004 1.71.115 2.51.34 1.9-1.29 2.74-1.02 2.74-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.85-2.34 4.7-4.57 4.95.36.31.68.92.68 1.85 0 1.33-.01 2.4-.01 2.73 0 .26.18.58.69.48A10.01 10.01 0 0022 12c0-5.52-4.48-10-10-10z" />
   </svg>
 );
 
@@ -83,6 +91,16 @@ const InfoButton = ({ inline }: Props) => {
             >
               <TikTokIcon size={18} />
               Follow on TikTok
+            </a>
+
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-full bg-[#24292f] text-white font-semibold text-sm hover:opacity-95 transition-all transform hover:scale-105"
+            >
+              <GitHubIcon size={18} />
+              View on GitHub
             </a>
           </div>
         </div>
