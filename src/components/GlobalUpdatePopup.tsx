@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { RELEASE_VERSION, UPDATE_POPUP_NEVER_KEY, UPDATE_POPUP_SESSION_DISMISSED_KEY } from "@/lib/release";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const GlobalUpdatePopup = () => {
   const { user, loading } = useAuth();
+  const isMobile = useIsMobile();
   const [showUpdatePopup, setShowUpdatePopup] = useState(false);
 
   const popupScopeKey = useMemo(() => user?.id || "guest", [user?.id]);
@@ -17,6 +19,9 @@ const GlobalUpdatePopup = () => {
       sessionStorage.getItem(dismissedSessionKey) !== "true"
     );
   }, [dismissedSessionKey, loading, neverKey]);
+
+  // Hide the global update popup on mobile devices to avoid covering the entire viewport
+  if (isMobile) return null;
 
   if (!showUpdatePopup) return null;
 
