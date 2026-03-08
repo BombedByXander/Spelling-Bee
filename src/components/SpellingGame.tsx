@@ -287,6 +287,8 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
   // Handle keys coming from the mobile on-screen keyboard
   const isMobile = useIsMobile();
 
+  const theFilesActiveNow = getActiveFunboxModifiers().includes("the_files");
+
   const handleVirtualKey = (key: string) => {
     if (result !== "idle") return;
     if (key === "BACKSPACE") {
@@ -582,9 +584,9 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
         />
       </div>
 
-      <div className="w-full max-w-lg px-1 mt-2">
+        <div className="w-full max-w-lg px-1 mt-2">
         {isMobile ? (
-          <MobileKeyboard layout={keyboardLayout} onKey={handleVirtualKey} />
+          <MobileKeyboard layout={keyboardLayout} onKey={handleVirtualKey} lastKey={lastKeyTs > 0 ? lastKey : null} theFilesActive={theFilesActiveNow} />
         ) : (
           <KeyboardMap lastKey={lastKeyTs > 0 ? lastKey : null} layout={keyboardLayout} size={keySize} />
         )}

@@ -28,25 +28,43 @@ const KEYBOARDS: Record<KeyboardLayout, string[][]> = {
 interface Props {
   layout?: KeyboardLayout;
   onKey: (key: string) => void;
+  lastKey?: string | null;
+  theFilesActive?: boolean;
 }
 
 const MobileKeyboard = ({ layout = "qwerty", onKey }: Props) => {
   const rows = KEYBOARDS[layout];
+  const [flashKey, setFlashKey] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!lastKey) return;
+    setFlashKey(lastKey.toUpperCase());
+    const t = setTimeout(() => setFlashKey(null), 150);
+    return () => clearTimeout(t);
+  }, [lastKey]);
 
   return (
     <div className="w-full max-w-2xl mx-auto px-1 pb-safe bg-transparent">
       <div className="bg-card/90 border border-border rounded-xl p-2 space-y-2">
         {rows.map((row, ri) => (
           <div key={ri} className="flex justify-center gap-2">
-            {row.map((k) => (
-              <button
-                key={k}
-                onClick={() => onKey(k)}
-                className="flex-0 px-3 py-2 rounded-md bg-card/60 border border-border text-sm font-mono text-foreground hover:bg-primary/10"
-              >
-                {k}
-              </button>
-            ))}
+            {row.map((k) => {
+              const isLetter = /[A-Z0-9]/i.test(k);
+              const isFlash = flashKey === k.toUpperCase();
+              return (
+                <button
+                  key={k}
+                  onClick={() => onKey(k)}
+                  className={`px-3 py-2 rounded-[10px] text-sm font-mono transition-all duration-100 transform-gpu will-change-transform border ${
+                    isFlash
+                      ? "bg-primary/90 text-primary-foreground border-primary shadow-md shadow-primary/40 scale-[1.04]"
+                      : "bg-card/55 border-border/40 text-muted-foreground/65"
+                  }`}
+                >
+                  {theFilesActive && isLetter ? <span style={{ color: "#000" }}>■</span> : k.toLowerCase()}
+                </button>
+              );
+            })}
           </div>
         ))}
 
