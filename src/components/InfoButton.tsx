@@ -14,10 +14,13 @@ const DiscordIcon = ({ size = 16 }: { size?: number }) => (
 );
 
 const TikTokIcon = ({ size = 16 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12.003 2v6.53c1.017.19 1.847.726 2.45 1.48 0 0 1.165-.39 1.165-2.03V3.5h2.382V1.5H12.003z" fill="currentColor" />
-    <path d="M8.5 9.5a4.5 4.5 0 1 0 4.5 4.5v-2a2.5 2.5 0 1 1-2.5-2.5V9.5z" fill="currentColor" />
-  </svg>
+  <img
+    src={`https://cdn.simpleicons.org/tiktok/ffffff`}
+    alt="TikTok"
+    width={size}
+    height={size}
+    style={{ display: "inline-block" }}
+  />
 );
 
 const GitHubIcon = ({ size = 16 }: { size?: number }) => (
