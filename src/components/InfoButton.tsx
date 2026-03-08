@@ -64,7 +64,7 @@ const InfoButton = ({ inline }: Props) => {
         </div>
 
         <div className="mt-6 pt-4 border-t border-border">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col gap-3">
             <a
               href={DISCORD_URL}
               target="_blank"
@@ -79,7 +79,7 @@ const InfoButton = ({ inline }: Props) => {
               href={TIKTOK_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-full bg-gradient-to-r from-[#69C9D0] to-[#EE1D52] text-white font-semibold text-sm hover:opacity-95 transition-all transform hover:scale-105"
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-full bg-black text-white font-semibold text-sm hover:opacity-95 transition-all transform hover:scale-105"
             >
               <TikTokIcon size={18} />
               Follow on TikTok
