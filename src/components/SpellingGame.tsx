@@ -13,6 +13,8 @@ import { getActiveFunboxModifiers } from "@/lib/funbox";
 import { getMuted } from "@/components/MuteButton";
 import { supabase } from "@/integrations/supabase/client";
 import KeyboardMap, { KeyboardLayout } from "@/components/KeyboardMap";
+import MobileKeyboard from "@/components/MobileKeyboard";
+import { useIsMobile } from "@/hooks/use-mobile";
 import WordMeaningHint from "@/components/WordMeaningHint";
 import BlackoutWord from "@/components/BlackoutWord";
 import StreakDisplay from "@/components/StreakDisplay";
@@ -282,6 +284,45 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
     setCaretPosition(Math.min(e.target.selectionStart ?? val.length, val.length));
   };
 
+  // Handle keys coming from the mobile on-screen keyboard
+  const isMobile = useIsMobile();
+
+  const handleVirtualKey = (key: string) => {
+    if (result !== "idle") return;
+    if (key === "BACKSPACE") {
+      setInput((prev) => {
+        const next = prev.slice(0, -1);
+        setRawCharCount((prevCount) => Math.max(0, prevCount - (prev.length - next.length)));
+        return next;
+      });
+      return;
+    }
+    if (key === "SPACE") {
+      const rawValue = input + " ";
+      const val = sanitizeInputForActiveModifiers(rawValue, getActiveFunboxModifiers());
+      if (!startTime && val.length === 1) setStartTime(performance.now());
+      setRawCharCount((prev) => prev + 1);
+      if (!getMuted()) getSoundPack(activeSound).play();
+      setLastKey(" ");
+      setInput(val);
+      setCaretPosition(val.length);
+      return;
+    }
+    if (key === "ENTER") {
+      handleSubmit();
+      return;
+    }
+    // regular character
+    const rawValue = input + key;
+    const val = sanitizeInputForActiveModifiers(rawValue, getActiveFunboxModifiers());
+    if (!startTime && val.length === 1) setStartTime(performance.now());
+    setRawCharCount((prev) => prev + (val.length - input.length));
+    if (!getMuted()) getSoundPack(activeSound).play();
+    setLastKey(key);
+    setInput(val);
+    setCaretPosition(val.length);
+  };
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (result !== "idle") return;
@@ -478,6 +519,10 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
             <input
             ref={inputRef}
             value={input}
+            // Prevent native mobile keyboard from appearing
+            readOnly={isMobile}
+            inputMode={isMobile ? "none" : undefined}
+            tabIndex={isMobile ? -1 : undefined}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             onKeyUp={(e) => {
@@ -538,7 +583,11 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
       </div>
 
       <div className="w-full max-w-lg px-1 mt-2">
-        <KeyboardMap lastKey={lastKeyTs > 0 ? lastKey : null} layout={keyboardLayout} size={keySize} />
+        {isMobile ? (
+          <MobileKeyboard layout={keyboardLayout} onKey={handleVirtualKey} />
+        ) : (
+          <KeyboardMap lastKey={lastKeyTs > 0 ? lastKey : null} layout={keyboardLayout} size={keySize} />
+        )}
       </div>
     </div>
   );
