@@ -22,7 +22,7 @@ const GlobalUpdatePopup = () => {
 
   return (
     <>
-      <div className="fixed inset-0 z-30 bg-background" />
+      <div className="fixed inset-0 z-30 bg-background/70 backdrop-blur-sm" />
       <div className="fixed top-3 left-1/2 -translate-x-1/2 z-40 w-[min(94vw,760px)] rounded-2xl border border-border bg-card/95 px-4 py-4 shadow-2xl backdrop-blur-sm">
         <div className="max-h-[72vh] overflow-y-auto pr-1">
           <div className="flex items-start justify-between gap-3">
@@ -62,12 +62,16 @@ const GlobalUpdatePopup = () => {
             <li>• .GIF file types now supported for profile pictures.</li>
             <li>• Added Profile Picture cropping & panning.</li>
             <li>• Mobile support is now added for the site. </li>
+            <li>• Mobile now has a built-in keyboard.</li>
             <li>• Dock has more simple captions and size is improved.</li>
           </ul>
 
           <p className="mt-4 text-xs text-muted-foreground font-mono">Bug fixes:</p>
           <ul className="mt-2 space-y-2 text-sm text-foreground">
             <li>• Profile picture images not showing.</li>
+            <li>• TikTok logo not displaying correctly.</li>
+            <li>• Other minor bug fixes and improvements.</li>
+            <li>• Optimization Tweaks and performance improvements.</li>
 
           </ul>
         </div>
