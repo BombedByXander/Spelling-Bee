@@ -14,12 +14,12 @@ import Pass from "./pages/Pass";
 import ReplayViewer from "./pages/ReplayViewer";
 import Updates from "./pages/Updates";
 import NotFound from "./pages/NotFound";
-import GlobalUpdatePopup from "@/components/GlobalUpdatePopup";
-import GlobalRefreshNotice from "@/components/GlobalRefreshNotice";
+import GlobalUpdatePopup from "@/components/Extra/GlobalUpdatePopup";
+import GlobalRefreshNotice from "@/components/Extra/GlobalRefreshNotice";
 import { supabase } from "@/integrations/supabase/client";
 import { applyThemePreset, getStoredThemePreset } from "@/lib/theme";
-import AnnouncementBar from "@/components/AnnouncementBar";
-import AchievementToast from "@/components/AchievementToast";
+import AnnouncementBar from "@/components/Extra/AnnouncementBar";
+import AchievementToast from "@/components/Panels/AchievementToast";
 
 const queryClient = new QueryClient();
 

@@ -1,21 +1,21 @@
 import { type ReactNode, useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Trophy, User, Settings, Shield, Wrench, Info, LogIn, LogOut, CalendarDays } from "lucide-react";
-import SpellingGame from "@/components/SpellingGame";
-import CustomGame from "@/components/CustomGame";
-import BeginnerGame from "@/components/BeginnerGame";
-import NoviceGame from "@/components/NoviceGame";
-import ModerateGame from "@/components/ModerateGame";
-import GeniusGame from "@/components/GeniusGame";
-import EasterThemeDecor from "@/components/EasterThemeDecor";
-import CosmicBackground from "@/components/CosmicBackground";
-import StarryBackground from "@/components/StarryBackground";
+import SpellingGame from "@/components/Modes/SpellingGame";
+import CustomGame from "@/components/Modes/CustomGame";
+import BeginnerGame from "@/components/Modes/BeginnerGame";
+import NoviceGame from "@/components/Modes/NoviceGame";
+import ModerateGame from "@/components/Modes/ModerateGame";
+import GeniusGame from "@/components/Modes/GeniusGame";
+import EasterThemeDecor from "@/components/Extra/EasterThemeDecor";
+import CosmicBackground from "@/components/Extra/CosmicBackground";
+import StarryBackground from "@/components/Extra/StarryBackground";
 import InfoButton from "@/components/InfoButton";
 import Intermission from "@/components/Intermission";
-import Leaderboard from "@/components/Leaderboard";
+import Leaderboard from "@/components/Panels/Leaderboard";
 import CustomSettings from "@/components/CustomSettings";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import AdminPanel from "@/components/AdminPanel";
+import AdminPanel from "@/components/Panels/AdminPanel";
 import MuteButton, { getMuted } from "@/components/MuteButton";
 import FeedbackButton from "@/components/FeedbackButton";
 import FeedbackInboxButton from "@/components/FeedbackInboxButton";
@@ -514,3 +514,4 @@ const Index = () => {
 };
 
 export default Index;
+

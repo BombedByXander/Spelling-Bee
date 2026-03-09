@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import PersonalDashboard from "@/components/PersonalDashboard";
+import PersonalDashboard from "@/components/Panels/PersonalDashboard";
 import { useAuth } from "@/hooks/useAuth";
 
 const Dashboard = () => {
@@ -28,3 +28,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

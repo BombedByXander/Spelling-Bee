@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import StarryBackground from "@/components/StarryBackground";
+import StarryBackground from "@/components/Extra/StarryBackground";
 import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
@@ -122,3 +122,4 @@ const Auth = () => {
 };
 
 export default Auth;
+

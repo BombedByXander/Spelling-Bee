@@ -1,7 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import SeasonPassPanel from "@/components/SeasonPassPanel";
+import SeasonPassPanel from "@/components/Shop/SeasonPassPanel";
 
 const Pass = () => {
   const navigate = useNavigate();
@@ -46,3 +46,4 @@ const Pass = () => {
 };
 
 export default Pass;
+
