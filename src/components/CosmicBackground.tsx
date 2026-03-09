@@ -218,15 +218,60 @@ const CosmicBackground = () => {
         ctx.fillStyle = outerShadow;
         ctx.fill();
 
-        // Craters
+        // Craters - shadowed interiors with subtle rim highlights
         for (const ca of p.craterAngles) {
-          const cx = p.x + Math.cos(ca) * p.r * 0.5;
-          const cy = p.y + Math.sin(ca) * p.r * 0.5;
+          const angleOffset = ca + (Math.PI / 8) * (Math.random() - 0.5);
+          const cx = p.x + Math.cos(angleOffset) * p.r * (0.35 + Math.random() * 0.25);
+          const cy = p.y + Math.sin(angleOffset) * p.r * (0.35 + Math.random() * 0.25);
+          const craterR = p.r * (0.06 + Math.random() * 0.06);
+
+          // Inner shadow (gives depth)
+          const craterGrad = ctx.createRadialGradient(cx - craterR * 0.25, cy - craterR * 0.25, 0, cx, cy, craterR);
+          craterGrad.addColorStop(0, "rgba(0,0,0,0.18)");
+          craterGrad.addColorStop(0.6, "rgba(0,0,0,0.08)");
+          craterGrad.addColorStop(1, "rgba(0,0,0,0)");
           ctx.beginPath();
-          ctx.arc(cx, cy, p.r * 0.08, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(0,0,0,0.08)";
+          ctx.arc(cx, cy, craterR, 0, Math.PI * 2);
+          ctx.fillStyle = craterGrad;
           ctx.fill();
+
+          // Rim highlight (light catching the lip)
+          ctx.beginPath();
+          ctx.arc(cx - craterR * 0.15, cy - craterR * 0.15, craterR * 1.05, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(255,255,255,0.06)";
+          ctx.lineWidth = Math.max(0.6, craterR * 0.25);
+          ctx.stroke();
         }
+
+        // Surface micro-noise (subtle speckles for texture)
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 0.98, 0, Math.PI * 2);
+        ctx.clip();
+        const noiseCount = Math.floor(p.r * 2.5);
+        for (let ni = 0; ni < noiseCount; ni++) {
+          const nx = p.x + (Math.random() * 2 - 1) * p.r * 0.95;
+          const ny = p.y + (Math.random() * 2 - 1) * p.r * 0.95;
+          const dist = Math.hypot(nx - p.x, ny - p.y);
+          if (dist > p.r * 0.98) continue;
+          const na = 0.02 + Math.random() * 0.06;
+          ctx.fillStyle = `rgba(255,255,255,${na})`;
+          ctx.fillRect(Math.round(nx), Math.round(ny), 1, 1);
+        }
+        ctx.restore();
+
+        // Specular highlight (soft bright spot)
+        const specX = p.x - p.r * 0.35;
+        const specY = p.y - p.r * 0.35;
+        const specRad = p.r * 0.18;
+        const specGrad = ctx.createRadialGradient(specX, specY, 0, specX, specY, specRad);
+        specGrad.addColorStop(0, "rgba(255,255,255,0.55)");
+        specGrad.addColorStop(0.35, "rgba(255,255,255,0.12)");
+        specGrad.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.beginPath();
+        ctx.arc(specX, specY, specRad, 0, Math.PI * 2);
+        ctx.fillStyle = specGrad;
+        ctx.fill();
 
         // Ring
         if (p.hasRing && p.ringColor) {
