@@ -242,6 +242,39 @@ const CosmicBackground = () => {
         ctx.fillStyle = outerShadow;
         ctx.fill();
 
+        // Half-3D shading: deterministic light and shadow for a subtle 3D look
+        // Light direction is consistent but varies slightly by planet position for variety
+        const nx = (p.cx % 1000) / 1000; // normalized seed 0..1
+        const lightBias = (nx - 0.5) * 0.2; // small per-planet bias
+        const lightDirX = -0.35 + lightBias;
+        const lightDirY = -0.25;
+        const lightX = p.x + lightDirX * p.r;
+        const lightY = p.y + lightDirY * p.r;
+
+        // Soft specular/highlight (on light side)
+        const specRad = p.r * 0.28;
+        const specGrad2 = ctx.createRadialGradient(lightX, lightY, 0, lightX, lightY, specRad);
+        specGrad2.addColorStop(0, "rgba(255,255,255,0.18)");
+        specGrad2.addColorStop(0.35, "rgba(255,255,255,0.06)");
+        specGrad2.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.beginPath();
+        ctx.arc(lightX, lightY, specRad, 0, Math.PI * 2);
+        ctx.fillStyle = specGrad2;
+        ctx.fill();
+
+        // Soft shadow on opposite side to increase roundness
+        const shadowX = p.x - lightDirX * p.r * 0.5;
+        const shadowY = p.y - lightDirY * p.r * 0.5;
+        const shadowRad = p.r * 0.9;
+        const shadowGrad = ctx.createRadialGradient(shadowX, shadowY, 0, shadowX, shadowY, shadowRad);
+        shadowGrad.addColorStop(0, "rgba(0,0,0,0.0)");
+        shadowGrad.addColorStop(0.6, "rgba(0,0,0,0.06)");
+        shadowGrad.addColorStop(1, "rgba(0,0,0,0.12)");
+        ctx.beginPath();
+        ctx.arc(shadowX, shadowY, shadowRad, 0, Math.PI * 2);
+        ctx.fillStyle = shadowGrad;
+        ctx.fill();
+
         // Craters (reverted to original simple filled style)
         for (const spec of p.craterSpecs) {
           const cx = p.x + spec.dx;
