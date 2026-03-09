@@ -20,8 +20,10 @@ const GlobalUpdatePopup = () => {
     );
   }, [dismissedSessionKey, loading, neverKey]);
 
-  // Hide the global update popup on mobile devices to avoid covering the entire viewport
-  if (isMobile) return null;
+  // Synchronously detect mobile by viewport width to avoid rendering the popup
+  // before client hooks initialize (prevents a flash of full-screen overlay on mobile)
+  const isMobileSync = typeof window !== "undefined" && window.innerWidth < 768;
+  if (isMobileSync) return null;
 
   if (!showUpdatePopup) return null;
 
