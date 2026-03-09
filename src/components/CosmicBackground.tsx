@@ -14,6 +14,7 @@ interface Planet {
   cx: number;
   cy: number;
   craterSpecs: { dx: number; dy: number; r: number; rimOffsetX: number; rimOffsetY: number }[];
+  type: "rocky" | "gas" | "ice";
 }
 
 const PLANET_PALETTES = [
@@ -93,33 +94,46 @@ const CosmicBackground = () => {
 
     // Enhanced planets
     const planets: Planet[] = [];
-    for (let i = 0; i < 5; i++) {
+    // Create a larger, varied set of planets with types (rocky, gas, ice)
+    const planetCount = 9;
+    for (let i = 0; i < planetCount; i++) {
       const pal = PLANET_PALETTES[i % PLANET_PALETTES.length];
-      const radius = 25 + Math.random() * 50;
-      const numCraters = 3 + Math.floor(Math.random() * 3);
+      const radius = 18 + Math.random() * 72; // wider size spread
+      // pick a type bias: rocky more common, gas medium, ice rarer
+      const typeRand = Math.random();
+      const type: "rocky" | "gas" | "ice" = typeRand < 0.45 ? "rocky" : typeRand < 0.8 ? "gas" : "ice";
+
+      // crater count depends on type
+      const numCraters = type === "rocky" ? 4 + Math.floor(Math.random() * 5) : type === "gas" ? Math.floor(Math.random() * 2) : 1 + Math.floor(Math.random() * 3);
       const craterSpecs: { dx: number; dy: number; r: number; rimOffsetX: number; rimOffsetY: number }[] = [];
       for (let c = 0; c < numCraters; c++) {
         const angle = Math.random() * Math.PI * 2;
-        const distFactor = 0.35 + Math.random() * 0.25;
-        const craterR = radius * (0.06 + Math.random() * 0.06);
+        const distFactor = 0.28 + Math.random() * 0.4;
+        const craterR = radius * (0.05 + Math.random() * 0.08) * (type === "gas" ? 0.6 : 1);
         const dx = Math.cos(angle) * radius * distFactor;
-        const dy = Math.sin(angle) * radius * distFactor;
-        craterSpecs.push({ dx, dy, r: craterR, rimOffsetX: -craterR * 0.15, rimOffsetY: -craterR * 0.15 });
+        const dy = Math.sin(angle) * radius * distFactor * (0.9 + Math.random() * 0.2);
+        craterSpecs.push({ dx, dy, r: craterR, rimOffsetX: -craterR * 0.12, rimOffsetY: -craterR * 0.12 });
       }
+
+      // stronger rings for gas giants
+      const hasRing = type === "gas" ? Math.random() > 0.25 : Math.random() > 0.85;
+      const ringColor = hasRing ? pal.ring : undefined;
+
       planets.push({
         x: 0,
         y: 0,
         r: radius,
         color: pal.body,
         glowColor: pal.glow,
-        ringColor: Math.random() > 0.4 ? pal.ring : undefined,
-        hasRing: Math.random() > 0.35,
-        orbitSpeed: 0.00008 + Math.random() * 0.00015,
+        ringColor,
+        hasRing,
+        orbitSpeed: 0.00004 + Math.random() * 0.00022,
         orbitAngle: Math.random() * Math.PI * 2,
-        orbitRadius: 80 + Math.random() * 350,
+        orbitRadius: 60 + Math.random() * 500,
         cx: Math.random() * w,
         cy: Math.random() * h,
         craterSpecs,
+        type,
       });
     }
 
@@ -257,15 +271,35 @@ const CosmicBackground = () => {
         // Specular highlight (soft bright spot)
         const specX = p.x - p.r * 0.35;
         const specY = p.y - p.r * 0.35;
-        const specRad = p.r * 0.18;
+        const specRad = p.r * (p.type === "ice" ? 0.28 : 0.18);
         const specGrad = ctx.createRadialGradient(specX, specY, 0, specX, specY, specRad);
-        specGrad.addColorStop(0, "rgba(255,255,255,0.55)");
-        specGrad.addColorStop(0.35, "rgba(255,255,255,0.12)");
+        const specInner = p.type === "ice" ? 0.75 : 0.55;
+        const specMid = p.type === "ice" ? 0.24 : 0.12;
+        specGrad.addColorStop(0, `rgba(255,255,255,${specInner})`);
+        specGrad.addColorStop(0.35, `rgba(255,255,255,${specMid})`);
         specGrad.addColorStop(1, "rgba(255,255,255,0)");
         ctx.beginPath();
         ctx.arc(specX, specY, specRad, 0, Math.PI * 2);
         ctx.fillStyle = specGrad;
         ctx.fill();
+
+        // Gas giant banding (subtle translucent bands inside planet)
+        if (p.type === "gas") {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.clip();
+          const bands = 3 + Math.floor(p.r / 25);
+          for (let b = 0; b < bands; b++) {
+            const bandOffset = -p.r * 0.6 + (b / Math.max(1, bands - 1)) * p.r * 1.2;
+            const bandAlpha = 0.02 + (b % 2 === 0 ? 0.01 : 0.00);
+            ctx.beginPath();
+            ctx.ellipse(p.x, p.y + bandOffset, p.r * 1.02, p.r * 0.18, 0, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${bandAlpha})`;
+            ctx.fill();
+          }
+          ctx.restore();
+        }
 
         // Ring
         if (p.hasRing && p.ringColor) {
