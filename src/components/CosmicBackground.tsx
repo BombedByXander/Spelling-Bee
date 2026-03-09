@@ -13,7 +13,7 @@ interface Planet {
   orbitRadius: number;
   cx: number;
   cy: number;
-  craterAngles: number[];
+  craterSpecs: { dx: number; dy: number; r: number; rimOffsetX: number; rimOffsetY: number }[];
 }
 
 const PLANET_PALETTES = [
@@ -95,11 +95,21 @@ const CosmicBackground = () => {
     const planets: Planet[] = [];
     for (let i = 0; i < 5; i++) {
       const pal = PLANET_PALETTES[i % PLANET_PALETTES.length];
-      const craters: number[] = [];
-      for (let c = 0; c < 3 + Math.floor(Math.random() * 3); c++) craters.push(Math.random() * Math.PI * 2);
+      const radius = 25 + Math.random() * 50;
+      const numCraters = 3 + Math.floor(Math.random() * 3);
+      const craterSpecs: { dx: number; dy: number; r: number; rimOffsetX: number; rimOffsetY: number }[] = [];
+      for (let c = 0; c < numCraters; c++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distFactor = 0.35 + Math.random() * 0.25;
+        const craterR = radius * (0.06 + Math.random() * 0.06);
+        const dx = Math.cos(angle) * radius * distFactor;
+        const dy = Math.sin(angle) * radius * distFactor;
+        craterSpecs.push({ dx, dy, r: craterR, rimOffsetX: -craterR * 0.15, rimOffsetY: -craterR * 0.15 });
+      }
       planets.push({
-        x: 0, y: 0,
-        r: 25 + Math.random() * 50,
+        x: 0,
+        y: 0,
+        r: radius,
         color: pal.body,
         glowColor: pal.glow,
         ringColor: Math.random() > 0.4 ? pal.ring : undefined,
@@ -109,7 +119,7 @@ const CosmicBackground = () => {
         orbitRadius: 80 + Math.random() * 350,
         cx: Math.random() * w,
         cy: Math.random() * h,
-        craterAngles: craters,
+        craterSpecs,
       });
     }
 
@@ -218,12 +228,11 @@ const CosmicBackground = () => {
         ctx.fillStyle = outerShadow;
         ctx.fill();
 
-        // Craters - shadowed interiors with subtle rim highlights
-        for (const ca of p.craterAngles) {
-          const angleOffset = ca + (Math.PI / 8) * (Math.random() - 0.5);
-          const cx = p.x + Math.cos(angleOffset) * p.r * (0.35 + Math.random() * 0.25);
-          const cy = p.y + Math.sin(angleOffset) * p.r * (0.35 + Math.random() * 0.25);
-          const craterR = p.r * (0.06 + Math.random() * 0.06);
+        // Craters - use precomputed specs to avoid per-frame jitter
+        for (const spec of p.craterSpecs) {
+          const cx = p.x + spec.dx;
+          const cy = p.y + spec.dy;
+          const craterR = spec.r;
 
           // Inner shadow (gives depth)
           const craterGrad = ctx.createRadialGradient(cx - craterR * 0.25, cy - craterR * 0.25, 0, cx, cy, craterR);
@@ -237,7 +246,7 @@ const CosmicBackground = () => {
 
           // Rim highlight (light catching the lip)
           ctx.beginPath();
-          ctx.arc(cx - craterR * 0.15, cy - craterR * 0.15, craterR * 1.05, 0, Math.PI * 2);
+          ctx.arc(cx + spec.rimOffsetX, cy + spec.rimOffsetY, craterR * 1.05, 0, Math.PI * 2);
           ctx.strokeStyle = "rgba(255,255,255,0.06)";
           ctx.lineWidth = Math.max(0.6, craterR * 0.25);
           ctx.stroke();
