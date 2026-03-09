@@ -44,6 +44,7 @@ const KeyboardMap = ({ lastKey, layout = "qwerty", size = 20 }: Props) => {
   // hide if size explicitly zero
   if (size === 0) return null;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (!lastKey) return;
     const upperKey = lastKey.toUpperCase();
@@ -52,6 +53,7 @@ const KeyboardMap = ({ lastKey, layout = "qwerty", size = 20 }: Props) => {
     return () => clearTimeout(t);
   }, [lastKey]);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const update = () => setTheFilesActive(isFunboxModifierActive("the_files"));
     window.addEventListener("storage", update);

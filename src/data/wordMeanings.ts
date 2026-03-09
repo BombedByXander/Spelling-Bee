@@ -812,6 +812,6 @@ export const WORD_MEANINGS: Record<string, string> = {
 };
 
 export const getWordMeaning = (word: string): string | null => {
-  const normalized = word.toLowerCase().replace(/[^a-z'\-]/g, "").trim();
+  const normalized = word.toLowerCase().replace(/[^a-z'-]/g, "").trim();
   return normalized ? WORD_MEANINGS[normalized] ?? null : null;
 };
