@@ -92,10 +92,11 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
         request = request.or(`display_name.ilike.%${escaped}%,username.ilike.%${escaped}%`);
       }
 
-      const [{ data, error }, { data: roleRows, error: roleError }] = await Promise.all([
+      const [{ data, error }, rolesRes] = await Promise.all([
         request,
-        (supabase as any).from("user_roles").select("user_id, role").limit(10000),
+        supabase.from<RoleRow>("user_roles").select("user_id, role").limit(10000),
       ]);
+      const roleRows = rolesRes.data;
 
       if (error || roleError) {
         console.error("Error fetching users:", error);
@@ -150,8 +151,8 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
     setSavingRoleUserId(targetUserId);
     setPanelError(null);
 
-    const { error: deleteError } = await (supabase as any)
-      .from("user_roles")
+    const { error: deleteError } = await supabase
+      .from<RoleRow>("user_roles")
       .delete()
       .eq("user_id", targetUserId);
 
@@ -162,8 +163,8 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
     }
 
     if (nextRole !== "user") {
-      const { error: insertError } = await (supabase as any)
-        .from("user_roles")
+      const { error: insertError } = await supabase
+        .from<RoleRow>("user_roles")
         .insert({ user_id: targetUserId, role: nextRole });
 
       if (insertError) {
@@ -186,8 +187,8 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
   const fetchFeedback = async () => {
     try {
       setFeedbackLoading(true);
-      const { data, error } = await (supabase as any)
-        .from("feedback_submissions")
+      const { data, error } = await supabase
+        .from<FeedbackRow>("feedback_submissions")
         .select("id, display_name, user_id, message, created_at, category")
         .order("created_at", { ascending: false })
         .limit(200);
@@ -210,8 +211,8 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
   const fetchAnnouncements = async () => {
     try {
       setAnnouncementsLoading(true);
-      const { data, error } = await (supabase as any)
-        .from("announcements")
+      const { data, error } = await supabase
+        .from<AnnouncementRow>("announcements")
         .select("id, message, active, created_at")
         .order("created_at", { ascending: false })
         .limit(200);
@@ -324,11 +325,10 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
     try {
       // Read current stars (tolerant if missing)
       const { data: currentProfile, error: currentProfileError } = await supabase
-        .from("profiles")
+        .from<{ stars: number }>("profiles")
         .select("stars")
         .eq("id", targetId)
         .single();
-
       if (currentProfileError) {
         setGiveError(currentProfileError.message || "Failed to read current XP");
         return;
@@ -339,7 +339,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
 
       // Apply update and read the new value back in one operation
       const { data, error } = await supabase
-        .from("profiles")
+        .from<{ stars: number }>("profiles")
         .update({ stars: newStars })
         .eq("id", targetId)
         .select("stars")
@@ -669,8 +669,8 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                           return;
                         }
                         setAnnouncementsLoading(true);
-                        const { data: created, error } = await (supabase as any)
-                          .from("announcements")
+                        const { data: created, error } = await supabase
+                          .from<AnnouncementRow>("announcements")
                           .insert({ message: newAnnouncementMessage.trim(), active: newAnnouncementActive })
                           .select();
                         try { console.debug("Create announcement result:", { created, error }); } catch { void 0; }
@@ -703,8 +703,8 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                       <button
                         onClick={async () => {
                           setPanelError(null);
-                            const { error } = await (supabase as any)
-                              .from("announcements")
+                            const { error } = await supabase
+                              .from<AnnouncementRow>("announcements")
                             .update({ active: !a.active })
                             .eq("id", a.id);
                           if (error) setPanelError(error.message || "Could not update announcement.");
@@ -718,7 +718,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                         onClick={async () => {
                           if (!window.confirm("Delete this announcement?")) return;
                           setPanelError(null);
-                            const { error } = await (supabase as any).from("announcements").delete().eq("id", a.id);
+                            const { error } = await supabase.from<AnnouncementRow>("announcements").delete().eq("id", a.id);
                           if (error) setPanelError(error.message || "Could not delete announcement.");
                           else await fetchAnnouncements();
                         }}
