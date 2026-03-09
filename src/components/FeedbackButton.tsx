@@ -47,11 +47,12 @@ const FeedbackButton = ({ userId, inline = false }: Props) => {
       try {
         const { data, error } = await supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle();
         if (error) return;
-        const name = (data as any)?.display_name || null;
+        const d = data as Record<string, unknown> | null;
+        const name = d && typeof d["display_name"] === "string" ? String(d["display_name"]) : null;
         if (mounted) setFetchedDisplayName(name);
         if (name && !displayName) setDisplayName(name);
       } catch (e) {
-        // ignore
+        void e;
       }
     })();
 
@@ -85,9 +86,10 @@ const FeedbackButton = ({ userId, inline = false }: Props) => {
 
     // Try to insert with category; if DB doesn't have column, fall back to inserting without it
     setSubmitting(true);
-    let insertError: any = null;
+    let insertError: unknown = null;
     try {
-      const payload: any = {
+      type FeedbackPayload = { message: string; display_name: string; user_id: string | null; category: "bug" | "critical" | "feedback" };
+      const payload: FeedbackPayload = {
         message: trimmedMessage,
         display_name: sender,
         user_id: userId ?? null,
@@ -96,28 +98,31 @@ const FeedbackButton = ({ userId, inline = false }: Props) => {
       const res = await supabase.from("feedback_submissions").insert(payload);
       insertError = res.error;
       // If unknown column error, retry without category
-      if (insertError && /column .*category/.test((insertError.message || "").toLowerCase())) {
+      const ie = insertError as Record<string, unknown> | null;
+      const ieMsg = ie && typeof ie["message"] === "string" ? String(ie["message"]).toLowerCase() : "";
+      if (ie && /column .*category/.test(ieMsg)) {
         const fallback = await supabase
           .from("feedback_submissions")
           .insert({ message: trimmedMessage, display_name: sender, user_id: userId ?? null });
         insertError = fallback.error;
       }
     } catch (e) {
-      insertError = e as any;
+      insertError = e as unknown;
     }
 
     setSubmitting(false);
 
     if (insertError) {
-      const errCode = insertError.code || "";
-      const errMessage = (insertError.message || "").toLowerCase();
+      const ie = insertError as Record<string, unknown> | null;
+      const errCode = ie && typeof ie["code"] === "string" ? String(ie["code"]) : "";
+      const errMessage = ie && typeof ie["message"] === "string" ? String(ie["message"]).toLowerCase() : "";
 
       if (errCode === "42P01" || errMessage.includes("feedback_submissions")) {
         setError("Feedback table is not ready yet. Admin needs to run the latest database migration.");
       } else if (errCode === "42501") {
         setError("Feedback permissions are not configured yet. Admin needs to run the latest database migration.");
       } else {
-        setError(`Could not submit feedback right now. (${insertError.message || "Unknown error"})`);
+        setError(`Could not submit feedback right now. (${(ie && String(ie["message"])) || "Unknown error"})`);
       }
       console.error("Feedback submit failed:", insertError);
       return;

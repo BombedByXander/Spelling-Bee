@@ -184,34 +184,34 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
       }
       // Upsert best WPM so leaderboard can reflect immediately
       if (newWpm !== null) {
-        const tryUpsert = async (targetUserId: string | null) => {
+        const tryUpsert = async (
+          targetUserId: string | null
+        ): Promise<{ data: unknown | null; error: unknown | null } | null> => {
           if (!targetUserId) return null;
           try {
-            const existing = await supabase.from('user_best_wpm').select('best_wpm').eq('user_id', targetUserId).maybeSingle();
-            const existingBest = existing && existing.data ? Number(existing.data.best_wpm ?? 0) : 0;
+            const existing = await supabase.from("user_best_wpm").select("best_wpm").eq("user_id", targetUserId).maybeSingle();
+            const existingBest = existing && existing.data ? Number(((existing.data as { best_wpm?: number | string }) || {}).best_wpm ?? 0) : 0;
             if (newWpm > existingBest) {
-              const resp = await supabase.from('user_best_wpm').upsert(
-                { user_id: targetUserId, best_wpm: newWpm, mode: chargMode ? 'charg' : 'master', modifiers: [] },
-                { onConflict: 'user_id' }
+              const resp = await supabase.from("user_best_wpm").upsert(
+                { user_id: targetUserId, best_wpm: newWpm, mode: chargMode ? "charg" : "master", modifiers: [] },
+                { onConflict: "user_id" }
               );
-              return resp;
+              return resp as unknown as { data: unknown | null; error: unknown | null };
             }
             return { data: null, error: null };
-          } catch (err) {
-            // return error object for handling
-            return { data: null, error: err } as any;
+          } catch (err: unknown) {
+            return { data: null, error: err };
           }
         };
 
         // First attempt with provided prop userId (if available)
         if (userId) {
           const res = await tryUpsert(userId);
-          if (res && (res as any).error) {
-            // eslint-disable-next-line no-console
-            console.error('user_best_wpm upsert failed for prop userId', res.error, { userId, newWpm });
+          if (res && (res as { error?: unknown }).error) {
+            console.error("user_best_wpm upsert failed for prop userId", (res as { error?: unknown }).error, { userId, newWpm });
           }
           // if success (no error) we are done
-          if (!res || !(res as any).error) {
+          if (!res || !(res as { error?: unknown }).error) {
             /* upsert succeeded or not needed */
           } else {
             // fallback: try with authenticated uid from supabase client
@@ -220,16 +220,14 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
               const uid = authData?.user?.id ?? null;
               if (uid && uid !== userId) {
                 const fallback = await tryUpsert(uid);
-                if (fallback && (fallback as any).error) {
-                  // eslint-disable-next-line no-console
-                  console.error('user_best_wpm fallback upsert also failed', fallback.error, { uid, newWpm });
+                if (fallback && (fallback as { error?: unknown }).error) {
+                  console.error("user_best_wpm fallback upsert also failed", (fallback as { error?: unknown }).error, { uid, newWpm });
                 } else {
-                  // eslint-disable-next-line no-console
-                  console.info('user_best_wpm fallback upsert succeeded', { uid, newWpm });
+                  console.info("user_best_wpm fallback upsert succeeded", { uid, newWpm });
                 }
               }
             } catch (authErr) {
-              // eslint-disable-next-line no-console
+               
               console.error('error fetching auth user for fallback upsert', authErr);
             }
           }
@@ -240,16 +238,15 @@ const SpellingGame = ({ chargMode, userId, activeSound, activeFont, keyboardLayo
             const uid = authData?.user?.id ?? null;
             if (uid) {
               const res = await tryUpsert(uid);
-              if (res && (res as any).error) {
-                // eslint-disable-next-line no-console
-                console.error('user_best_wpm upsert failed for auth uid', res.error, { uid, newWpm });
+              if (res && (res as { error?: unknown }).error) {
+                console.error('user_best_wpm upsert failed for auth uid', (res as { error?: unknown }).error, { uid, newWpm });
               }
             } else {
-              // eslint-disable-next-line no-console
+               
               console.warn('No authenticated user found; cannot persist best WPM');
             }
           } catch (err) {
-            // eslint-disable-next-line no-console
+             
             console.error('Error during fallback auth upsert flow', err);
           }
         }

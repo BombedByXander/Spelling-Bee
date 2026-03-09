@@ -221,7 +221,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
         return;
       }
 
-      try { console.debug("Fetched announcements:", data?.length ?? 0); } catch {}
+      try { console.debug("Fetched announcements:", data?.length ?? 0); } catch { void 0; }
       setAnnouncements((data ?? []) as AnnouncementRow[]);
     } catch (err) {
       console.error("Exception fetching announcements:", err);
@@ -297,7 +297,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
           textarea.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       } catch (e) {
-        // ignore
+        void e;
       }
     }, 80);
     return () => clearTimeout(id);
@@ -673,7 +673,7 @@ const AdminPanel = ({ open, onClose, canManageRoles = false, currentUserId }: Pr
                           .from("announcements")
                           .insert({ message: newAnnouncementMessage.trim(), active: newAnnouncementActive })
                           .select();
-                        try { console.debug("Create announcement result:", { created, error }); } catch {}
+                        try { console.debug("Create announcement result:", { created, error }); } catch { void 0; }
 
                         if (error) {
                           setPanelError(error.message || "Could not create announcement.");

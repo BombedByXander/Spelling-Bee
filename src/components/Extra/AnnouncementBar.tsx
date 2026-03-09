@@ -57,7 +57,9 @@ const AnnouncementBar = () => {
         if (fetched && fetched.id && dismissedId !== fetched.id) {
           setVisible(true);
         }
-      } catch {}
+      } catch (err) {
+        void err;
+      }
     })();
 
     const ch = supabase
@@ -65,30 +67,32 @@ const AnnouncementBar = () => {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "announcements" },
-        (payload: any) => {
-          try { console.debug("Announcement payload:", payload); } catch {}
+        (payload: unknown) => {
+          console.debug("Announcement payload:", payload);
           try {
-            const eventType = payload?.event || payload?.type || payload?.eventType || payload?.action;
-            const record = payload?.record || payload?.new || payload?.old || payload?.data || null;
+            const p = payload as Record<string, unknown> | null;
+            const eventType = p && (p["event"] ?? p["type"] ?? p["eventType"] ?? p["action"]);
+            const record = p && (p["record"] ?? p["new"] ?? p["old"] ?? p["data"] ?? null);
             if (!record) return;
 
             const et = String(eventType).toUpperCase();
+            const rec = record as Record<string, unknown>;
 
             // On INSERT or UPDATE (active true) show the announcement
-            if (et.includes("INSERT") || (et.includes("UPDATE") && record && record.active)) {
-              try { console.debug("Announcement show/updated:", record); } catch {}
+            if (et.includes("INSERT") || (et.includes("UPDATE") && rec && rec["active"])) {
+              console.debug("Announcement show/updated:", record);
               setAnnouncement(record as AnnouncementRow);
-              if (dismissedId !== record.id) setVisible(true);
+              if (dismissedId !== String(rec["id"] ?? "")) setVisible(true);
             }
 
             // On DELETE or UPDATE (active false) hide it
-            if (et.includes("DELETE") || (et.includes("UPDATE") && record && record.active === false)) {
-              try { console.debug("Announcement removed/deactivated:", record); } catch {}
+            if (et.includes("DELETE") || (et.includes("UPDATE") && rec && rec["active"] === false)) {
+              console.debug("Announcement removed/deactivated:", record);
               setVisible(false);
               setTimeout(() => setAnnouncement(null), 220);
             }
           } catch (err) {
-            // ignore
+            void err;
           }
         }
       )
@@ -126,7 +130,7 @@ const AnnouncementBar = () => {
 
         // If remote announcement differs from current, show it
         if (remoteId !== (announcement?.id ?? "")) {
-          try { console.debug("Remote announcement file detected:", { remoteId, remoteMessage }); } catch {}
+          console.debug("Remote announcement file detected:", { remoteId, remoteMessage });
           const row: AnnouncementRow = { id: remoteId, message: remoteMessage, active: remoteActive, created_at: new Date().toISOString() };
           setAnnouncement(row);
           if (dismissedId !== remoteId) setVisible(true);
@@ -139,7 +143,7 @@ const AnnouncementBar = () => {
     // initial check + periodic poll (shorter interval for faster popup)
     void fetchRemoteAnnouncementFile();
     const timer = setInterval(() => {
-      try { console.debug("Polling /announcement.json..."); } catch {}
+      console.debug("Polling /announcement.json...");
       void fetchRemoteAnnouncementFile();
     }, 5_000);
     return () => {
@@ -158,7 +162,9 @@ const AnnouncementBar = () => {
       try {
         localStorage.setItem(STORAGE_KEY, announcement.id);
         setDismissedId(announcement.id);
-      } catch {}
+      } catch (err) {
+        void err;
+      }
     }, 220);
   };
 

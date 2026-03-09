@@ -42,13 +42,22 @@ const ShopModal = ({
       ]);
 
       if (profileRes.data) {
-        const row: any = profileRes.data;
-        setStars(row.stars ?? 0);
-        if (row.active_sound) onSoundChange(row.active_sound);
-        if (row.active_font) onFontChange(row.active_font);
+        const row = profileRes.data as Record<string, unknown>;
+        const starsVal = typeof row["stars"] === "number" ? (row["stars"] as number) : Number(row["stars"] ?? 0);
+        setStars(starsVal ?? 0);
+        const asSound = row["active_sound"];
+        const asFont = row["active_font"];
+        if (typeof asSound === "string") onSoundChange(asSound);
+        if (typeof asFont === "string") onFontChange(asFont);
       }
-      if (soundRes.data) setPurchasedSounds(new Set(["default", ...soundRes.data.map((row: any) => row.sound_id)]));
-      if (fontRes.data) setPurchasedFonts(new Set(["default", ...fontRes.data.map((row: any) => row.font_id)]));
+      if (soundRes.data) {
+        const srows = soundRes.data as Array<Record<string, unknown>>;
+        setPurchasedSounds(new Set(["default", ...srows.map((r) => String(r["sound_id"]))]));
+      }
+      if (fontRes.data) {
+        const frows = fontRes.data as Array<Record<string, unknown>>;
+        setPurchasedFonts(new Set(["default", ...frows.map((r) => String(r["font_id"]))]));
+      }
     };
 
     fetchData();
@@ -89,12 +98,16 @@ const ShopModal = ({
 
     if (error) {
       setMessage(error.message || "Purchase failed");
-    } else if (data === true || (data && typeof data === "object" && (data as any).ok)) {
-      setPurchasedFonts((prev) => new Set(prev).add(font.id));
-      setStars((prev) => prev - font.cost);
-      setMessage("Purchased!");
     } else {
-      setMessage("Insufficient stars");
+      const d = data as Record<string, unknown> | boolean | null;
+      const ok = data === true || (d && typeof d === "object" && d["ok"] === true);
+      if (ok) {
+        setPurchasedFonts((prev) => new Set(prev).add(font.id));
+        setStars((prev) => prev - font.cost);
+        setMessage("Purchased!");
+      } else {
+        setMessage("Insufficient stars");
+      }
     }
 
     setLoadingId(null);

@@ -36,12 +36,13 @@ const KEYBOARDS: Record<KeyboardLayout, string[][]> = {
 
 const KeyboardMap = ({ lastKey, layout = "qwerty", size = 20 }: Props) => {
   const isMobile = useIsMobile();
-  // hide entirely on mobile
+  const [flashKey, setFlashKey] = useState<string | null>(null);
+  const [theFilesActive, setTheFilesActive] = useState<boolean>(() => isFunboxModifierActive("the_files"));
+
+  // hide entirely on mobile (rendered after hooks so hooks order is stable)
   if (isMobile) return null;
   // hide if size explicitly zero
   if (size === 0) return null;
-  const [flashKey, setFlashKey] = useState<string | null>(null);
-  const [theFilesActive, setTheFilesActive] = useState<boolean>(() => isFunboxModifierActive("the_files"));
 
   useEffect(() => {
     if (!lastKey) return;

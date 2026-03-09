@@ -34,8 +34,8 @@ export default function AvatarEditor({ file, onCancel, onUpload }: Props) {
     };
     const node = containerRef.current;
     if (node) node.addEventListener("wheel", onWheel, { passive: false });
-    return () => node && node.removeEventListener("wheel", onWheel as any);
-  }, []);
+    return () => node && node.removeEventListener("wheel", onWheel as EventListener);
+  }, [scale]);
 
   // Auto-fit image so something is visible immediately
   const onImgLoad = () => {
@@ -70,7 +70,11 @@ export default function AvatarEditor({ file, onCancel, onUpload }: Props) {
 
   const onPointerUp = (e: React.PointerEvent) => {
     dragging.current = false;
-    try { (e.target as Element).releasePointerCapture(e.pointerId); } catch {}
+    try {
+      (e.target as Element).releasePointerCapture(e.pointerId);
+    } catch (err) {
+      void err;
+    }
   };
 
   const handleConfirm = async () => {

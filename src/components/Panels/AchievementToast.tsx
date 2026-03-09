@@ -8,8 +8,9 @@ const AchievementToast = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   useEffect(() => {
-    const handler = (e: any) => {
-      const slug = e?.detail?.slug as string | undefined;
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ slug?: string }>).detail;
+      const slug = detail?.slug;
       if (!slug) return;
       const def = ACHIEVEMENT_DEFS.find((d) => d.slug === slug);
       const toast = {
@@ -23,8 +24,8 @@ const AchievementToast = () => {
       setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== toast.id)), 4000);
     };
 
-    window.addEventListener("achievement:unlocked", handler as EventListener);
-    return () => window.removeEventListener("achievement:unlocked", handler as EventListener);
+    window.addEventListener("achievement:unlocked", handler);
+    return () => window.removeEventListener("achievement:unlocked", handler);
   }, []);
 
   if (typeof document === "undefined") return null;

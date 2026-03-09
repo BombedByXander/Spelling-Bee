@@ -8,10 +8,12 @@ export interface SoundPack {
   playEnter: () => void;
 }
 
-const audioCtx =
+const audioCtor =
   typeof window !== "undefined"
-    ? new (window.AudioContext || (window as any).webkitAudioContext)()
+    ? ((window as Window & { webkitAudioContext?: typeof AudioContext }).AudioContext ||
+        (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)
     : null;
+const audioCtx = audioCtor ? new audioCtor() : null;
 
 function ensureAudioReady(onReady: () => void) {
   if (!audioCtx) return;

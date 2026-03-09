@@ -18,9 +18,12 @@ const AchievementsPanel = ({ userId }: { userId: string }) => {
         return;
       }
       const map: Record<string, string> = {};
-      (data ?? []).forEach((row: any) => {
-        const slug = row?.achievements?.slug || row?.achievement_id;
-        const at = row?.unlocked_at || null;
+      (data ?? []).forEach((row) => {
+        const r = row as Record<string, unknown>;
+        const achievements = r["achievements"] as Record<string, unknown> | undefined | null;
+        const slug = (achievements && typeof achievements["slug"] === "string" ? String(achievements["slug"]) : null) ||
+          (typeof r["achievement_id"] === "string" ? String(r["achievement_id"]) : null);
+        const at = r["unlocked_at"] ? String(r["unlocked_at"]) : null;
         if (slug && at) map[slug] = at;
       });
       setUnlocked(map);

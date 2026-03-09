@@ -59,7 +59,7 @@ export const createReplayShareLink = async (authorId?: string) => {
     lastAt: events[events.length - 1]?.at ?? null,
   };
 
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from("run_replays")
     .insert({
       share_code: shareCode,
