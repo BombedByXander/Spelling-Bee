@@ -20,15 +20,13 @@ const SoundShop = ({ open, onClose, userId, activeSound, onSoundChange }: Props)
     if (!open || !userId) return;
     // Fetch user's stars and purchases
     const fetchData = async () => {
-      const [profileRes, purchasesRes] = await Promise.all([
-        supabase.from("profiles").select("stars, active_sound").eq("id", userId).single(),
-        supabase.from("sound_purchases").select("sound_id").eq("user_id", userId),
-      ]);
-      if (profileRes.data) {
+      const profileRes = await supabase.from<{ stars: number; active_sound?: string }>("profiles").select("stars, active_sound").eq("id", userId).single();
+      const purchasesRes = await supabase.from<{ sound_id: string }>("sound_purchases").select("sound_id").eq("user_id", userId);
+      if (profileRes.data && typeof profileRes.data.stars === "number") {
         setStars(profileRes.data.stars);
       }
       if (purchasesRes.data) {
-        setPurchased(new Set(["default", ...purchasesRes.data.map((p: any) => p.sound_id)]));
+        setPurchased(new Set(["default", ...purchasesRes.data.map((p) => p.sound_id)]));
       }
     };
     fetchData();
@@ -37,8 +35,8 @@ const SoundShop = ({ open, onClose, userId, activeSound, onSoundChange }: Props)
   const handlePurchase = async (sound: SoundPack) => {
     if (!userId) return;
     setLoading(sound.id);
-    const { data } = await supabase.rpc("purchase_sound", { p_sound_id: sound.id, p_cost: sound.cost });
-    if (data) {
+    const res = await supabase.rpc<boolean | { ok?: boolean }>("purchase_sound", { p_sound_id: sound.id, p_cost: sound.cost });
+    if (res.data === true || (res.data && typeof res.data === "object" && (res.data as { ok?: boolean }).ok)) {
       setPurchased(p => new Set(p).add(sound.id));
       setStars(s => s - sound.cost);
     }

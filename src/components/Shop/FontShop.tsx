@@ -22,7 +22,7 @@ const FontShop = ({ open, onClose, userId, activeFont, onFontChange }: Props) =>
     const fetchData = async () => {
       try {
         const profileQuery = supabase.from("profiles").select("stars").eq("id", userId).single();
-        const purchasesQuery = supabase.from("font_purchases").select("font_id").eq("user_id", userId);
+        const purchasesQuery = supabase.from<{ font_id: string }>("font_purchases").select("font_id").eq("user_id", userId);
         const [profileRes, purchasesRes] = await Promise.all([profileQuery, purchasesQuery]);
         if (profileRes.error) {
           console.error("Error fetching profile for font shop:", profileRes.error);
@@ -34,7 +34,7 @@ const FontShop = ({ open, onClose, userId, activeFont, onFontChange }: Props) =>
           console.error("Error fetching font purchases:", purchasesRes.error);
         }
         if (purchasesRes.data) {
-          setPurchased(new Set(["default", ...purchasesRes.data.map((p: any) => p.font_id)]));
+          setPurchased(new Set(["default", ...purchasesRes.data.map((p) => p.font_id)]));
         }
       } catch (e) {
         console.error("Unexpected error in FontShop fetchData", e);
@@ -47,7 +47,7 @@ const FontShop = ({ open, onClose, userId, activeFont, onFontChange }: Props) =>
     if (!userId) return;
     setLoading(font.id);
     try {
-      const { data, error } = await supabase.rpc("purchase_font", { p_font_id: font.id, p_cost: font.cost });
+      const { data, error } = await supabase.rpc<boolean | { ok?: boolean }>("purchase_font", { p_font_id: font.id, p_cost: font.cost });
       if (error) {
         console.error("purchase_font RPC error:", error);
         setMessage(error.message || "Purchase failed");
@@ -57,16 +57,16 @@ const FontShop = ({ open, onClose, userId, activeFont, onFontChange }: Props) =>
         setMessage("Purchased!");
       } else if (data === false) {
         setMessage("Insufficient stars");
-      } else {
-        // unexpected response; try graceful fallback
-        if (data && typeof data === "object" && (data as any).ok) {
-          setPurchased(p => new Set(p).add(font.id));
-          setStars(s => s - font.cost);
-          setMessage("Purchased!");
         } else {
-          setMessage("Purchase failed (unexpected response)");
-          console.error("purchase_font unexpected data:", data);
-        }
+          // unexpected response; try graceful fallback
+          if (data && typeof data === "object" && 'ok' in data && (data as { ok?: boolean }).ok) {
+            setPurchased(p => new Set(p).add(font.id));
+            setStars(s => s - font.cost);
+            setMessage("Purchased!");
+          } else {
+            setMessage("Purchase failed (unexpected response)");
+            console.error("purchase_font unexpected data:", data);
+          }
       }
     } catch (e) {
       console.error(e);

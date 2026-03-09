@@ -53,10 +53,8 @@ const Leaderboard = ({ open, onClose }: Props) => {
     };
 
     try {
-      const [profileRes, historyRes] = await Promise.all([
-        (supabase as any).rpc("get_public_profile_stats", { p_user_id: entry.user_id }),
-        (supabase as any).rpc("get_public_weekly_history", { p_user_id: entry.user_id, p_limit: 10 }),
-      ]);
+      const profileRes = await supabase.rpc<PublicProfileStats[]>("get_public_profile_stats", { p_user_id: entry.user_id });
+      const historyRes = await supabase.rpc<WeeklyHistoryRow[]>("get_public_weekly_history", { p_user_id: entry.user_id, p_limit: 10 });
 
       const profileRow = Array.isArray(profileRes.data) ? profileRes.data[0] : null;
 
@@ -83,12 +81,10 @@ const Leaderboard = ({ open, onClose }: Props) => {
     setLoading(true);
     // New behavior: show top 50 highest recorded streaks (from profiles.best_streak)
     try {
-      const [{ data: profiles }, { data: roles }] = await Promise.all([
-        supabase.from("profiles").select("id, display_name, username, avatar_url, best_streak").order("best_streak", { ascending: false }).limit(50),
-        supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
-      ]);
-      const built = (profiles ?? [])
-        .map((p: any, i: number) => ({
+      const profilesRes = await supabase.from<{ id: string; display_name?: string; username?: string; avatar_url?: string; best_streak?: number }>("profiles").select("id, display_name, username, avatar_url, best_streak").order("best_streak", { ascending: false }).limit(50);
+      const rolesRes = await supabase.from<{ user_id: string; role: string }>("user_roles").select("user_id, role").eq("role", "admin");
+      const built = (profilesRes.data ?? [])
+        .map((p, i: number) => ({
           user_id: p.id,
           display_name: p.display_name ?? "(unknown)",
           username: p.username ?? null,
@@ -99,7 +95,7 @@ const Leaderboard = ({ open, onClose }: Props) => {
         } as LeaderboardEntry))
         .filter((e: LeaderboardEntry) => Number(e.streak ?? 0) > 0);
       setEntries(built);
-      if (roles) setAdminIds(new Set(roles.map((row: any) => row.user_id)));
+      if (rolesRes.data) setAdminIds(new Set(rolesRes.data.map((row) => row.user_id)));
     } catch (err) {
       setEntries([]);
     } finally {
@@ -114,10 +110,10 @@ const Leaderboard = ({ open, onClose }: Props) => {
     // subscribe to profile updates so streak changes reflect immediately
     const channel = supabase
       .channel("leaderboard-streaks")
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles" }, (payload) => {
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles" }, (payload) => {
         // only refresh on best_streak changes
         try {
-          const record = (payload as any).record;
+          const record = (payload as unknown as { record?: { best_streak?: number } }).record;
           if (record && (record.best_streak !== undefined)) {
             fetchLeaderboard();
           }
