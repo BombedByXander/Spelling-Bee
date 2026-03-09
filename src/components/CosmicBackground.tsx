@@ -114,7 +114,9 @@ const CosmicBackground = () => {
     }
 
     const draw = () => {
-      ctx.clearRect(0, 0, w, h);
+      // Fill with near-black for OLED-style background (prevents grey or translucent bleed-through)
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, w, h);
       const now = Date.now();
 
       // Stars with twinkle
