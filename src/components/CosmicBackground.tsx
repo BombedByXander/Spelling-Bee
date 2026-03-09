@@ -252,13 +252,13 @@ const CosmicBackground = () => {
         const lightY = p.y + lightDirY * p.r;
 
         // Soft specular/highlight (on light side)
-        const specRad = p.r * 0.28;
-        const specGrad2 = ctx.createRadialGradient(lightX, lightY, 0, lightX, lightY, specRad);
+        const lightSpecRad = p.r * 0.28;
+        const specGrad2 = ctx.createRadialGradient(lightX, lightY, 0, lightX, lightY, lightSpecRad);
         specGrad2.addColorStop(0, "rgba(255,255,255,0.18)");
         specGrad2.addColorStop(0.35, "rgba(255,255,255,0.06)");
         specGrad2.addColorStop(1, "rgba(255,255,255,0)");
         ctx.beginPath();
-        ctx.arc(lightX, lightY, specRad, 0, Math.PI * 2);
+        ctx.arc(lightX, lightY, lightSpecRad, 0, Math.PI * 2);
         ctx.fillStyle = specGrad2;
         ctx.fill();
 
