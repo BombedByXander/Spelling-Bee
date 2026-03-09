@@ -242,28 +242,14 @@ const CosmicBackground = () => {
         ctx.fillStyle = outerShadow;
         ctx.fill();
 
-        // Craters - use precomputed specs to avoid per-frame jitter
+        // Craters (reverted to original simple filled style)
         for (const spec of p.craterSpecs) {
           const cx = p.x + spec.dx;
           const cy = p.y + spec.dy;
-          const craterR = spec.r;
-
-          // Inner shadow (gives depth)
-          const craterGrad = ctx.createRadialGradient(cx - craterR * 0.25, cy - craterR * 0.25, 0, cx, cy, craterR);
-          craterGrad.addColorStop(0, "rgba(0,0,0,0.18)");
-          craterGrad.addColorStop(0.6, "rgba(0,0,0,0.08)");
-          craterGrad.addColorStop(1, "rgba(0,0,0,0)");
           ctx.beginPath();
-          ctx.arc(cx, cy, craterR, 0, Math.PI * 2);
-          ctx.fillStyle = craterGrad;
+          ctx.arc(cx, cy, p.r * 0.08, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(0,0,0,0.08)";
           ctx.fill();
-
-          // Rim highlight (light catching the lip)
-          ctx.beginPath();
-          ctx.arc(cx + spec.rimOffsetX, cy + spec.rimOffsetY, craterR * 1.05, 0, Math.PI * 2);
-          ctx.strokeStyle = "rgba(255,255,255,0.06)";
-          ctx.lineWidth = Math.max(0.6, craterR * 0.25);
-          ctx.stroke();
         }
 
         // (Removed micro-noise to avoid flickering/shaking dots)
