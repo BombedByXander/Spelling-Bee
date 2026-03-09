@@ -243,22 +243,7 @@ const CosmicBackground = () => {
           ctx.stroke();
         }
 
-        // Surface micro-noise (subtle speckles for texture)
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r * 0.98, 0, Math.PI * 2);
-        ctx.clip();
-        const noiseCount = Math.floor(p.r * 2.5);
-        for (let ni = 0; ni < noiseCount; ni++) {
-          const nx = p.x + (Math.random() * 2 - 1) * p.r * 0.95;
-          const ny = p.y + (Math.random() * 2 - 1) * p.r * 0.95;
-          const dist = Math.hypot(nx - p.x, ny - p.y);
-          if (dist > p.r * 0.98) continue;
-          const na = 0.02 + Math.random() * 0.06;
-          ctx.fillStyle = `rgba(255,255,255,${na})`;
-          ctx.fillRect(Math.round(nx), Math.round(ny), 1, 1);
-        }
-        ctx.restore();
+        // (Removed micro-noise to avoid flickering/shaking dots)
 
         // Specular highlight (soft bright spot)
         const specX = p.x - p.r * 0.35;

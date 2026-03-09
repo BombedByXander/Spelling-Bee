@@ -71,7 +71,7 @@ const InfoButton = ({ inline }: Props) => {
               </div>
             ))}
           </div>
-          <p className="mt-3 text-[10px] text-muted-foreground font-mono text-center">v26.2</p>
+          <p className="mt-3 text-[10px] text-muted-foreground font-mono text-center">v26.3</p>
         </div>
 
         <div className="mt-6 pt-4 border-t border-border">
