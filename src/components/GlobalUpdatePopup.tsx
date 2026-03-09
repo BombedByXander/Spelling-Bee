@@ -34,7 +34,7 @@ const GlobalUpdatePopup = () => {
         <div className="max-h-[72vh] overflow-y-auto pr-1">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">New update · v26.2</h2>
+              <h2 className="text-lg font-extrabold font-mono text-primary text-glow tracking-tight">New update · v26.3</h2>
               <p className="mt-1 text-[10px] text-muted-foreground font-mono italic">"Why the huge version jump", you may be asking — it's sorta inspired by iOS, the year 2026 (isolated to 26) and the update.</p>
               <p className="mt-1 text-xs text-muted-foreground font-mono">Important changes:</p>
             </div>
